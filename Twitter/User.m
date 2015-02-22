@@ -10,7 +10,7 @@
 
 @implementation User
 -(id) initWithDictionary:(NSDictionary *) dictionary {
-    self 
+        return nil;
 }
 
 @end

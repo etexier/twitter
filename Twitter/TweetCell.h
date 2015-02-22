@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Business.h"
+#import "Tweet.h"
 
 @interface TweetCell : UITableViewCell
-@property (nonatomic, strong) Business *business;
+@property (nonatomic, strong) Tweet *tweet;
 @end

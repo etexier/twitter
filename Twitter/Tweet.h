@@ -1,15 +1,16 @@
-//
-//  Tweet.h
-//  Twitter
-//
-//  Created by Emmanuel Texier on 2/19/15.
-//  Copyright (c) 2015 Emmanuel Texier. All rights reserved.
-//
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
+#pragma mark -
 @interface Tweet : NSObject
 
--(id) initWithDictionary:(NSDictionary *) dictionary;
+@property (nonatomic, copy, readonly) NSDate *createdAt;
+@property (nonatomic, copy, readonly) NSURL *userImageURL;
+@property (nonatomic, copy, readonly) NSString *userName;
+@property (nonatomic, copy, readonly) NSString *userScreenName;
+@property (nonatomic, copy, readonly) NSString *retweetInfo;
+@property (nonatomic, copy, readonly) NSString *tweetText;
+
+- (id)initWithDictionary:(NSDictionary *)dictionary;
 
 @end

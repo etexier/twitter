@@ -8,16 +8,22 @@
 
 #import "TweetCell.h"
 #import "UIImageView+AFNetworking.h"
+#import "Helper.h"
 
 @interface TweetCell ()
 
-@property(weak, nonatomic) IBOutlet UIImageView *thumbImageView;
-@property(weak, nonatomic) IBOutlet UILabel *nameLabel;
-@property(weak, nonatomic) IBOutlet UILabel *distanceLabel;
-@property(weak, nonatomic) IBOutlet UILabel *addressLabel;
-@property(weak, nonatomic) IBOutlet UILabel *numReviewsLabel;
-@property(weak, nonatomic) IBOutlet UIImageView *ratingImageView;
-@property(weak, nonatomic) IBOutlet UILabel *categoryLabel;
+@property(weak, nonatomic) IBOutlet UIImageView *userImageView;
+@property(weak, nonatomic) IBOutlet UILabel *userNameLabel;
+@property(weak, nonatomic) IBOutlet UILabel *userScreenNameLabel;
+@property(weak, nonatomic) IBOutlet UILabel *createdTimeLabel;
+@property(weak, nonatomic) IBOutlet UILabel *tweetTextLabel;
+@property(weak, nonatomic) IBOutlet UILabel *retweetInfoLabel;
+
+
+// buttons
+@property(weak, nonatomic) IBOutlet UIButton *retweetButton;
+@property(weak, nonatomic) IBOutlet UIButton *replyButton;
+@property(weak, nonatomic) IBOutlet UIButton *favoriteButton;
 
 @end
 
@@ -25,10 +31,10 @@
 
 - (void)awakeFromNib {
     // Initialization code
-    
-    self.nameLabel.preferredMaxLayoutWidth = self.nameLabel.frame.size.width;
-    self.thumbImageView.layer.cornerRadius = 3;
-    self.thumbImageView.clipsToBounds = YES;
+
+    self.userNameLabel.preferredMaxLayoutWidth = self.userNameLabel.frame.size.width;
+    self.userImageView.layer.cornerRadius = 3;
+    self.userImageView.clipsToBounds = YES;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -37,21 +43,63 @@
     // Configure the view for the selected state
 }
 
-- (void)setBusiness:(Business *)business {
-    _business = business;
-    [self.thumbImageView setImageWithURL:[NSURL URLWithString:self.business.imageUrl]];
-    self.nameLabel.text = self.business.name;
-    self.addressLabel.text = self.business.address;
-    self.numReviewsLabel.text = [NSString stringWithFormat:@"%ld reviews", (long) self.business.numReviews];
-    self.distanceLabel.text = [NSString stringWithFormat:@"%.2f mi", self.business.distance];
-    [self.ratingImageView setImageWithURL:[NSURL URLWithString:self.business.ratingImageUrl]];
-    self.categoryLabel.text = self.business.categories;
+- (void)setTweet:(Tweet *)tweet {
+    _tweet = tweet;
+
+    [self.userImageView setImageWithURL:_tweet.userImageURL];
+//    [Helper fadeInImage:self.imageView url:tweet.userImageURL]; // fade in effect
+
+
+    _userNameLabel.text = _tweet.userName;
+    _userScreenNameLabel.text = [NSString stringWithFormat:@"@%@", _tweet.userScreenName ];
+    _tweetTextLabel.text = _tweet.tweetText;
+
+    // retweet label is not always there
+    if (_tweet.retweetInfo) {
+        _retweetInfoLabel.text = _tweet.retweetInfo;
+    }
+
+    // Calculate how long ago
+    NSDate *now = [NSDate date];
+    NSDateComponents *timeComponents = [[NSCalendar currentCalendar]
+            components:NSCalendarUnitSecond
+              fromDate:_tweet.createdAt
+                toDate:now
+               options:0];
+    if (timeComponents.second) {
+        long secondsAgo = timeComponents.second;
+        if (secondsAgo < 60) {
+            _createdTimeLabel.text = [NSString stringWithFormat:@"%lus", secondsAgo ];
+            return;
+        }
+        
+        long minutesAgo = (long) (secondsAgo/60);
+        if (minutesAgo < 60) {
+            _createdTimeLabel.text = [NSString stringWithFormat:@"%lum", minutesAgo];
+            return;
+        }
+
+        long hoursAgo = (long) (secondsAgo/(60*60));
+        if (hoursAgo < 60) {
+            _createdTimeLabel.text = [NSString stringWithFormat:@"%luh", hoursAgo];
+            return;
+        }
+
+        // check n days ago
+        long daysAgo = (long) (secondsAgo / (60*60*24));
+        if (daysAgo > 0) {
+            _createdTimeLabel.text = [NSString stringWithFormat:@"%lud", daysAgo ];
+            return;
+        }
+        
+        
+    }
 }
 
--(void) layoutSubviews {
+- (void)layoutSubviews {
     [super layoutSubviews];
-    self.nameLabel.preferredMaxLayoutWidth = self.nameLabel.frame.size.width;
-    
+    self.userNameLabel.preferredMaxLayoutWidth = self.userNameLabel.frame.size.width;
+
 }
 
 @end

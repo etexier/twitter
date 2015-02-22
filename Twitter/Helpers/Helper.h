@@ -4,7 +4,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 
 @interface Helper : NSObject
++ (void) fadeInImage:(UIImageView *)imageView url:(NSURL *) url;
+
+
 @end

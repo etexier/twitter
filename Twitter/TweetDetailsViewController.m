@@ -7,15 +7,25 @@
 //
 
 #import "TweetDetailsViewController.h"
+#import "Tweet.h"
 
 @interface TweetDetailsViewController ()
 
 @end
 
 @implementation TweetDetailsViewController
+- (id)initWithTweet:(Tweet *)tweet {
+    self = [super init];
+    if (self) {
+        self.tweet = tweet;
+    }
+    return self;
+}
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.title = @"Tweet";
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -24,14 +34,5 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

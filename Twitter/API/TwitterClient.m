@@ -14,7 +14,7 @@
 
 // internal
 static NSString *const kTwitterClientAPIURL = @"https://api.twitter.com/1.1/";
-static NSString *const kTimeLinePath = @"statuses/home_timeline.json?count=100";
+static NSString *const kTimeLinePath = @"statuses/home_timeline.json?count=10";
 
 
 // exported
@@ -169,7 +169,6 @@ static TwitterClient *_sharedInstance = nil;
         return completion(nil, error);
     }
 
-    NSLog(@"Creating array of tweet instances...");
 
     NSArray *response = responseObject;
 
@@ -179,6 +178,7 @@ static TwitterClient *_sharedInstance = nil;
         Tweet *tweet = [[Tweet alloc] initWithDictionary:tweetInfo];
         [tweets addObject:tweet];
     }
+    NSLog(@"Created array of %lu tweet instances...", (unsigned long) tweets.count);
 
     completion(tweets, nil);
 }

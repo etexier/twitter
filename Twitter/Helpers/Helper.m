@@ -4,9 +4,18 @@
 //
 
 #import "Helper.h"
+#import "UIImageView+AFNetworking.h"
 
 
-@implementation Helper {
-
+@implementation Helper
++ (void)fadeInImage:(UIImageView *)imageView url:(NSURL *)url {
+    imageView.alpha = 0;
+    [imageView setImageWithURL:url];
+    [UIView beginAnimations:@"fade in" context:nil];
+    [UIView setAnimationDuration:1.0];
+    imageView.alpha = 1;
+    [UIView commitAnimations];
 }
+
+
 @end

@@ -8,8 +8,6 @@
 
 #import "BDBOAuth1RequestOperationManager.h"
 
-@import Foundation.h;
-
 
 @import Foundation;
 
