@@ -46,7 +46,6 @@ static NSString *const kTweetCell = @"TweetCell";
 //        self.tableView.separatorInset = UIEdgeInsetsZero;
 
         // contextual log in/out right button based on login status
-
         // register notifications
 
         // Log out button if already logged in
@@ -55,7 +54,7 @@ static NSString *const kTweetCell = @"TweetCell";
                                                            queue:nil
                                                       usingBlock:^(NSNotification *note) {
                                                           [self loadTweets];
-                                                          [self.navigationItem.leftBarButtonItem setTitle:@"Log Out"];
+                                                          [self.navigationItem.leftBarButtonItem setTitle:@"Sign Out"];
                                                       }];
 
 
@@ -66,7 +65,7 @@ static NSString *const kTweetCell = @"TweetCell";
                                                       usingBlock:^(NSNotification *note) {
                                                           self.tweets = [NSArray array];
                                                           [self.tableView reloadData];
-                                                          [self.navigationItem.leftBarButtonItem setTitle:@"Log In"];
+                                                          [self.navigationItem.leftBarButtonItem setTitle:@"Sign In"];
                                                       }];
     }
 
@@ -77,6 +76,7 @@ static NSString *const kTweetCell = @"TweetCell";
     [super viewDidLoad];
 
     self.title = @"Tweets";
+    self.willReloadTweets = YES;
 
     // Do any additional setup after loading the view from its nib.
     self.tableView.dataSource = self;
@@ -96,7 +96,7 @@ static NSString *const kTweetCell = @"TweetCell";
     [self.tableView registerNib:[UINib nibWithNibName:kTweetCell bundle:nil] forCellReuseIdentifier:kTweetCell];
 
 
-    NSString *logInOutString = [[TwitterClient sharedInstance] isAuthorized] ? @"Log Out" : @"Log In";
+    NSString *logInOutString = [[TwitterClient sharedInstance] isAuthorized] ? @"Sign Out" : @"Sign In";
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:logInOutString
                                                                               style:UIBarButtonItemStylePlain
                                                                              target:self
@@ -106,6 +106,11 @@ static NSString *const kTweetCell = @"TweetCell";
 
 - (void)viewDidAppear:(BOOL)animated {
     // Do we want to reload the data everytime?
+    if (!self.willReloadTweets) {
+        self.willReloadTweets = YES;
+        [self.tableView reloadData];
+        return;
+    }
     if ([[TwitterClient sharedInstance] isAuthorized]) {
         [self loadTweets];
     }
@@ -162,41 +167,15 @@ static NSString *const kTweetCell = @"TweetCell";
     return [self calculateHeightForConfiguredSizingCell:sizingCell];
 }
 
-- (CGFloat)calculateHeightForConfiguredSizingCell:(UITableViewCell *)sizingCell {
-    [sizingCell setNeedsLayout];
-    [sizingCell layoutIfNeeded];
-    
-    CGSize size = [sizingCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-    return size.height + 1.0f; // Add 1.0f for the cell separator height
-}
-
-//  could be a iOS bug: the cell were squished when going back and forth b/w views
-//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-//    TweetCell *cell = [tableView dequeueReusableCellWithIdentifier:kTweetCell];
-//    cell.tweet = self.tweets[(NSUInteger) indexPath.row];
-//        [cell setNeedsUpdateConstraints];
-//        [cell updateConstraintsIfNeeded];
-//    
-//        cell.bounds = CGRectMake(0.0f, 0.0f, CGRectGetWidth(tableView.bounds), CGRectGetHeight(cell.bounds));
-//    
-//        [cell setNeedsLayout];
-//        [cell layoutIfNeeded];
-//    CGSize size = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-//    return size.height + 50;
-//}
-
-
-
-
 
 #pragma mark Authorization
 
 - (void)logInOut {
     if ([[TwitterClient sharedInstance] isAuthorized]) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[[UIActionSheet alloc] initWithTitle:@"Are you sure you want to log out?"
+            [[[UIActionSheet alloc] initWithTitle:@"Are you sure you want to sign out?"
                                 cancelButtonTitle:@"Cancel"
-                           destructiveButtonTitle:@"Log Out"
+                           destructiveButtonTitle:@"Sign Out"
                                  otherButtonTitle:nil
                                   completionBlock:^(NSInteger buttonIndex, UIActionSheet *actionSheet) {
                                       if (buttonIndex == actionSheet.destructiveButtonIndex) {
@@ -223,10 +202,10 @@ static NSString *const kTweetCell = @"TweetCell";
 - (void)loadTweets {
     if (![[TwitterClient sharedInstance] isAuthorized]) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[[UIAlertView alloc] initWithTitle:@"Not Logged In"
-                                        message:@"You have to log in before you can view your timeline!"
+            [[[UIAlertView alloc] initWithTitle:@"Not Signed In"
+                                        message:@"You have to sign in first!"
                               cancelButtonTitle:@"Cancel"
-                               otherButtonTitle:@"Log In"
+                               otherButtonTitle:@"Sign In"
                                 completionBlock:^(NSInteger buttonIndex, UIAlertView *alertView) {
                                     if (buttonIndex == alertView.cancelButtonIndex + 1) {
                                         [[TwitterClient sharedInstance] authorize];
@@ -266,6 +245,17 @@ static NSString *const kTweetCell = @"TweetCell";
         [self.refreshControl endRefreshing];
     }];
 }
+
+#pragma mark - other private methods
+- (CGFloat)calculateHeightForConfiguredSizingCell:(UITableViewCell *)sizingCell {
+    [sizingCell setNeedsLayout];
+    [sizingCell layoutIfNeeded];
+    
+    CGSize size = [sizingCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+    return size.height + 1.0f; // Add 1.0f for the cell separator height
+}
+
+
 
 
 @end

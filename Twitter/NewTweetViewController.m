@@ -7,8 +7,11 @@
 //
 
 #import "NewTweetViewController.h"
+#import "TwitterClient.h"
+#import "TweetsViewController.h"
 
 @interface NewTweetViewController ()
+@property (weak, nonatomic) IBOutlet UITextView *tweetTextView;
 
 @end
 
@@ -18,6 +21,19 @@
     [super viewDidLoad];
     self.title = @"New Tweet";
     // Do any additional setup after loading the view from its nib.
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel"
+                                                                             style:UIBarButtonItemStylePlain
+                                                                            target:self
+                                                                            action:@selector(onCancelTweet)];
+
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Send"
+                                                                             style:UIBarButtonItemStylePlain
+                                                                            target:self
+                                                                            action:@selector(onSendTweet)];
+}
+
+- (void) viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:YES];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -25,14 +41,50 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+#pragma mark - actions
+- (void)onSendTweet {
+    [self sendTweetText:self.tweetTextView.text];
+    [[self navigationController] popViewControllerAnimated:YES];
 }
-*/
 
+- (void) onCancelTweet {
+    TweetsViewController *vc = [self backViewController];
+    vc.willReloadTweets = NO;
+    [[self navigationController] popViewControllerAnimated:YES];
+    
+}
+
+#pragma mark - private
+- (void) sendTweetText:(NSString *)text {
+    
+    [[TwitterClient sharedInstance] updateStatus:text completion:^(NSArray *response, NSError *error) {
+        if (error) {
+            NSLog(@"Error: %@", error.localizedDescription);
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[[UIAlertView alloc] initWithTitle:@"Error"
+                                            message:error.localizedDescription
+                                           delegate:self
+                                  cancelButtonTitle:@"Dismiss"
+                                  otherButtonTitles:nil] show];
+            });
+        } else {
+            NSLog(@"Test tweet sent");
+        }
+        
+    }];
+
+}
+
+- (TweetsViewController *)backViewController
+{
+    NSInteger numberOfViewControllers = self.navigationController.viewControllers.count;
+    if (numberOfViewControllers < 2) {
+        return nil;
+    } else {
+        NSUInteger index = (NSUInteger) (numberOfViewControllers - 2);
+        return (TweetsViewController *) self.navigationController.viewControllers[index];
+    }
+}
 @end

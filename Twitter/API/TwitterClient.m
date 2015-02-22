@@ -15,6 +15,7 @@
 // internal
 static NSString *const kTwitterClientAPIURL = @"https://api.twitter.com/1.1/";
 static NSString *const kTimeLinePath = @"statuses/home_timeline.json?count=10";
+static NSString *const kUpdateStatusRequest = @"statuses/update.json";
 
 
 // exported
@@ -67,7 +68,7 @@ static TwitterClient *_sharedInstance = nil;
 }
 
 + (instancetype)sharedInstance {
-    NSAssert(_sharedInstance, @"TwitterClient not initialized. [TwitterClient createWithConsumerKey:secret:] must be called first.");
+    NSAssert(_sharedInstance, @"TwitterClient is not initialized. Call [TwitterClient createWithConsumerKey:secret:] first.");
 
     return _sharedInstance;
 }
@@ -117,6 +118,7 @@ static TwitterClient *_sharedInstance = nil;
                                          requestToken:[BDBOAuth1Credential credentialWithQueryString:url.query]
                                               success:^(BDBOAuth1Credential *accessToken) {
                                                   NSLog(@"Received access token!");
+                                                  // notify all listeners
                                                   [[NSNotificationCenter defaultCenter] postNotificationName:TwitterClientDidLogInNotification
                                                                                                       object:self
                                                                                                     userInfo:accessToken.userInfo];
@@ -159,6 +161,31 @@ static TwitterClient *_sharedInstance = nil;
                          completion(nil, error);
                      }];
 }
+
+- (void)updateStatus:(NSString *)text completion:(void (^)(NSArray *, NSError *error))completion {
+    NSString *encodedText = [text stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
+
+    NSString *query = [NSString stringWithFormat:@"%@?status=%@", kUpdateStatusRequest, encodedText];
+    [self.networkManager POST:query
+                  parameters:nil
+                     success:^(NSURLSessionDataTask *task, id responseObject) {
+                         NSLog(@"Update status successfully");
+                         completion (responseObject, nil);
+                     }
+                     failure:^(NSURLSessionDataTask *task, NSError *error) {
+                         NSLog(@"Failed to load timeline!");
+                         completion(nil, error);
+                     }];
+}
+
+- (void)retweet:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *error))completion {
+    // TODO : TBI
+}
+
+- (void)replyTo:(NSString *)id1 completion:(void (^)(NSArray *, NSError *error))completion {
+    // TODO: TBI
+}
+
 
 - (void)parseTweetsFromAPIResponse:(id)responseObject completion:(void (^)(NSArray *, NSError *))completion {
     if (![responseObject isKindOfClass:[NSArray class]]) {

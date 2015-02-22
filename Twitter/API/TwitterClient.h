@@ -35,7 +35,10 @@ FOUNDATION_EXPORT NSString * const kTwitterClientOAuthCallbackURL;
 - (BOOL)handleAuthorizationCallbackURL:(NSURL *)url;
 - (void)deAuthorize;
 
-#pragma mark Tweets
+#pragma mark Tweets operations
 - (void)loadTimelineWithCompletion:(void (^)(NSArray *tweets, NSError *error))completion;
+- (void)updateStatus:(NSString *)text completion:(void (^)(NSArray *, NSError *))completion;
+- (void)retweet:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion;
+- (void)replyTo:(NSString *)id completion:(void (^)(NSArray *, NSError *))completion;
 
 @end

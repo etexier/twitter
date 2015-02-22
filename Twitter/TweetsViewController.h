@@ -10,4 +10,5 @@
 
 @interface TweetsViewController : UIViewController
 
+@property(nonatomic) BOOL willReloadTweets;
 @end
