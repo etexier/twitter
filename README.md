@@ -2,7 +2,7 @@
 
 This is a basic twitter app to read and compose tweets the [Twitter API](https://apps.twitter.com/).
 
-Time spent: `16h`
+Time spent: `18h`
 
 ### Features
 
@@ -27,6 +27,19 @@ Time spent: `16h`
 - [ ] User can load more tweets once they reach the bottom of the feed using infinite loading similar to the actual Twitter client.
 
 ### Walkthrough
+![Demo](twitter-demo.gif)
 
-![Video Walkthrough](...)
+GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
+Credits
+---------
+* [Twitter API](http://developer.rottentomatoes.com/docs/read/JSON)
+* [BDOAuth1Manager](https://github.com/AFNetworking/AFNetworking)
+* [MBProgressHUD](https://github.com/magnetsystems/rest2mobile)
+* [BBlock/UIKit](https://github.com/magnetsystems/rest2mobile)
+* Icons made by [Daniel Bruce](http://www.danielbruce.se), (Freepik)[http://www.freepik.com] from [Flaticon](http://www.flaticon.com is licensed by [Creative Commons BY 3.0](http://creativecommons.org/licenses/by/3.0/)
+
+### License
+
+Licensed under the **[Apache License, Version 2.0] [license]** (the "License");
+you may not use this software except in compliance with the License.
