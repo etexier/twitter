@@ -30,6 +30,9 @@
                                                                              style:UIBarButtonItemStylePlain
                                                                             target:self
                                                                             action:@selector(onSendTweet)];
+    
+    self.tweetTextView.backgroundColor = [UIColor darkGrayColor];
+    self.tweetTextView.contentInset = UIEdgeInsetsMake(-7.0,0.0,0,0.0);
 }
 
 - (void) viewWillAppear:(BOOL)animated {

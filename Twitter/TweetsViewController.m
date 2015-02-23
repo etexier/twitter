@@ -105,16 +105,7 @@ static NSString *const kTweetCell = @"TweetCell";
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    // Do we want to reload the data everytime?
-    if (!self.willReloadTweets) {
-        self.willReloadTweets = YES;
-        [self.tableView reloadData];
-        return;
-    }
-    if ([[TwitterClient sharedInstance] isAuthorized]) {
-        [self loadTweets];
-    }
-
+    // do not reload here as this will you will visually see the cell's height being re-adjusted -> use viewWillAppear
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -124,6 +115,17 @@ static NSString *const kTweetCell = @"TweetCell";
                                                                       target:self
                                                                       action:@selector(onNewTweet)];
     self.navigationItem.rightBarButtonItem = newTweetButton;
+    
+    // Do we want to reload the data everytime?
+    if (!self.willReloadTweets) {
+        self.willReloadTweets = YES;
+        [self.tableView reloadData];
+        return;
+    }
+    if ([[TwitterClient sharedInstance] isAuthorized]) {
+        [self loadTweets];
+    }
+    
 }
 
 

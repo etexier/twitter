@@ -33,8 +33,23 @@
     // Initialization code
 
     self.userNameLabel.preferredMaxLayoutWidth = self.userNameLabel.frame.size.width;
-    self.userImageView.layer.cornerRadius = 3;
+    
+    // round image
+    self.userImageView.layer.cornerRadius = self.userImageView.frame.size.width / 2.0f;
     self.userImageView.clipsToBounds = YES;
+
+    // for performance 
+    self.userImageView.layer.shouldRasterize = YES;
+    self.userImageView.layer.rasterizationScale = [[UIScreen mainScreen] scale];
+    
+    [self prepareForReuse];
+}
+
+- (void)prepareForReuse {
+    self.userImageView.image = nil;
+    self.userNameLabel.text = @"";
+    self.userScreenNameLabel.text = @"@";
+    self.tweetTextLabel.text = nil;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
