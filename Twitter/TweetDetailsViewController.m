@@ -10,8 +10,6 @@
 #import "Tweet.h"
 #import "Helper.h"
 #import "UIImageView+AFNetworking.h"
-#import "TwitterClient.h"
-#import "TweetsViewController.h"
 
 @interface TweetDetailsViewController ()
 @property(weak, nonatomic) IBOutlet UIImageView *userImageView;
@@ -67,7 +65,7 @@
 
     [self renderCounters];
 
-    self.replyImageView.image = [UIImage imageNamed:@"reply.png"];
+    [Helper updateReplyImageView:self.replyImageView tweet:_tweet];
     [Helper updateFavoriteImageView:self.likeImageView tweet:_tweet];
     [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
 
@@ -96,7 +94,8 @@
 
 - (void)onSelectReplyImage {
     NSLog(@"single Tap on reply");
-    // TODO
+    // TODO: push to new controller
+    [Helper updateReplyImageView:self.replyImageView tweet:_tweet];
 }
 
 - (void)onSwitchRetweetStatus {
@@ -111,9 +110,9 @@
             _tweet.retweeted = !_tweet.retweeted;
             [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
             if (_tweet.retweeted) {
-                _tweet.retweetCount = _tweet.retweetCount+1;
+                _tweet.retweetCount = _tweet.retweetCount + 1;
             } else {
-                _tweet.retweetCount = _tweet.retweetCount-1;
+                _tweet.retweetCount = _tweet.retweetCount - 1;
 
             }
             [self renderCounters];;
@@ -142,9 +141,9 @@
             _tweet.favorited = !_tweet.favorited;
             [Helper updateFavoriteImageView:self.likeImageView tweet:_tweet];
             if (_tweet.favorited) {
-                _tweet.favoriteCount = _tweet.favoriteCount+1;
+                _tweet.favoriteCount = _tweet.favoriteCount + 1;
             } else {
-                _tweet.favoriteCount = _tweet.favoriteCount-1;
+                _tweet.favoriteCount = _tweet.favoriteCount - 1;
 
             }
 

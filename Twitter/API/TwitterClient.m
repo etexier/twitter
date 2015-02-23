@@ -239,8 +239,12 @@ static TwitterClient *_sharedInstance = nil;
 }
 
 
-- (void)replyTo:(NSString *)id1 completion:(void (^)(NSArray *, NSError *error))completion {
-    // TODO: TBI
+- (void)replyTo:(NSString *)id
+  withTweetText:(NSString *) text
+     completion:(void (^)(NSDictionary *, NSError *error))completion {
+    NSString *encodedText = [text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *query = [NSString stringWithFormat:@"%@?status=%@&in_reply_to_status_id=%@", kUpdateStatusRequest, encodedText, id];
+    [self postWithQuery:query completion:completion];
 }
 
 - (void)showTweet:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion {

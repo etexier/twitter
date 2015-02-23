@@ -10,4 +10,5 @@
 
 @interface NewTweetViewController : UIViewController
 
+- (id)initAsReplyTo:(NSString *)replyToScreenName forTweetId:(NSString *)replyToTweetId;
 @end

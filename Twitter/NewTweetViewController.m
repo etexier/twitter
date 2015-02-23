@@ -12,22 +12,48 @@
 #import "UIImageView+AFNetworking.h"
 #import "Helper.h"
 
+#pragma mark -
 
 @interface NewTweetViewController ()
 @property(weak, nonatomic) IBOutlet UITextView *tweetTextView;
 @property(weak, nonatomic) IBOutlet UIImageView *imageView;
-@property(strong, nonatomic) NSURL *imageURL;
 @property(weak, nonatomic) IBOutlet UILabel *tweetLabel;
+
+@property(strong, nonatomic) NSURL *imageURL;
+
+@property(nonatomic, strong) NSString *replyToScreenName;
+@property(nonatomic, strong) NSString *replyToTweetId;
 
 
 @end
 
+#pragma mark -
+
 @implementation NewTweetViewController
+
+#pragma mark - init
+
+- (id)initAsReplyTo:(NSString *)replyToScreenName forTweetId:(NSString *)replyToTweetId {
+    self = [super init];
+    if (self) {
+        self.replyToScreenName = replyToScreenName;
+        self.replyToTweetId = replyToTweetId;
+    }
+    return self;
+
+}
+
+#pragma mark - ui view controller method
 
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"New Tweet";
+    if (self.replyToScreenName) {
+        self.title = [NSString stringWithFormat:@"To @%@", self.replyToScreenName];
+        self.tweetTextView.text = [NSString stringWithFormat:@"@%@ ", _replyToScreenName];
+    } else {
+        self.title = @"New Tweet";
+    }
     // Do any additional setup after loading the view from its nib.
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel"
                                                                              style:UIBarButtonItemStylePlain
@@ -75,7 +101,6 @@
     self.imageView.clipsToBounds = YES;
 
 
-
 }
 
 #pragma mark - actions
@@ -113,31 +138,32 @@
 }
 
 - (void)sendTweetText:(NSString *)text {
-
-
-    [[TwitterClient sharedInstance] updateStatus:text completion:^(NSDictionary *response, NSError *error) {
-        if (error) {
-            NSLog(@"Error: %@", error.localizedDescription);
-
-            // Must dispatch on UI thread for UI interaction
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[[UIAlertView alloc] initWithTitle:@"Error"
-                                            message:error.localizedDescription
-                                           delegate:self
-                                  cancelButtonTitle:@"Dismiss"
-                                  otherButtonTitles:nil] show];
-            });
-
-        } else {
-            NSLog(@"Test tweet sent");
+    if (self.replyToScreenName) {
+        [[TwitterClient sharedInstance] replyTo:self.replyToTweetId withTweetText:text completion:^(NSDictionary *response, NSError *error) {
+            if (error) {
+                NSLog(@"Error: %@", error.localizedDescription);
+                return;
+            }
+            NSLog(@"Reply tweet sent");
             // Must dispatch on UI thread for UI interaction
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self navigateBackAndReload:YES];
             });
-
+        }];
+        return;
+    }
+    [[TwitterClient sharedInstance] updateStatus:text completion:^(NSDictionary *response, NSError *error) {
+        if (error) {
+            NSLog(@"Error: %@", error.localizedDescription);
+            return;
         }
-
+        NSLog(@"Tweet sent");
+        // Must dispatch on UI thread for UI interaction
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self navigateBackAndReload:YES];
+        });
     }];
+
 
 }
 

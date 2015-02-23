@@ -30,4 +30,7 @@
 + (void)onSwitchRetweetStatusForTweet:(Tweet *)tweet completion:(void (^)(NSString *, NSError *))completion;
 
 + (void)onSwitchFavoriteStatus:(Tweet *)tweet completion:(void (^)(NSString *, NSError *))completion;
+
++ (void)updateReplyImageView:(UIImageView *)view tweet:(Tweet *)tweet;
+
 @end

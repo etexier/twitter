@@ -10,6 +10,7 @@
 #import "UIImageView+AFNetworking.h"
 #import "Helper.h"
 #import "TwitterClient.h"
+#import "NewTweetViewController.h"
 
 @interface TweetCell ()
 
@@ -74,7 +75,7 @@
         _retweetInfoLabel.text = _tweet.retweetInfo;
     }
 
-    self.replyImageView.image = [UIImage imageNamed:@"reply.png"];
+    [Helper updateReplyImageView:self.replyImageView tweet:_tweet];
     [Helper updateFavoriteImageView:self.likeImageView tweet:_tweet];
     [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
 
@@ -107,8 +108,25 @@
 
 - (void)onSelectReplyImage {
     NSLog(@"single Tap on reply");
-    // TODO
+    [Helper updateReplyImageView:self.replyImageView tweet:_tweet];
+    [self onReplyTweet];
 }
+
+- (void)onReplyTweet {
+    if (![[TwitterClient sharedInstance] isAuthorized]) {
+        [[[UIAlertView alloc] initWithTitle:@"Error"
+                                    message:@"You must sign in to tweet"
+                                   delegate:self
+                          cancelButtonTitle:@"Dismiss"
+                          otherButtonTitles:nil] show];
+        return;
+    }
+    NewTweetViewController *vc = [[NewTweetViewController alloc] initAsReplyTo:_tweet.userScreenName forTweetId:_tweet.id];
+    UITableView *tv = (UITableView *) self.superview.superview;
+    UITableViewController *tvc = (UITableViewController *) tv.dataSource;
+    [tvc.navigationController pushViewController:vc animated:YES];
+}
+
 
 - (void)onSwitchRetweetStatus {
     NSLog(@"single Tap on retweet");

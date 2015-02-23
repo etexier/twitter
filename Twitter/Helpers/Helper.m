@@ -208,7 +208,10 @@
         }];
 
     }
-
-
 }
+
++ (void)updateReplyImageView:(UIImageView *)imageView tweet:(Tweet *)tweet {
+    imageView.image = [UIImage imageNamed:@"reply.png"];
+}
+
 @end
