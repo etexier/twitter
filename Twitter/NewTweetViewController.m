@@ -10,6 +10,7 @@
 #import "TwitterClient.h"
 #import "TweetsViewController.h"
 #import "UIImageView+AFNetworking.h"
+#import "Helper.h"
 
 
 @interface NewTweetViewController ()
@@ -106,7 +107,7 @@
 #pragma mark - private
 
 - (void)navigateBackAndReload:(BOOL)reload {
-    TweetsViewController *vc = [self backViewController];
+    TweetsViewController *vc = [Helper backViewController:self.navigationController];
     vc.willReloadTweets = reload; // no need to reload tweet if no tweet is sent. Let the user pull down the table
     [[self navigationController] popViewControllerAnimated:YES];
 }
@@ -140,13 +141,4 @@
 
 }
 
-- (TweetsViewController *)backViewController {
-    NSInteger numberOfViewControllers = self.navigationController.viewControllers.count;
-    if (numberOfViewControllers < 2) {
-        return nil;
-    } else {
-        NSUInteger index = (NSUInteger) (numberOfViewControllers - 2);
-        return (TweetsViewController *) self.navigationController.viewControllers[index];
-    }
-}
 @end

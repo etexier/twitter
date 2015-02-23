@@ -32,6 +32,9 @@ static NSString *const kUnfavoriteRequest = @"favorites/destroy.json?id=:id";
 // ex: POST https://api.twitter.com/1.1/favorites/create.json?id=243138128959913986
 static NSString *const kFavoriteRequest = @"favorites/create.json?id=:id";
 
+// ex: GET https://api.twitter.com/1.1/statuses/show.json?id=210462857140252672
+static NSString *const kShowTweetRequest = @"statuses/show.json";
+
 // exported
 NSString *const TwitterClientErrorDomain = @"TwitterClientErrorDomain";
 
@@ -42,6 +45,7 @@ NSString *const kTwitterClientOAuthAuthorizeURL = @"https://api.twitter.com/oaut
 NSString *const kTwitterClientOAuthCallbackURL = @"etexiertwitter://authorize";
 NSString *const kTwitterClientOAuthRequestTokenPath = @"/oauth/request_token";
 NSString *const kTwitterClientOAuthAccessTokenPath = @"/oauth/access_token";
+
 
 #pragma mark -
 
@@ -225,6 +229,21 @@ static TwitterClient *_sharedInstance = nil;
 - (void)replyTo:(NSString *)id1 completion:(void (^)(NSArray *, NSError *error))completion {
     // TODO: TBI
 }
+
+- (void)showTweet:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion {
+    [self.networkManager GET:kUsersShowRequest
+                  parameters:@{@"id" : tweetId}
+                     success:^(NSURLSessionDataTask *task, id responseObject) {
+                         NSLog(@"Got tweet for  %@: %@", tweetId, responseObject);
+                         completion(responseObject, nil);
+                     }
+                     failure:^(NSURLSessionDataTask *task, NSError *error) {
+                         NSLog(@"Failed to get tweet  for %@", tweetId);
+                         completion(nil, error);
+                     }];
+
+}
+
 
 - (void)showUserForScreenName:(NSString *)screenName completion:(void (^)(NSDictionary *dictionary, NSError *error))completion {
     //users/show.json?screen_name=rsarver

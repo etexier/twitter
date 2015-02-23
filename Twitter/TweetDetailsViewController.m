@@ -11,6 +11,7 @@
 #import "Helper.h"
 #import "UIImageView+AFNetworking.h"
 #import "TwitterClient.h"
+#import "TweetsViewController.h"
 
 @interface TweetDetailsViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *userImageView;
@@ -121,6 +122,10 @@
                 });
 
             } else {
+                TweetsViewController *vc = [Helper backViewController:self.navigationController];
+                [vc reloadTweet:_tweet.id];
+                [self reloadTweet:_tweet.id];
+
                 // success!
             }
         }];
@@ -146,6 +151,11 @@
         }];
 
     }
+}
+
+- (void)reloadTweet:(NSString *)id {
+    // TBI
+
 }
 
 - (void)onSelectLikeImage{

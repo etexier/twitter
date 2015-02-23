@@ -3,6 +3,8 @@
 // Copyright (c) 2015 Emmanuel Texier. All rights reserved.
 //
 
+#import "TweetsViewController.h"
+#import "NewTweetViewController.h"
 #import "Tweet.h"
 #import "TweetDetailsViewController.h"
 #import "Helper.h"
@@ -81,6 +83,16 @@
         imageView.image = [UIImage imageNamed:@"retweet_on.png"];
     } else {
         imageView.image = [UIImage imageNamed:@"retweet.png"];
+    }
+}
+
++ (TweetsViewController *)backViewController:(UINavigationController *) nvc {
+    NSInteger numberOfViewControllers = nvc.viewControllers.count;
+    if (numberOfViewControllers < 2) {
+        return nil;
+    } else {
+        NSUInteger index = (NSUInteger) (numberOfViewControllers - 2);
+        return (TweetsViewController *) nvc.viewControllers[index];
     }
 }
 @end

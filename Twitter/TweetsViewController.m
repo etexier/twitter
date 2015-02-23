@@ -294,4 +294,28 @@ static NSString *const kTweetCell = @"TweetCell";
 }
 
 
+- (void)reloadTweet:(NSString *)id {
+    [[TwitterClient sharedInstance] showTweet:id completion:^(NSDictionary *dictionary, NSError *error) {
+        if (error) {
+            NSLog(@"Error showing tweet: %@", error.localizedDescription);
+            // quietly forget it
+        } else {
+            Tweet *tweet = [[Tweet alloc] initWithDictionary:dictionary];
+            int i;
+            int found = -1;
+            for (i = 0; i < [self.tweets count]; i++) {
+                Tweet *t = self.tweets[i];
+                if ([t.id isEqualToString:id]) {
+                    found = i;
+                    break;
+                }
+            }
+           // update tweet
+//            NSMutableArray *newTweets = [@[self.tweets] mutableCopy];
+            [self.tweets[(NSUInteger) found] replaceObjectAtIndex:1 withObject:tweet];
+            [self.tableView reloadData];
+        }
+    }];
+
+}
 @end

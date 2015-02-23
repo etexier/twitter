@@ -58,6 +58,8 @@ FOUNDATION_EXPORT NSString *const kTwitterClientOAuthCallbackURL;
 
 - (void)replyTo:(NSString *)id completion:(void (^)(NSArray *, NSError *))completion;
 
+- (void)showTweet:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion;
+
 - (void)showUserForScreenName:(NSString *)screenName completion:(void (^)(NSDictionary *, NSError *))completion;
 
 - (void)showSignedInUserInfoWithCompletion:(void (^)(NSDictionary *dictionary, NSError *error))completion;

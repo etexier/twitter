@@ -5,6 +5,8 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "TweetsViewController.h"
+#import "Tweet.h"
 
 
 @interface Helper : NSObject
@@ -18,4 +20,6 @@
 + (void)updateLikeImageView:(UIImageView *)imageView tweet:(Tweet *)tweet;
 
 + (void)updateRetweetImageView:(UIImageView *)imageView tweet:(Tweet *)tweet;
+
++ (TweetsViewController *)backViewController:(UINavigationController *)nvc;
 @end
