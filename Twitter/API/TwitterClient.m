@@ -16,12 +16,21 @@
 static NSString *const kTwitterClientAPIURL = @"https://api.twitter.com/1.1/";
 static NSString *const kTimeLinePath = @"statuses/home_timeline.json?count=10";
 static NSString *const kUpdateStatusRequest = @"statuses/update.json";
+// ex: POST https://api.twitter.com/1.1/statuses/retweet/:id.json
+static NSString *const kRetweetRequest = @"statuses/retweet/:id.json";
+// ex: POST https://api.twitter.com/1.1/statuses/destroy/:id.json
+static NSString *const kDestroyRequest = @"statuses/destroy/:id.json";
 
 // ex: GET https://api.twitter.com/1.1/users/show.json?screen_name=rsarver
 static NSString *const kUsersShowRequest = @"users/show.json";
 // ex: GET https://api.twitter.com/1.1/account/verify_credentials.json
 static NSString *const kAccountInfoRequest = @"account/verify_credentials.json";
 
+// ex:POST https://api.twitter.com/1.1/favorites/destroy.json?id=243138128959913986
+static NSString *const kUnfavoriteRequest = @"favorites/destroy.json?id=:id";
+
+// ex: POST https://api.twitter.com/1.1/favorites/create.json?id=243138128959913986
+static NSString *const kFavoriteRequest = @"favorites/create.json?id=:id";
 
 // exported
 NSString *const TwitterClientErrorDomain = @"TwitterClientErrorDomain";
@@ -43,6 +52,7 @@ NSString *const kTwitterClientOAuthAccessTokenPath = @"/oauth/access_token";
 
 - (id)initWithConsumerKey:(NSString *)key secret:(NSString *)secret;
 
+- (void)postWithQuery:(NSString *)query completion:(void (^)(NSArray *, NSError *))completion;
 @end
 
 #pragma mark -
@@ -172,21 +182,45 @@ static TwitterClient *_sharedInstance = nil;
     NSString *encodedText = [text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     NSString *query = [NSString stringWithFormat:@"%@?status=%@", kUpdateStatusRequest, encodedText];
+    [self postWithQuery:query completion:completion];
+}
+
+- (void)favorite:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion {
+    NSString *query = [kFavoriteRequest stringByReplacingOccurrencesOfString:@":id" withString:tweetId];
+    [self postWithQuery:query completion:completion];
+
+}
+
+- (void) postWithQuery:(NSString *)query completion:(void (^)(NSArray *, NSError *))completion {
     [self.networkManager POST:query
                    parameters:nil
                       success:^(NSURLSessionDataTask *task, id responseObject) {
-                          NSLog(@"Update status successfully");
+                          NSLog(@"query : %@ successful", query);
                           completion(responseObject, nil);
                       }
                       failure:^(NSURLSessionDataTask *task, NSError *error) {
-                          NSLog(@"Failed to update status!");
+                          NSLog(@"query : %@ failed", query);
                           completion(nil, error);
                       }];
+
 }
 
-- (void)retweet:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *error))completion {
-    // TODO : TBI
+- (void)unfavorite:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion {
+    NSString *query = [kUnfavoriteRequest stringByReplacingOccurrencesOfString:@":id" withString:tweetId];
+    [self postWithQuery:query completion:completion];
 }
+
+
+- (void)retweet:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *error))completion {
+    NSString *query = [kRetweetRequest stringByReplacingOccurrencesOfString:@":id" withString:tweetId];
+    [self postWithQuery:query completion:completion];
+}
+
+- (void)destroyTweet:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion {
+    NSString *query = [kDestroyRequest stringByReplacingOccurrencesOfString:@":id" withString:tweetId];
+    [self postWithQuery:query completion:completion];
+}
+
 
 - (void)replyTo:(NSString *)id1 completion:(void (^)(NSArray *, NSError *error))completion {
     // TODO: TBI

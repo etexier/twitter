@@ -3,6 +3,8 @@
 // Copyright (c) 2015 Emmanuel Texier. All rights reserved.
 //
 
+#import "Tweet.h"
+#import "TweetDetailsViewController.h"
 #import "Helper.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -65,5 +67,20 @@
     NSString *dateString = [dateFormatter stringFromDate: date];
     return dateString;
 
+}
++ (void)updateLikeImageView:(UIImageView *) imageView tweet:(Tweet *) tweet {
+    if (tweet.favorited) {
+        imageView.image = [UIImage imageNamed:@"like_on.png"];
+    } else {
+        imageView.image = [UIImage imageNamed:@"like.png"];
+    }
+}
+
++ (void)updateRetweetImageView:(UIImageView *) imageView tweet:(Tweet *) tweet {
+    if (tweet.retweeted) {
+        imageView.image = [UIImage imageNamed:@"retweet_on.png"];
+    } else {
+        imageView.image = [UIImage imageNamed:@"retweet.png"];
+    }
 }
 @end

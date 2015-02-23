@@ -48,11 +48,17 @@ FOUNDATION_EXPORT NSString *const kTwitterClientOAuthCallbackURL;
 
 - (void)updateStatus:(NSString *)text completion:(void (^)(NSArray *, NSError *))completion;
 
+- (void)favorite:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion;
+
+- (void)unfavorite:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion;
+
 - (void)retweet:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion;
+
+- (void)destroyTweet:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion;
 
 - (void)replyTo:(NSString *)id completion:(void (^)(NSArray *, NSError *))completion;
 
-- (void)showUserForScreenName:(NSString *)screenName completion:(void (^)(NSDictionary *, NSError *)) completion;
+- (void)showUserForScreenName:(NSString *)screenName completion:(void (^)(NSDictionary *, NSError *))completion;
 
-- (void)showSignedInUserInfoWithCompletion:(void (^)(NSDictionary * dictionary, NSError *error))completion;
+- (void)showSignedInUserInfoWithCompletion:(void (^)(NSDictionary *dictionary, NSError *error))completion;
 @end

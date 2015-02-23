@@ -62,9 +62,9 @@
                 self.imageURL = [NSURL URLWithString:dictionary[@"profile_image_url"]];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.imageView setImageWithURL:self.imageURL];
+                    NSString *screenName = dictionary[@"screen_name"];
+                    self.tweetLabel.text = [NSString stringWithFormat:@"@%@ tweets:", screenName];
                 });
-                NSString *screenName = dictionary[@"screen_name"];
-                self.tweetLabel.text = [NSString stringWithFormat:@"@%@ tweets:", screenName];
             }
         }];
     } else {

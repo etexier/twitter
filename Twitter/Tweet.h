@@ -12,7 +12,9 @@
 @property (nonatomic, copy, readonly) NSString *tweetText;
 @property (nonatomic, readonly) NSUInteger retweetCount;
 @property (nonatomic, readonly) NSUInteger favoriteCount;
-
+@property (nonatomic, assign) BOOL favorited;
+@property (nonatomic, assign) BOOL retweeted;
+@property (nonatomic, readonly) NSString *id;
 
 - (id)initWithDictionary:(NSDictionary *)dictionary;
 

@@ -38,8 +38,11 @@ static NSString *const kTweetCreatedAtName = @"created_at";
 static NSString *const kTweetUserScreenNameName = @"screen_name";
 static NSString *const kTweetRetweetCountName = @"retweet_count";
 static NSString *const kTweetFavoriteCountName = @"favorite_count";
+static NSString *const kTweetFavoritedName = @"favorited";
+static NSString *const kTweetRetweetedName = @"retweeted";
+static NSString *const kTweetIdName = @"id_str";
 
-#pragma mark -
+#pragma mark - implementation class
 
 @implementation Tweet
 
@@ -73,8 +76,11 @@ static NSString *const kTweetFavoriteCountName = @"favorite_count";
         _userScreenName = userInfo[kTweetUserScreenNameName];
         NSLog(@"Created tweet from %@", self.userScreenName);
 
-        _favoriteCount = [[dictionary valueForKeyPath:kTweetFavoriteCountName] unsignedIntegerValue];
-        _retweetCount = [[dictionary valueForKeyPath:kTweetRetweetCountName] unsignedIntegerValue];
+        _favoriteCount = [dictionary[kTweetFavoriteCountName] unsignedIntegerValue];
+        _retweetCount = [dictionary[kTweetRetweetCountName] unsignedIntegerValue];
+        _favorited = [dictionary[kTweetFavoritedName] boolValue];
+        _retweeted = [dictionary[kTweetRetweetedName] boolValue];
+        _id = dictionary[kTweetIdName];
 
 //        // 6. retweet info
 //        _retweetInfo = userInfo[]

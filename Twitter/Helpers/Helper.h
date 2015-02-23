@@ -14,4 +14,8 @@
 + (NSString *)calculateTimeAgoTillDate:(NSDate *)date;
 
 + (NSString *)calculateLocalDate:(NSDate *)date;
+
++ (void)updateLikeImageView:(UIImageView *)imageView tweet:(Tweet *)tweet;
+
++ (void)updateRetweetImageView:(UIImageView *)imageView tweet:(Tweet *)tweet;
 @end
