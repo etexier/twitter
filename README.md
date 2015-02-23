@@ -34,7 +34,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 Credits
 ---------
 * [Twitter API](https://dev.twitter.com/rest/public)
-* [BDOAuth1Manager](https://github.com/AFNetworking/BDOAuth1Manager)
+* [BDBOAuth1Manager](https://github.com/bdbergeron/BDBOAuth1Manager)
 * [AFNetworking](https://github.com/AFNetworking/AFNetworking)
 * [MBProgressHUD](https://github.com/magnetsystems/MBProgressHUD)
 * [BBlock/UIKit](https://github.com/magnetsystems/BBlock)
