@@ -41,6 +41,7 @@ static NSString *const kTweetFavoriteCountName = @"favorite_count";
 static NSString *const kTweetFavoritedName = @"favorited";
 static NSString *const kTweetRetweetedName = @"retweeted";
 static NSString *const kTweetIdName = @"id_str";
+static NSString *const kTweetOriginalTweetId = @"retweeted_status.id_str";
 
 #pragma mark - implementation class
 
@@ -80,6 +81,9 @@ static NSString *const kTweetIdName = @"id_str";
         _retweetCount = [dictionary[kTweetRetweetCountName] unsignedIntegerValue];
         _favorited = [dictionary[kTweetFavoritedName] boolValue];
         _retweeted = [dictionary[kTweetRetweetedName] boolValue];
+        if (_retweeted) {
+            _originalTweetId = [dictionary valueForKeyPath:kTweetOriginalTweetId];
+        }
         _id = dictionary[kTweetIdName];
 
 //        // 6. retweet info

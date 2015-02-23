@@ -115,7 +115,7 @@
 - (void)sendTweetText:(NSString *)text {
 
 
-    [[TwitterClient sharedInstance] updateStatus:text completion:^(NSArray *response, NSError *error) {
+    [[TwitterClient sharedInstance] updateStatus:text completion:^(NSDictionary *response, NSError *error) {
         if (error) {
             NSLog(@"Error: %@", error.localizedDescription);
 

@@ -17,9 +17,17 @@
 
 + (NSString *)calculateLocalDate:(NSDate *)date;
 
-+ (void)updateLikeImageView:(UIImageView *)imageView tweet:(Tweet *)tweet;
++ (void)updateFavoriteImageView:(UIImageView *)imageView tweet:(Tweet *)tweet;
 
 + (void)updateRetweetImageView:(UIImageView *)imageView tweet:(Tweet *)tweet;
 
 + (TweetsViewController *)backViewController:(UINavigationController *)nvc;
+
++ (int)findTweetIndexWithId:(NSString *)id fromTweets:(NSArray *)tweets;
+
++ (int)findReTweetIndexWithId:(NSString *)id1 fromTweets:(NSArray *)tweets;
+
++ (void)onSwitchRetweetStatusForTweet:(Tweet *)tweet completion:(void (^)(NSString *, NSError *))completion;
+
++ (void)onSwitchFavoriteStatus:(Tweet *)tweet completion:(void (^)(NSString *, NSError *))completion;
 @end

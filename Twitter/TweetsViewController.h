@@ -12,5 +12,5 @@
 
 @property(nonatomic) BOOL willReloadTweets;
 
-- (void)reloadTweet:(NSString *)id;
+- (void)reloadSingleTweetById:(NSString *)id;
 @end

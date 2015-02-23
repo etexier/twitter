@@ -14,17 +14,17 @@
 #import "TweetsViewController.h"
 
 @interface TweetDetailsViewController ()
-@property (weak, nonatomic) IBOutlet UIImageView *userImageView;
-@property (weak, nonatomic) IBOutlet UILabel *userNameLabel;
-@property (weak, nonatomic) IBOutlet UILabel *screenNameLabel;
-@property (weak, nonatomic) IBOutlet UILabel *timeAgoLabel;
-@property (weak, nonatomic) IBOutlet UILabel *tweetLabel;
-@property (weak, nonatomic) IBOutlet UIImageView *replyImageView;
-@property (weak, nonatomic) IBOutlet UIImageView *retweetImageView;
-@property (weak, nonatomic) IBOutlet UIImageView *likeImageView;
-@property (weak, nonatomic) IBOutlet UILabel *retweetLabel;
-@property (weak, nonatomic) IBOutlet UILabel *favoritedLabel;
-@property (weak, nonatomic) IBOutlet UILabel *dateLabel;
+@property(weak, nonatomic) IBOutlet UIImageView *userImageView;
+@property(weak, nonatomic) IBOutlet UILabel *userNameLabel;
+@property(weak, nonatomic) IBOutlet UILabel *screenNameLabel;
+@property(weak, nonatomic) IBOutlet UILabel *timeAgoLabel;
+@property(weak, nonatomic) IBOutlet UILabel *tweetLabel;
+@property(weak, nonatomic) IBOutlet UIImageView *replyImageView;
+@property(weak, nonatomic) IBOutlet UIImageView *retweetImageView;
+@property(weak, nonatomic) IBOutlet UIImageView *likeImageView;
+@property(weak, nonatomic) IBOutlet UILabel *retweetLabel;
+@property(weak, nonatomic) IBOutlet UILabel *favoritedLabel;
+@property(weak, nonatomic) IBOutlet UILabel *dateLabel;
 
 @end
 
@@ -60,7 +60,7 @@
     self.tweetLabel.layer.borderColor = [UIColor whiteColor].CGColor;
     self.tweetLabel.layer.cornerRadius = 4.0;
     self.tweetLabel.layer.borderWidth = 1;
-    UIEdgeInsets insets = {0,5,0,5};
+    UIEdgeInsets insets = {0, 5, 0, 5};
 
     [self.tweetLabel drawTextInRect:UIEdgeInsetsInsetRect(self.tweetLabel.layer.visibleRect, insets)];
 
@@ -69,11 +69,11 @@
     self.favoritedLabel.text = [NSString stringWithFormat:@"FAVORITES %lu", (unsigned long) _tweet.favoriteCount];
 
     self.replyImageView.image = [UIImage imageNamed:@"reply.png"];
-    [Helper updateLikeImageView:self.likeImageView tweet:_tweet];
+    [Helper updateFavoriteImageView:self.likeImageView tweet:_tweet];
     [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
 
-    [self registerGestureOnImageView:self.likeImageView selector:@selector(onSelectLikeImage)];
-    [self registerGestureOnImageView:self.retweetImageView selector:@selector(onSelectRetweetImage)];
+    [self registerGestureOnImageView:self.likeImageView selector:@selector(onSwitchFavoriteStatus)];
+    [self registerGestureOnImageView:self.retweetImageView selector:@selector(onSwitchRetweetStatus)];
     [self registerGestureOnImageView:self.replyImageView selector:@selector(onSelectReplyImage)];
 
 }
@@ -83,7 +83,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void) registerGestureOnImageView:(UIImageView *) imageView selector:(SEL) selector {
+- (void)registerGestureOnImageView:(UIImageView *)imageView selector:(SEL)selector {
 
     [imageView setUserInteractionEnabled:YES];
 
@@ -95,116 +95,48 @@
 
 }
 
--(void)onSelectReplyImage{
+- (void)onSelectReplyImage {
     NSLog(@"single Tap on reply");
     // TODO
 }
 
--(void)onSelectRetweetImage{
+- (void)onSwitchRetweetStatus {
     NSLog(@"single Tap on retweet");
-    _tweet.retweeted = !_tweet.retweeted;
-    [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
-    if (!_tweet.retweeted) {
+    [Helper onSwitchRetweetStatusForTweet:_tweet completion:^(NSString *string, NSError *error) {
+        if (error) {
+            NSLog(@"Couldn't switch retweet status");
+            return;
+        }
+        // success!
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _tweet.retweeted = !_tweet.retweeted;
+            [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
+            [self reloadTweet:_tweet.id];
+        });
 
-        [[TwitterClient sharedInstance] destroyTweet:_tweet.id completion:^(NSArray *array, NSError *error) {
-            if (error) {
-                NSLog(@"Error: %@", error.localizedDescription);
-                // undo model
-                _tweet.retweeted = !_tweet.retweeted;
-                // undo UI
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[[UIAlertView alloc] initWithTitle:@"Error"
-                                                message:error.localizedDescription
-                                               delegate:self
-                                      cancelButtonTitle:@"Dismiss"
-                                      otherButtonTitles:nil] show];
-                    [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
-                });
 
-            } else {
-                TweetsViewController *vc = [Helper backViewController:self.navigationController];
-                [vc reloadTweet:_tweet.id];
-                [self reloadTweet:_tweet.id];
-
-                // success!
-            }
-        }];
-    } else {
-        [[TwitterClient sharedInstance] retweet:_tweet.id completion:^(NSArray *array, NSError *error) {
-            if (error) {
-                NSLog(@"Error: %@", error.localizedDescription);
-                // undo model
-                _tweet.retweeted = !_tweet.retweeted;
-                // undo UI
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[[UIAlertView alloc] initWithTitle:@"Error"
-                                                message:error.localizedDescription
-                                               delegate:self
-                                      cancelButtonTitle:@"Dismiss"
-                                      otherButtonTitles:nil] show];
-                    [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
-                });
-
-            } else {
-                // success!
-            }
-        }];
-
-    }
+    }];
 }
+
 
 - (void)reloadTweet:(NSString *)id {
-    // TBI
-
+//    TweetsViewController *vc = [Helper backViewController:self.navigationController];
+//    [vc reloadSingleTweetById:id];
 }
 
-- (void)onSelectLikeImage{
+- (void)onSwitchFavoriteStatus {
     NSLog(@"single Tap on favorite");
-    _tweet.favorited = !_tweet.favorited;
-    [Helper updateLikeImageView:self.likeImageView tweet:_tweet];
-    if (!_tweet.favorited) {
-
-        [[TwitterClient sharedInstance] unfavorite:_tweet.id completion:^(NSArray *array, NSError *error) {
-            if (error) {
-                NSLog(@"Error: %@", error.localizedDescription);
-                // undo model
-                _tweet.favorited = !_tweet.favorited;
-                // undo UI
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[[UIAlertView alloc] initWithTitle:@"Error"
-                                                message:error.localizedDescription
-                                               delegate:self
-                                      cancelButtonTitle:@"Dismiss"
-                                      otherButtonTitles:nil] show];
-                    [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
-                });
-
-            } else {
-                // success!
-            }
-        }];
-    } else {
-        [[TwitterClient sharedInstance] favorite:_tweet.id completion:^(NSArray *array, NSError *error) {
-            if (error) {
-                NSLog(@"Error: %@", error.localizedDescription);
-                // undo model
-                _tweet.favorited = !_tweet.favorited;
-                // undo UI
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[[UIAlertView alloc] initWithTitle:@"Error"
-                                                message:error.localizedDescription
-                                               delegate:self
-                                      cancelButtonTitle:@"Dismiss"
-                                      otherButtonTitles:nil] show];
-                    [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
-                });
-
-            } else {
-                // success!
-            }
-        }];
-
-    }
+    [Helper onSwitchFavoriteStatus:_tweet completion:^(NSString *string, NSError *error) {
+        if (error) {
+            NSLog(@"Couldn't switch favorite status");
+            return;
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _tweet.favorited = !_tweet.favorited;
+            [Helper updateFavoriteImageView:self.likeImageView tweet:_tweet];
+            [self reloadTweet:_tweet.id];
+        });
+    }];
 }
 
 

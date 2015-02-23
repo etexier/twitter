@@ -14,6 +14,7 @@
 #import "Tweet.h"
 #import "TweetCell.h"
 #import "MBProgressHUD.h"
+#import "Helper.h"
 
 static NSString *const kTweetCell = @"TweetCell";
 
@@ -181,7 +182,7 @@ static NSString *const kTweetCell = @"TweetCell";
         sizingCell = [self.tableView dequeueReusableCellWithIdentifier:kTweetCell];
     });
 
-    sizingCell.tweet = self.tweets[indexPath.row];
+    sizingCell.tweet = self.tweets[(NSUInteger) indexPath.row];
     return [self calculateHeightForConfiguredSizingCell:sizingCell];
 }
 
@@ -294,25 +295,21 @@ static NSString *const kTweetCell = @"TweetCell";
 }
 
 
-- (void)reloadTweet:(NSString *)id {
+- (void)reloadSingleTweetById:(NSString *)id {
     [[TwitterClient sharedInstance] showTweet:id completion:^(NSDictionary *dictionary, NSError *error) {
         if (error) {
             NSLog(@"Error showing tweet: %@", error.localizedDescription);
             // quietly forget it
         } else {
-            Tweet *tweet = [[Tweet alloc] initWithDictionary:dictionary];
-            int i;
-            int found = -1;
-            for (i = 0; i < [self.tweets count]; i++) {
-                Tweet *t = self.tweets[i];
-                if ([t.id isEqualToString:id]) {
-                    found = i;
-                    break;
-                }
+            int found = [Helper findTweetIndexWithId:id fromTweets:self.tweets];
+            if (found == -1) {
+                NSLog(@"Error: couldn't find tweet with id %d", found);
             }
-           // update tweet
-//            NSMutableArray *newTweets = [@[self.tweets] mutableCopy];
-            [self.tweets[(NSUInteger) found] replaceObjectAtIndex:1 withObject:tweet];
+
+           // update tweet array.
+            NSMutableArray *newTweets = [@[self.tweets] mutableCopy];
+            newTweets[(NSUInteger) found] = [[Tweet alloc] initWithDictionary:dictionary];
+            self.tweets = newTweets;
             [self.tableView reloadData];
         }
     }];

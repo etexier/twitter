@@ -16,6 +16,8 @@
 @property (nonatomic, assign) BOOL retweeted;
 @property (nonatomic, readonly) NSString *id;
 
+@property(nonatomic, readonly) NSString *originalTweetId;
+
 - (id)initWithDictionary:(NSDictionary *)dictionary;
 
 @end

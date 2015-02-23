@@ -35,6 +35,9 @@ static NSString *const kFavoriteRequest = @"favorites/create.json?id=:id";
 // ex: GET https://api.twitter.com/1.1/statuses/show.json?id=210462857140252672
 static NSString *const kShowTweetRequest = @"statuses/show.json";
 
+// ex: GET https://dev.twitter.com/rest/reference/get/statuses/retweets_of_me
+static NSString *const kReTweetsOfMeRequest = @"statuses/retweets_of_me";
+
 // exported
 NSString *const TwitterClientErrorDomain = @"TwitterClientErrorDomain";
 
@@ -53,17 +56,25 @@ NSString *const kTwitterClientOAuthAccessTokenPath = @"/oauth/access_token";
 
 @property(nonatomic) BDBOAuth1SessionManager *networkManager;
 @property(nonatomic, readwrite, copy) NSDictionary *userInfo;
+#pragma mark - init
 
 - (id)initWithConsumerKey:(NSString *)key secret:(NSString *)secret;
 
-- (void)postWithQuery:(NSString *)query completion:(void (^)(NSArray *, NSError *))completion;
+
+#pragma mark - private utility methods
+
+- (void)postWithQuery:(NSString *)query completion:(void (^)(NSDictionary *, NSError *))completion;
+
+- (void)listWithQuery:(NSString *)query parameters:(NSDictionary *)params completion:(void (^)(NSArray *, NSError *))completion;
+
+- (void)getWithQuery:(NSString *)query parameters:(NSDictionary *)params completion:(void (^)(NSDictionary *, NSError *))completion;
 @end
 
 #pragma mark -
 
 @implementation TwitterClient
 
-#pragma mark Initialization
+#pragma mark - init
 static TwitterClient *_sharedInstance = nil;
 
 + (instancetype)createWithConsumerKey:(NSString *)key secret:(NSString *)secret {
@@ -174,7 +185,7 @@ static TwitterClient *_sharedInstance = nil;
                   parameters:nil
                      success:^(NSURLSessionDataTask *task, id responseObject) {
                          NSLog(@"Time line Response; %@", @"..."); //responseObject);
-                         [self parseTweetsFromAPIResponse:responseObject completion:completion];
+                         [TwitterClient parseTweetsFromListResponse:responseObject completion:completion];
                      }
                      failure:^(NSURLSessionDataTask *task, NSError *error) {
                          NSLog(@"Failed to load timeline!");
@@ -182,45 +193,38 @@ static TwitterClient *_sharedInstance = nil;
                      }];
 }
 
-- (void)updateStatus:(NSString *)text completion:(void (^)(NSArray *, NSError *error))completion {
+- (void)updateStatus:(NSString *)text completion:(void (^)(NSDictionary *, NSError *error))completion {
     NSString *encodedText = [text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     NSString *query = [NSString stringWithFormat:@"%@?status=%@", kUpdateStatusRequest, encodedText];
     [self postWithQuery:query completion:completion];
 }
 
-- (void)favorite:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion {
+- (void)favorite:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion {
     NSString *query = [kFavoriteRequest stringByReplacingOccurrencesOfString:@":id" withString:tweetId];
     [self postWithQuery:query completion:completion];
 
 }
 
-- (void) postWithQuery:(NSString *)query completion:(void (^)(NSArray *, NSError *))completion {
-    [self.networkManager POST:query
-                   parameters:nil
-                      success:^(NSURLSessionDataTask *task, id responseObject) {
-                          NSLog(@"query : %@ successful", query);
-                          completion(responseObject, nil);
-                      }
-                      failure:^(NSURLSessionDataTask *task, NSError *error) {
-                          NSLog(@"query : %@ failed", query);
-                          completion(nil, error);
-                      }];
 
-}
-
-- (void)unfavorite:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion {
+- (void)unfavorite:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion {
     NSString *query = [kUnfavoriteRequest stringByReplacingOccurrencesOfString:@":id" withString:tweetId];
     [self postWithQuery:query completion:completion];
 }
 
 
-- (void)retweet:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *error))completion {
+- (void)retweet:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion {
     NSString *query = [kRetweetRequest stringByReplacingOccurrencesOfString:@":id" withString:tweetId];
     [self postWithQuery:query completion:completion];
 }
 
-- (void)destroyTweet:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion {
+- (void)listRetweetsOfMeWithCompletion:(void (^)(NSArray *, NSError *error))completion {
+    NSString *query = kReTweetsOfMeRequest;
+    [self listWithQuery:query parameters:nil completion:completion];
+}
+
+// Warning! you can only destroy your own tweets or retweet. Otherwise API returns "Forbidden 403" errors
+- (void)destroyTweet:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion {
     NSString *query = [kDestroyRequest stringByReplacingOccurrencesOfString:@":id" withString:tweetId];
     [self postWithQuery:query completion:completion];
 }
@@ -231,52 +235,21 @@ static TwitterClient *_sharedInstance = nil;
 }
 
 - (void)showTweet:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion {
-    [self.networkManager GET:kUsersShowRequest
-                  parameters:@{@"id" : tweetId}
-                     success:^(NSURLSessionDataTask *task, id responseObject) {
-                         NSLog(@"Got tweet for  %@: %@", tweetId, responseObject);
-                         completion(responseObject, nil);
-                     }
-                     failure:^(NSURLSessionDataTask *task, NSError *error) {
-                         NSLog(@"Failed to get tweet  for %@", tweetId);
-                         completion(nil, error);
-                     }];
-
-}
+    NSDictionary *params = @{@"id" : tweetId};
+    [self getWithQuery:kShowTweetRequest parameters:params completion:completion];
+};
 
 
 - (void)showUserForScreenName:(NSString *)screenName completion:(void (^)(NSDictionary *dictionary, NSError *error))completion {
-    //users/show.json?screen_name=rsarver
-    [self.networkManager GET:kUsersShowRequest
-                  parameters:@{@"screen_name" : screenName}
-                     success:^(NSURLSessionDataTask *task, id responseObject) {
-                         NSLog(@"Got user info for  %@: %@", screenName, responseObject);
-                         completion(responseObject, nil);
-                     }
-                     failure:^(NSURLSessionDataTask *task, NSError *error) {
-                         NSLog(@"Failed to get user info for %@", screenName);
-                         completion(nil, error);
-                     }];
-
+    NSDictionary *params = @{@"screen_name" : screenName};
+    [self getWithQuery:kUsersShowRequest parameters:params completion:completion];
 }
 
 - (void)showSignedInUserInfoWithCompletion:(void (^)(NSDictionary *dictionary, NSError *error))completion {
-    // GET https://api.twitter.com/1.1/account/verify_credentials.json
-    [self.networkManager GET:kAccountInfoRequest
-                  parameters:nil
-                     success:^(NSURLSessionDataTask *task, id responseObject) {
-                         NSLog(@"Got user info for logged in user: %@", responseObject);
-                         completion(responseObject, nil);
-                     }
-                     failure:^(NSURLSessionDataTask *task, NSError *error) {
-                         NSLog(@"Failed to get user info for logged in user");
-                         completion(nil, error);
-                     }];
-
+    [self getWithQuery:kAccountInfoRequest parameters:nil completion:completion];
 }
 
-
-- (void)parseTweetsFromAPIResponse:(id)responseObject completion:(void (^)(NSArray *, NSError *))completion {
++ (void)parseTweetsFromListResponse:(id)responseObject completion:(void (^)(NSArray *, NSError *))completion {
     if (![responseObject isKindOfClass:[NSArray class]]) {
         NSError *error = [NSError errorWithDomain:TwitterClientErrorDomain
                                              code:1000
@@ -298,5 +271,52 @@ static TwitterClient *_sharedInstance = nil;
 
     completion(tweets, nil);
 }
+
+
+
+#pragma mark - private utility methods
+
+- (void)listWithQuery:(NSString *)query parameters:(NSDictionary *)params completion:(void (^)(NSArray *, NSError *))completion {
+    [self.networkManager GET:query
+                  parameters:params
+                     success:^(NSURLSessionDataTask *task, id responseObject) {
+                         NSLog(@"GET LIST  : %@ with params %@ SUCCESS. Response:%@", query, params, responseObject);
+                         completion(responseObject, nil);
+                     }
+                     failure:^(NSURLSessionDataTask *task, NSError *error) {
+                         NSLog(@"GET LIST: %@ with params %@ FAILED", query, params);
+                         completion(nil, error);
+                     }];
+
+}
+
+- (void)getWithQuery:(NSString *)query parameters:(NSDictionary *)params completion:(void (^)(NSDictionary *, NSError *))completion {
+    [self.networkManager GET:query
+                  parameters:params
+                     success:^(NSURLSessionDataTask *task, id responseObject) {
+                         NSLog(@"GET : %@ with params %@ SUCCESS. Response:%@", query, params, responseObject);
+                         completion(responseObject, nil);
+                     }
+                     failure:^(NSURLSessionDataTask *task, NSError *error) {
+                         NSLog(@"GET : %@ with params %@ FAILED", query, params);
+                         completion(nil, error);
+                     }];
+
+}
+
+- (void)postWithQuery:(NSString *)query completion:(void (^)(NSDictionary *, NSError *))completion {
+    [self.networkManager POST:query
+                   parameters:nil
+                      success:^(NSURLSessionDataTask *task, id responseObject) {
+                          NSLog(@"query : %@ successful", query);
+                          completion(responseObject, nil);
+                      }
+                      failure:^(NSURLSessionDataTask *task, NSError *error) {
+                          NSLog(@"query : %@ failed", query);
+                          completion(nil, error);
+                      }];
+
+}
+
 
 @end

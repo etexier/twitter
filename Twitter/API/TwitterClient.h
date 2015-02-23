@@ -36,6 +36,8 @@ FOUNDATION_EXPORT NSString *const kTwitterClientOAuthCallbackURL;
 
 + (BOOL)isAuthorizationCallbackURL:(NSURL *)url;
 
++ (void)parseTweetsFromListResponse:(id)responseObject completion:(void (^)(NSArray *, NSError *))completion;
+
 - (void)authorize;
 
 - (BOOL)handleAuthorizationCallbackURL:(NSURL *)url;
@@ -46,15 +48,17 @@ FOUNDATION_EXPORT NSString *const kTwitterClientOAuthCallbackURL;
 
 - (void)loadTimelineWithCompletion:(void (^)(NSArray *tweets, NSError *error))completion;
 
-- (void)updateStatus:(NSString *)text completion:(void (^)(NSArray *, NSError *))completion;
+- (void)updateStatus:(NSString *)text completion:(void (^)(NSDictionary *, NSError *))completion;
 
-- (void)favorite:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion;
+- (void)favorite:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion;
 
-- (void)unfavorite:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion;
+- (void)unfavorite:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion;
 
-- (void)retweet:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion;
+- (void)retweet:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion;
 
-- (void)destroyTweet:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion;
+- (void)listRetweetsOfMeWithCompletion:(void (^)(NSArray *, NSError *error))completion;
+
+- (void)destroyTweet:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion;
 
 - (void)replyTo:(NSString *)id completion:(void (^)(NSArray *, NSError *))completion;
 
