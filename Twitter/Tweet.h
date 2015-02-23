@@ -11,8 +11,8 @@
 @property (nonatomic, copy, readonly) NSString *userScreenName;
 @property (nonatomic, copy, readonly) NSString *retweetInfo;
 @property (nonatomic, copy, readonly) NSString *tweetText;
-@property (nonatomic, readonly) NSUInteger retweetCount;
-@property (nonatomic, readonly) NSUInteger favoriteCount;
+@property (nonatomic, assign) NSUInteger retweetCount;
+@property (nonatomic, assign) NSUInteger favoriteCount;
 @property (nonatomic, assign) BOOL favorited;
 @property (nonatomic, assign) BOOL retweeted;
 @property (nonatomic, readonly) NSString *id;

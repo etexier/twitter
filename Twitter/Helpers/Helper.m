@@ -4,9 +4,7 @@
 //
 
 #import "TweetsViewController.h"
-#import "NewTweetViewController.h"
 #import "Tweet.h"
-#import "TweetDetailsViewController.h"
 #import "Helper.h"
 #import "UIImageView+AFNetworking.h"
 #import "TwitterClient.h"
@@ -189,21 +187,6 @@
     }
 
 
-}
-
-+ (void)switchRetweetStatus:(Tweet *)tweet imageView:(UIImageView *)imageView {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        tweet.retweeted = !tweet.retweeted;
-        [Helper updateRetweetImageView:imageView tweet:tweet];
-    });
-
-}
-
-+ (void)switchFavoriteStatus:(Tweet *)tweet imageView:(UIImageView *)imageView {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        tweet.favorited = !tweet.favorited;
-        [Helper updateFavoriteImageView:imageView tweet:tweet];
-    });
 }
 
 + (void)onSwitchFavoriteStatus:(Tweet *)tweet completion:(void (^)(NSString *, NSError *))completion {

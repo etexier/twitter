@@ -65,8 +65,7 @@
     [self.tweetLabel drawTextInRect:UIEdgeInsetsInsetRect(self.tweetLabel.layer.visibleRect, insets)];
 
 
-    self.retweetLabel.text = [NSString stringWithFormat:@"RETWEETS %lu", (unsigned long) _tweet.retweetCount];
-    self.favoritedLabel.text = [NSString stringWithFormat:@"FAVORITES %lu", (unsigned long) _tweet.favoriteCount];
+    [self renderCounters];
 
     self.replyImageView.image = [UIImage imageNamed:@"reply.png"];
     [Helper updateFavoriteImageView:self.likeImageView tweet:_tweet];
@@ -111,7 +110,13 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             _tweet.retweeted = !_tweet.retweeted;
             [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
-            [self reloadTweet:_tweet.id];
+            if (_tweet.retweeted) {
+                _tweet.retweetCount = _tweet.retweetCount+1;
+            } else {
+                _tweet.retweetCount = _tweet.retweetCount-1;
+
+            }
+            [self renderCounters];;
         });
 
 
@@ -119,7 +124,9 @@
 }
 
 
-- (void)reloadTweet:(NSString *)id {
+- (void)renderCounters {
+    self.retweetLabel.text = [NSString stringWithFormat:@"RETWEETS %lu", (unsigned long) _tweet.retweetCount];
+    self.favoritedLabel.text = [NSString stringWithFormat:@"FAVORITES %lu", (unsigned long) _tweet.favoriteCount];
 //    TweetsViewController *vc = [Helper backViewController:self.navigationController];
 //    [vc reloadSingleTweetById:id];
 }
@@ -134,7 +141,14 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             _tweet.favorited = !_tweet.favorited;
             [Helper updateFavoriteImageView:self.likeImageView tweet:_tweet];
-            [self reloadTweet:_tweet.id];
+            if (_tweet.favorited) {
+                _tweet.favoriteCount = _tweet.favoriteCount+1;
+            } else {
+                _tweet.favoriteCount = _tweet.favoriteCount-1;
+
+            }
+
+            [self renderCounters];
         });
     }];
 }
