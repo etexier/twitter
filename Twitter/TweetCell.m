@@ -19,11 +19,10 @@
 @property(weak, nonatomic) IBOutlet UILabel *tweetTextLabel;
 @property(weak, nonatomic) IBOutlet UILabel *retweetInfoLabel;
 
+@property (weak, nonatomic) IBOutlet UIImageView *replyImageView;
+@property (weak, nonatomic) IBOutlet UIImageView *retweetImageView;
+@property (weak, nonatomic) IBOutlet UIImageView *likeImageView;
 
-// buttons
-@property(weak, nonatomic) IBOutlet UIButton *retweetButton;
-@property(weak, nonatomic) IBOutlet UIButton *replyButton;
-@property(weak, nonatomic) IBOutlet UIButton *favoriteButton;
 
 @end
 
@@ -73,6 +72,10 @@
     if (_tweet.retweetInfo) {
         _retweetInfoLabel.text = _tweet.retweetInfo;
     }
+
+    [self.replyImageView initWithImage:[UIImage imageNamed:@"reply.png"]];
+    [self.retweetImageView initWithImage:[UIImage imageNamed:@"retweet.png"]];
+    [self.likeImageView initWithImage:[UIImage imageNamed:@"like.png"]];
 
     // Calculate how long ago
     _createdTimeLabel.text = [Helper calculateTimeAgoTillDate:_tweet.createdAt];
