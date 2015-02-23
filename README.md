@@ -37,7 +37,7 @@ Credits
 * [BDOAuth1Manager](https://github.com/AFNetworking/AFNetworking)
 * [MBProgressHUD](https://github.com/magnetsystems/rest2mobile)
 * [BBlock/UIKit](https://github.com/magnetsystems/rest2mobile)
-* Icons made by [Daniel Bruce](http://www.danielbruce.se), (Freepik)[http://www.freepik.com] from [Flaticon](http://www.flaticon.com is licensed by [Creative Commons BY 3.0](http://creativecommons.org/licenses/by/3.0/)
+* Icons made by [Twitter](http://www.danielbruce.se), (Freepik)[http://www.freepik.com] 
 
 ### License
 
