@@ -12,4 +12,6 @@
 
 
 + (NSString *)calculateTimeAgoTillDate:(NSDate *)date;
+
++ (NSString *)calculateLocalDate:(NSDate *)date;
 @end

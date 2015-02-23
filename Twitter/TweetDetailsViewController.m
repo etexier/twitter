@@ -22,6 +22,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *likeImageView;
 @property (weak, nonatomic) IBOutlet UILabel *retweetLabel;
 @property (weak, nonatomic) IBOutlet UILabel *favoritedLabel;
+@property (weak, nonatomic) IBOutlet UILabel *dateLabel;
 
 @end
 
@@ -51,8 +52,8 @@
     self.screenNameLabel.text = [NSString stringWithFormat:@"@%@", _tweet.userScreenName];
 
     // Calculate how long ago
-    self.timeAgoLabel.text = [Helper calculateTimeAgoTillDate:_tweet.createdAt];
-
+    self.timeAgoLabel.text = [NSString stringWithFormat:@"%@ ago", [Helper calculateTimeAgoTillDate:_tweet.createdAt]];
+    self.dateLabel.text = [Helper calculateLocalDate:_tweet.createdAt];
     self.tweetLabel.text = _tweet.tweetText;
     self.tweetLabel.layer.borderColor = [UIColor whiteColor].CGColor;
     self.tweetLabel.layer.cornerRadius = 4.0;

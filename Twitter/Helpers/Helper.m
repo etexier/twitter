@@ -56,4 +56,14 @@
     return @"0s";
 
 }
+
+
++ (NSString *)calculateLocalDate:(NSDate *)date {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"MM/dd/YYYY hh:mm:ss a"];
+    [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
+    NSString *dateString = [dateFormatter stringFromDate: date];
+    return dateString;
+
+}
 @end
