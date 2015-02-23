@@ -17,12 +17,15 @@ static NSString *const kTwitterClientAPIURL = @"https://api.twitter.com/1.1/";
 static NSString *const kTimeLinePath = @"statuses/home_timeline.json?count=10";
 static NSString *const kUpdateStatusRequest = @"statuses/update.json";
 
+// ex: GET https://api.twitter.com/1.1/users/show.json?screen_name=rsarver
+static NSString *const kUsersShowRequest = @"users/show.json";
+
 
 // exported
 NSString *const TwitterClientErrorDomain = @"TwitterClientErrorDomain";
 
-NSString *const TwitterClientDidLogInNotification = @"TwitterClientDidLogInNotification";
-NSString *const TwitterClientDidLogOutNotification = @"TwitterClientDidLogOutNotification";
+NSString *const TwitterClientDidSignInNotification = @"TwitterClientDidLogInNotification";
+NSString *const TwitterClientDidSignOutNotification = @"TwitterClientDidLogOutNotification";
 
 NSString *const kTwitterClientOAuthAuthorizeURL = @"https://api.twitter.com/oauth/authorize";
 NSString *const kTwitterClientOAuthCallbackURL = @"etexiertwitter://authorize";
@@ -34,6 +37,7 @@ NSString *const kTwitterClientOAuthAccessTokenPath = @"/oauth/access_token";
 @interface TwitterClient ()
 
 @property(nonatomic) BDBOAuth1SessionManager *networkManager;
+@property (nonatomic, readwrite, copy)NSDictionary * userInfo;
 
 - (id)initWithConsumerKey:(NSString *)key secret:(NSString *)secret;
 
@@ -117,11 +121,12 @@ static TwitterClient *_sharedInstance = nil;
                                                method:@"POST"
                                          requestToken:[BDBOAuth1Credential credentialWithQueryString:url.query]
                                               success:^(BDBOAuth1Credential *accessToken) {
-                                                  NSLog(@"Received access token!");
+                                                  self.userInfo = [accessToken.userInfo copy];
+                                                  NSLog(@"Received access token for %@", accessToken.userInfo[@"screen_name"]);
                                                   // notify all listeners
-                                                  [[NSNotificationCenter defaultCenter] postNotificationName:TwitterClientDidLogInNotification
+                                                  [[NSNotificationCenter defaultCenter] postNotificationName:TwitterClientDidSignInNotification
                                                                                                       object:self
-                                                                                                    userInfo:accessToken.userInfo];
+                                                                                                    userInfo:self.userInfo];
                                               }
                                               failure:^(NSError *error) {
                                                   NSLog(@"Error: %@", error.localizedDescription);
@@ -144,7 +149,7 @@ static TwitterClient *_sharedInstance = nil;
 - (void)deAuthorize {
     [self.networkManager deauthorize];
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:TwitterClientDidLogOutNotification object:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:TwitterClientDidSignOutNotification object:self];
 }
 
 #pragma mark Tweets
@@ -153,7 +158,7 @@ static TwitterClient *_sharedInstance = nil;
     [self.networkManager GET:kTimeLinePath
                   parameters:nil
                      success:^(NSURLSessionDataTask *task, id responseObject) {
-                         NSLog(@"Time line Response; %@", responseObject);
+                         NSLog(@"Time line Response; %@", @"..."); //responseObject);
                          [self parseTweetsFromAPIResponse:responseObject completion:completion];
                      }
                      failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -186,6 +191,21 @@ static TwitterClient *_sharedInstance = nil;
     // TODO: TBI
 }
 
+- (void)showUserForScreenName:(NSString *)screenName completion:(void (^)(NSDictionary * dictionary, NSError *error))completion {
+    //users/show.json?screen_name=rsarver
+    [self.networkManager GET:kUsersShowRequest
+                   parameters:@{@"screen_name": screenName}
+                      success:^(NSURLSessionDataTask *task, id responseObject) {
+                          NSLog(@"Got user info for for %@: %@", screenName, responseObject);
+                          completion (responseObject, nil);
+                      }
+                      failure:^(NSURLSessionDataTask *task, NSError *error) {
+                          NSLog(@"Failed to get user info for %@", screenName);
+                          completion(nil, error);
+                      }];
+
+}
+
 
 - (void)parseTweetsFromAPIResponse:(id)responseObject completion:(void (^)(NSArray *, NSError *))completion {
     if (![responseObject isKindOfClass:[NSArray class]]) {
@@ -209,6 +229,5 @@ static TwitterClient *_sharedInstance = nil;
 
     completion(tweets, nil);
 }
-
 
 @end

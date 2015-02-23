@@ -12,33 +12,47 @@
 @import Foundation;
 
 
-FOUNDATION_EXPORT NSString * const TwitterClientErrorDomain;
+FOUNDATION_EXPORT NSString *const TwitterClientErrorDomain;
 
-FOUNDATION_EXPORT NSString * const TwitterClientDidLogInNotification;
-FOUNDATION_EXPORT NSString * const TwitterClientDidLogOutNotification;
-FOUNDATION_EXPORT NSString * const kTwitterClientOAuthCallbackURL;
+FOUNDATION_EXPORT NSString *const TwitterClientDidSignInNotification;
+FOUNDATION_EXPORT NSString *const TwitterClientDidSignOutNotification;
+FOUNDATION_EXPORT NSString *const kTwitterClientOAuthCallbackURL;
 
 
-#pragma mark -
 @interface TwitterClient : NSObject
+#pragma mark - properties
 
-@property (nonatomic, assign, readonly, getter = isAuthorized) BOOL authorized;
+@property(nonatomic, assign, readonly, getter = isAuthorized) BOOL authorized;
+@property(nonatomic, copy, readonly) NSDictionary *userInfo;
 
-#pragma mark Initialization
+#pragma mark - initialization
+
 + (instancetype)createWithConsumerKey:(NSString *)apiKey secret:(NSString *)secret;
+
 + (instancetype)sharedInstance;
 
-#pragma mark Authorization
+#pragma mark - authorization
+
 - (BOOL)isAuthorized;
+
 + (BOOL)isAuthorizationCallbackURL:(NSURL *)url;
+
 - (void)authorize;
+
 - (BOOL)handleAuthorizationCallbackURL:(NSURL *)url;
+
 - (void)deAuthorize;
 
-#pragma mark Tweets operations
+#pragma mark - tweets operations
+
 - (void)loadTimelineWithCompletion:(void (^)(NSArray *tweets, NSError *error))completion;
+
 - (void)updateStatus:(NSString *)text completion:(void (^)(NSArray *, NSError *))completion;
+
 - (void)retweet:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *))completion;
+
 - (void)replyTo:(NSString *)id completion:(void (^)(NSArray *, NSError *))completion;
+
+- (void)showUserForScreenName:(NSString *)screenName completion:(void (^)(NSDictionary *, NSError *)) completion;
 
 @end
