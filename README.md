@@ -33,11 +33,12 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 Credits
 ---------
-* [Twitter API](http://developer.rottentomatoes.com/docs/read/JSON)
-* [BDOAuth1Manager](https://github.com/AFNetworking/AFNetworking)
-* [MBProgressHUD](https://github.com/magnetsystems/rest2mobile)
-* [BBlock/UIKit](https://github.com/magnetsystems/rest2mobile)
-* Icons made by [Twitter](http://www.danielbruce.se), (Freepik)[http://www.freepik.com] 
+* [Twitter API](https://dev.twitter.com/rest/public)
+* [BDOAuth1Manager](https://github.com/AFNetworking/BDOAuth1Manager)
+* [AFNetworking](https://github.com/AFNetworking/AFNetworking)
+* [MBProgressHUD](https://github.com/magnetsystems/MBProgressHUD)
+* [BBlock/UIKit](https://github.com/magnetsystems/BBlock)
+* Icons made by [Twitter](https://dev.twitter.com/overview/general/image-resources) 
 
 ### License
 
