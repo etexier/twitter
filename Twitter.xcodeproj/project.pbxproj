@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		31C4AD4B1A96BCA200507116 /* Tweet.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C4AD4A1A96BCA200507116 /* Tweet.m */; };
-		31C4AD4E1A96BCAA00507116 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C4AD4D1A96BCAA00507116 /* User.m */; };
 		31F522AE1A964FF700C5545C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F522AD1A964FF700C5545C /* main.m */; };
 		31F522B11A964FF700C5545C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F522B01A964FF700C5545C /* AppDelegate.m */; };
 		31F522B91A964FF700C5545C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31F522B81A964FF700C5545C /* Images.xcassets */; };
@@ -40,8 +39,6 @@
 /* Begin PBXFileReference section */
 		31C4AD491A96BCA200507116 /* Tweet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tweet.h; sourceTree = "<group>"; };
 		31C4AD4A1A96BCA200507116 /* Tweet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tweet.m; sourceTree = "<group>"; };
-		31C4AD4C1A96BCAA00507116 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
-		31C4AD4D1A96BCAA00507116 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		31F522A81A964FF700C5545C /* Twitter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Twitter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		31F522AC1A964FF700C5545C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		31F522AD1A964FF700C5545C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -97,8 +94,6 @@
 			children = (
 				31C4AD491A96BCA200507116 /* Tweet.h */,
 				31C4AD4A1A96BCA200507116 /* Tweet.m */,
-				31C4AD4C1A96BCAA00507116 /* User.h */,
-				31C4AD4D1A96BCAA00507116 /* User.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -368,7 +363,6 @@
 				32F0B3251A9926C000ED623D /* NewTweetViewController.m in Sources */,
 				31F522B11A964FF700C5545C /* AppDelegate.m in Sources */,
 				32F0B3351A99282A00ED623D /* TweetCell.m in Sources */,
-				31C4AD4E1A96BCAA00507116 /* User.m in Sources */,
 				31C4AD4B1A96BCA200507116 /* Tweet.m in Sources */,
 				31F522AE1A964FF700C5545C /* main.m in Sources */,
 				32F0B3201A9926AF00ED623D /* TweetDetailsViewController.m in Sources */,

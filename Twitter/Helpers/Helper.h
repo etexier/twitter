@@ -25,7 +25,7 @@
 
 + (int)findTweetIndexWithId:(NSString *)id fromTweets:(NSArray *)tweets;
 
-+ (int)findReTweetIndexWithId:(NSString *)id1 fromTweets:(NSArray *)tweets;
++ (int)findReTweetIndexForScreenName:(NSString *)id1 fromTweets:(NSArray *)tweets;
 
 + (void)onSwitchRetweetStatusForTweet:(Tweet *)tweet completion:(void (^)(NSString *, NSError *))completion;
 

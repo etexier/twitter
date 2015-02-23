@@ -35,8 +35,11 @@ static NSString *const kFavoriteRequest = @"favorites/create.json?id=:id";
 // ex: GET https://api.twitter.com/1.1/statuses/show.json?id=210462857140252672
 static NSString *const kShowTweetRequest = @"statuses/show.json";
 
-// ex: GET https://dev.twitter.com/rest/reference/get/statuses/retweets_of_me
-static NSString *const kReTweetsOfMeRequest = @"statuses/retweets_of_me";
+// ex: GET https://dev.twitter.com/rest/reference/get/statuses/retweets_of_me.json
+static NSString *const kReTweetsOfMeRequest = @"statuses/retweets_of_me.json";
+
+// ex: GET https://api.twitter.com/1.1/statuses/retweets/509457288717819904.js
+static NSString *const kReTweetsForTweetRequest = @"statuses/retweets/:id.json";
 
 // exported
 NSString *const TwitterClientErrorDomain = @"TwitterClientErrorDomain";
@@ -221,6 +224,12 @@ static TwitterClient *_sharedInstance = nil;
 - (void)listRetweetsOfMeWithCompletion:(void (^)(NSArray *, NSError *error))completion {
     NSString *query = kReTweetsOfMeRequest;
     [self listWithQuery:query parameters:nil completion:completion];
+}
+
+- (void) listRetweetsForTweetId:(NSString *) tweetId completion:(void(^)(NSArray *, NSError *error)) completion{
+    NSString *query = [kReTweetsForTweetRequest stringByReplacingOccurrencesOfString:@":id" withString:tweetId];
+    [self listWithQuery:query parameters:nil completion:completion];
+    
 }
 
 // Warning! you can only destroy your own tweets or retweet. Otherwise API returns "Forbidden 403" errors

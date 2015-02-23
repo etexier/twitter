@@ -58,6 +58,8 @@ FOUNDATION_EXPORT NSString *const kTwitterClientOAuthCallbackURL;
 
 - (void)listRetweetsOfMeWithCompletion:(void (^)(NSArray *, NSError *error))completion;
 
+- (void)listRetweetsForTweetId:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *error))completion;
+
 - (void)destroyTweet:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion;
 
 - (void)replyTo:(NSString *)id completion:(void (^)(NSArray *, NSError *))completion;

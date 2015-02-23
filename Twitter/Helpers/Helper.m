@@ -111,13 +111,14 @@
 
 }
 
-+ (int)findReTweetIndexWithId:(NSString *)id fromTweets:(NSArray *)tweets {
++ (int)findReTweetIndexForScreenName:(NSString *)screenName fromTweets:(NSArray *)tweets {
     int found = -1;
     int i;
     for (i = 0; i < [tweets count]; i++) {
-        Tweet *t = tweets[i];
-        if ([id isEqualToString:t.originalTweetId]) {
+        Tweet *t = tweets[(NSUInteger) i];
+        if ([t.userScreenName isEqualToString:screenName]) {
             found = i;
+            break;
         }
     }
     return found;
@@ -129,36 +130,50 @@
         // must find my retweet id for this tweet id
 
         // first, get list of my retweets
-        [[TwitterClient sharedInstance] listRetweetsOfMeWithCompletion:^(NSArray *array, NSError *error) {
+        [[TwitterClient sharedInstance] listRetweetsForTweetId:tweet.id completion:^(NSArray *array, NSError *error) {
             if (error) {
-                NSLog(@"Couldn't find list of retweets. Error:%@", error.localizedDescription);
+                NSLog(@"Couldn't find list of retweets for tweet id %@. Error:%@", tweet.id, error.localizedDescription);
                 completion(nil, error);
                 return;
             }
 
             // parse tweets
             [TwitterClient parseTweetsFromListResponse:array completion:^(NSArray *array1, NSError *error1) {
-                if (error) {
+                if (error1) {
                     NSLog(@"Couldn't parse list of retweets. Error:%@", error1.localizedDescription);
                     completion(nil, error1);
                     return;
                 }
-                // find my retweet for this retweet id
+                // find my retweet id for this retweeted tweet.
                 NSArray *tweets = array1;
-                int found = [Helper findReTweetIndexWithId:tweet.id fromTweets:tweets];
-                if (found == -1) {
-                    NSLog(@"Couldn't find retweeted tweet with id %@", tweet.id);
-                    return;
-                }
 
-                Tweet *retweet = tweets[(NSUInteger) found];
-                // delete my retweet
-                [[TwitterClient sharedInstance] destroyTweet:retweet.id completion:^(NSDictionary *array2, NSError *error2) {
-                    if (error2) {
-                        NSLog(@"Couldn't destroy retweet. Error:%@", error2.localizedDescription);
+                // get user screen name
+                [[TwitterClient sharedInstance] showSignedInUserInfoWithCompletion:^(NSDictionary *dictionary, NSError *error4) {
+                    NSLog(@"Getting user info for logged in user ...");
+
+                    if (error) {
+                        NSLog(@"Couldn't get user screen name. Error:%@", error1.localizedDescription);
+                        completion(nil, error4);
+                        return;
                     }
-                    completion(tweet.id, error2);
-                    return;
+                    NSString *screenName = dictionary[@"screen_name"];
+
+                    int found = [Helper findReTweetIndexForScreenName:screenName fromTweets:tweets];
+                    if (found == -1) {
+                        NSLog(@"Couldn't find retweeted tweet with id %@", tweet.id);
+                        completion(nil, error1);
+                        return;
+                    }
+
+                    Tweet *retweet = tweets[(NSUInteger) found];
+                    // delete my retweet
+                    [[TwitterClient sharedInstance] destroyTweet:retweet.id completion:^(NSDictionary *array2, NSError *error2) {
+                        if (error2) {
+                            NSLog(@"Couldn't destroy retweet. Error:%@", error2.localizedDescription);
+                        }
+                        completion(tweet.id, error2);
+                        return;
+                    }];
                 }];
 
             }];
