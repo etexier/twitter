@@ -9,6 +9,7 @@
 #import "TweetCell.h"
 #import "UIImageView+AFNetworking.h"
 #import "Helper.h"
+#import "TwitterClient.h"
 
 @interface TweetCell ()
 
@@ -73,14 +74,13 @@
         _retweetInfoLabel.text = _tweet.retweetInfo;
     }
 
-//    self.replyImageView.image = [UIImage imageNamed:@"reply.png"];
-//    self.retweetImageView.image = [UIImage imageNamed:@"retweet.png"];
-//    self.likeImageView.image = [UIImage imageNamed:@"like.png"];
-
     self.replyImageView.image = [UIImage imageNamed:@"reply.png"];
     [Helper updateLikeImageView:self.likeImageView tweet:_tweet];
     [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
 
+    [self registerGestureOnImageView:self.likeImageView selector:@selector(onSelectLikeImage)];
+    [self registerGestureOnImageView:self.retweetImageView selector:@selector(onSelectRetweetImage)];
+    [self registerGestureOnImageView:self.replyImageView selector:@selector(onSelectReplyImage)];
 
     // Calculate how long ago
     _createdTimeLabel.text = [Helper calculateTimeAgoTillDate:_tweet.createdAt];
@@ -91,5 +91,122 @@
     self.userNameLabel.preferredMaxLayoutWidth = self.userNameLabel.frame.size.width;
 
 }
+
+
+- (void) registerGestureOnImageView:(UIImageView *) imageView selector:(SEL) selector {
+
+    [imageView setUserInteractionEnabled:YES];
+
+    // select
+    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:selector];
+    singleTap.numberOfTapsRequired = 1;
+
+    [imageView addGestureRecognizer:singleTap];
+
+}
+
+-(void)onSelectReplyImage{
+    NSLog(@"single Tap on reply");
+    // TODO
+}
+
+-(void)onSelectRetweetImage{
+    NSLog(@"single Tap on retweet");
+    _tweet.retweeted = !_tweet.retweeted;
+    [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
+    if (!_tweet.retweeted) {
+
+        [[TwitterClient sharedInstance] destroyTweet:_tweet.id completion:^(NSArray *array, NSError *error) {
+            if (error) {
+                NSLog(@"Error: %@", error.localizedDescription);
+                // undo model
+                _tweet.retweeted = !_tweet.retweeted;
+                // undo UI
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[[UIAlertView alloc] initWithTitle:@"Error"
+                                                message:error.localizedDescription
+                                               delegate:self
+                                      cancelButtonTitle:@"Dismiss"
+                                      otherButtonTitles:nil] show];
+                    [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
+                });
+
+            } else {
+                // success!
+            }
+        }];
+    } else {
+        [[TwitterClient sharedInstance] retweet:_tweet.id completion:^(NSArray *array, NSError *error) {
+            if (error) {
+                NSLog(@"Error: %@", error.localizedDescription);
+                // undo model
+                _tweet.retweeted = !_tweet.retweeted;
+                // undo UI
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[[UIAlertView alloc] initWithTitle:@"Error"
+                                                message:error.localizedDescription
+                                               delegate:self
+                                      cancelButtonTitle:@"Dismiss"
+                                      otherButtonTitles:nil] show];
+                    [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
+                });
+
+            } else {
+                // success!
+            }
+        }];
+
+    }
+}
+
+- (void)onSelectLikeImage{
+    NSLog(@"single Tap on favorite");
+    _tweet.favorited = !_tweet.favorited;
+    [Helper updateLikeImageView:self.likeImageView tweet:_tweet];
+    if (!_tweet.favorited) {
+
+        [[TwitterClient sharedInstance] unfavorite:_tweet.id completion:^(NSArray *array, NSError *error) {
+            if (error) {
+                NSLog(@"Error: %@", error.localizedDescription);
+                // undo model
+                _tweet.favorited = !_tweet.favorited;
+                // undo UI
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[[UIAlertView alloc] initWithTitle:@"Error"
+                                                message:error.localizedDescription
+                                               delegate:self
+                                      cancelButtonTitle:@"Dismiss"
+                                      otherButtonTitles:nil] show];
+                    [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
+                });
+
+            } else {
+                // success!
+            }
+        }];
+    } else {
+        [[TwitterClient sharedInstance] favorite:_tweet.id completion:^(NSArray *array, NSError *error) {
+            if (error) {
+                NSLog(@"Error: %@", error.localizedDescription);
+                // undo model
+                _tweet.favorited = !_tweet.favorited;
+                // undo UI
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[[UIAlertView alloc] initWithTitle:@"Error"
+                                                message:error.localizedDescription
+                                               delegate:self
+                                      cancelButtonTitle:@"Dismiss"
+                                      otherButtonTitles:nil] show];
+                    [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
+                });
+
+            } else {
+                // success!
+            }
+        }];
+
+    }
+}
+
 
 @end

@@ -63,22 +63,18 @@
 
     [self.tweetLabel drawTextInRect:UIEdgeInsetsInsetRect(self.tweetLabel.layer.visibleRect, insets)];
 
-    self.replyImageView.image = [UIImage imageNamed:@"reply.png"];
-    [Helper updateLikeImageView:self.likeImageView tweet:_tweet];
-    [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
 
     self.retweetLabel.text = [NSString stringWithFormat:@"RETWEETS %lu", (unsigned long) _tweet.retweetCount];
     self.favoritedLabel.text = [NSString stringWithFormat:@"FAVORITES %lu", (unsigned long) _tweet.favoriteCount];
 
-    // retweet label is not always there
-//        if (_tweet.retweetInfo) {
-//            _retweetInfoLabel.text = _tweet.retweetInfo;
-//        }
+    self.replyImageView.image = [UIImage imageNamed:@"reply.png"];
+    [Helper updateLikeImageView:self.likeImageView tweet:_tweet];
+    [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
 
-    // Do any additional setup after loading the view from its nib.
     [self registerGestureOnImageView:self.likeImageView selector:@selector(onSelectLikeImage)];
     [self registerGestureOnImageView:self.retweetImageView selector:@selector(onSelectRetweetImage)];
     [self registerGestureOnImageView:self.replyImageView selector:@selector(onSelectReplyImage)];
+
 }
 
 - (void)didReceiveMemoryWarning {
