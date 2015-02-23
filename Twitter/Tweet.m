@@ -36,12 +36,15 @@ static NSString *const kTweetUserImageURLName = @"profile_image_url";
 static NSString *const kTweetUserNameName = @"name";
 static NSString *const kTweetCreatedAtName = @"created_at";
 static NSString *const kTweetUserScreenNameName = @"screen_name";
+static NSString *const kTweetRetweetCountName = @"retweet_count";
+static NSString *const kTweetFavoriteCountName = @"favorite_count";
 
 #pragma mark -
 
 @implementation Tweet
 
 - (id)initWithDictionary:(NSDictionary *)dictionary {
+    NSLog(@"Creating tweet from %@", dictionary);
     self = [super init];
 
     if (self) {
@@ -69,6 +72,9 @@ static NSString *const kTweetUserScreenNameName = @"screen_name";
         // 5. screen name
         _userScreenName = userInfo[kTweetUserScreenNameName];
         NSLog(@"Created tweet from %@", self.userScreenName);
+
+        _favoriteCount = [[dictionary valueForKeyPath:kTweetFavoriteCountName] unsignedIntegerValue];
+        _retweetCount = [[dictionary valueForKeyPath:kTweetRetweetCountName] unsignedIntegerValue];
 
 //        // 6. retweet info
 //        _retweetInfo = userInfo[]

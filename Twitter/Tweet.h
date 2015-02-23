@@ -10,6 +10,9 @@
 @property (nonatomic, copy, readonly) NSString *userScreenName;
 @property (nonatomic, copy, readonly) NSString *retweetInfo;
 @property (nonatomic, copy, readonly) NSString *tweetText;
+@property (nonatomic, readonly) NSUInteger retweetCount;
+@property (nonatomic, readonly) NSUInteger favoriteCount;
+
 
 - (id)initWithDictionary:(NSDictionary *)dictionary;
 

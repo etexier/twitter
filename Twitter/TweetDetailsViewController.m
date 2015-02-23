@@ -20,6 +20,8 @@
 @property (weak, nonatomic) IBOutlet UIImageView *replyImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *retweetImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *likeImageView;
+@property (weak, nonatomic) IBOutlet UILabel *retweetLabel;
+@property (weak, nonatomic) IBOutlet UILabel *favoritedLabel;
 
 @end
 
@@ -62,6 +64,9 @@
     self.replyImageView.image = [UIImage imageNamed:@"reply.png"];
     self.retweetImageView.image = [UIImage imageNamed:@"retweet.png"];
     self.likeImageView.image = [UIImage imageNamed:@"like.png"];
+    
+    self.retweetLabel.text = [NSString stringWithFormat:@"RETWEETS %lu", (unsigned long) _tweet.retweetCount];
+    self.favoritedLabel.text = [NSString stringWithFormat:@"FAVORITES %lu", (unsigned long) _tweet.favoriteCount];
 
     // retweet label is not always there
 //        if (_tweet.retweetInfo) {
