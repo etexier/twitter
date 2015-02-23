@@ -36,8 +36,8 @@ Credits
 * [Twitter API](https://dev.twitter.com/rest/public)
 * [BDBOAuth1Manager](https://github.com/bdbergeron/BDBOAuth1Manager)
 * [AFNetworking](https://github.com/AFNetworking/AFNetworking)
-* [MBProgressHUD](https://github.com/magnetsystems/MBProgressHUD)
-* [BBlock/UIKit](https://github.com/magnetsystems/BBlock)
+* [MBProgressHUD](https://github.com/jdg/MBProgressHUD)
+* [BBlock/UIKit](https://github.com/kgn/BBlock)
 * Icons made by [Twitter](https://dev.twitter.com/overview/general/image-resources) 
 
 ### License
