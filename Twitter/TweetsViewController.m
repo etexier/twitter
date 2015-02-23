@@ -22,8 +22,6 @@ static NSString *const kTweetCell = @"TweetCell";
 
 @property(nonatomic, strong) UIRefreshControl *refreshControl;
 @property(nonatomic, strong) NSArray *tweets;
-@property(nonatomic, copy) NSString *userScreenName;
-
 
 @end
 
@@ -68,14 +66,6 @@ static NSString *const kTweetCell = @"TweetCell";
                                                           self.tweets = [NSArray array];
                                                           [self.tableView reloadData];
                                                           [self.navigationItem.leftBarButtonItem setTitle:@"Sign In"];
-                                                      }];
-        // for user info
-        [[NSNotificationCenter defaultCenter] addObserverForName:TwitterClientDidSignInNotification
-                                                          object:nil
-                                                           queue:nil
-                                                      usingBlock:^(NSNotification *note) {
-                                                          self.userScreenName = note.userInfo[@"screen_name"];
-                                                          NSLog(@"Got notification for sign in with notification userInfo: %@", self.userScreenName);;
                                                       }];
 
 
@@ -228,8 +218,7 @@ static NSString *const kTweetCell = @"TweetCell";
                           otherButtonTitles:nil] show];
         return;
     }
-    NSURL *imageURL = nil; // TODO get it from current user.
-    NewTweetViewController *vc = [[NewTweetViewController alloc] initWithScreenName:self.userScreenName];
+    NewTweetViewController *vc = [[NewTweetViewController alloc] init];
     [self.navigationController pushViewController:vc animated:YES];
 }
 

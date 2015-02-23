@@ -19,6 +19,8 @@ static NSString *const kUpdateStatusRequest = @"statuses/update.json";
 
 // ex: GET https://api.twitter.com/1.1/users/show.json?screen_name=rsarver
 static NSString *const kUsersShowRequest = @"users/show.json";
+// ex: GET https://api.twitter.com/1.1/account/verify_credentials.json
+static NSString *const kAccountInfoRequest = @"account/verify_credentials.json";
 
 
 // exported
@@ -37,7 +39,7 @@ NSString *const kTwitterClientOAuthAccessTokenPath = @"/oauth/access_token";
 @interface TwitterClient ()
 
 @property(nonatomic) BDBOAuth1SessionManager *networkManager;
-@property (nonatomic, readwrite, copy)NSDictionary * userInfo;
+@property(nonatomic, readwrite, copy) NSDictionary *userInfo;
 
 - (id)initWithConsumerKey:(NSString *)key secret:(NSString *)secret;
 
@@ -167,19 +169,19 @@ static TwitterClient *_sharedInstance = nil;
 }
 
 - (void)updateStatus:(NSString *)text completion:(void (^)(NSArray *, NSError *error))completion {
-    NSString *encodedText = [text stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
+    NSString *encodedText = [text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     NSString *query = [NSString stringWithFormat:@"%@?status=%@", kUpdateStatusRequest, encodedText];
     [self.networkManager POST:query
-                  parameters:nil
-                     success:^(NSURLSessionDataTask *task, id responseObject) {
-                         NSLog(@"Update status successfully");
-                         completion (responseObject, nil);
-                     }
-                     failure:^(NSURLSessionDataTask *task, NSError *error) {
-                         NSLog(@"Failed to load timeline!");
-                         completion(nil, error);
-                     }];
+                   parameters:nil
+                      success:^(NSURLSessionDataTask *task, id responseObject) {
+                          NSLog(@"Update status successfully");
+                          completion(responseObject, nil);
+                      }
+                      failure:^(NSURLSessionDataTask *task, NSError *error) {
+                          NSLog(@"Failed to load timeline!");
+                          completion(nil, error);
+                      }];
 }
 
 - (void)retweet:(NSString *)tweetId completion:(void (^)(NSArray *, NSError *error))completion {
@@ -190,18 +192,33 @@ static TwitterClient *_sharedInstance = nil;
     // TODO: TBI
 }
 
-- (void)showUserForScreenName:(NSString *)screenName completion:(void (^)(NSDictionary * dictionary, NSError *error))completion {
+- (void)showUserForScreenName:(NSString *)screenName completion:(void (^)(NSDictionary *dictionary, NSError *error))completion {
     //users/show.json?screen_name=rsarver
     [self.networkManager GET:kUsersShowRequest
-                   parameters:@{@"screen_name": screenName}
-                      success:^(NSURLSessionDataTask *task, id responseObject) {
-                          NSLog(@"Got user info for for %@: %@", screenName, responseObject);
-                          completion (responseObject, nil);
-                      }
-                      failure:^(NSURLSessionDataTask *task, NSError *error) {
-                          NSLog(@"Failed to get user info for %@", screenName);
-                          completion(nil, error);
-                      }];
+                  parameters:@{@"screen_name" : screenName}
+                     success:^(NSURLSessionDataTask *task, id responseObject) {
+                         NSLog(@"Got user info for  %@: %@", screenName, responseObject);
+                         completion(responseObject, nil);
+                     }
+                     failure:^(NSURLSessionDataTask *task, NSError *error) {
+                         NSLog(@"Failed to get user info for %@", screenName);
+                         completion(nil, error);
+                     }];
+
+}
+
+- (void)showSignedInUserInfoWithCompletion:(void (^)(NSDictionary *dictionary, NSError *error))completion {
+    // GET https://api.twitter.com/1.1/account/verify_credentials.json
+    [self.networkManager GET:kAccountInfoRequest
+                  parameters:nil
+                     success:^(NSURLSessionDataTask *task, id responseObject) {
+                         NSLog(@"Got user info for logged in user: %@", responseObject);
+                         completion(responseObject, nil);
+                     }
+                     failure:^(NSURLSessionDataTask *task, NSError *error) {
+                         NSLog(@"Failed to get user info for logged in user");
+                         completion(nil, error);
+                     }];
 
 }
 

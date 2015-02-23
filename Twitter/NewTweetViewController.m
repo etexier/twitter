@@ -16,7 +16,6 @@
 @property(weak, nonatomic) IBOutlet UITextView *tweetTextView;
 @property(weak, nonatomic) IBOutlet UIImageView *imageView;
 @property(strong, nonatomic) NSURL *imageURL;
-@property(strong, nonatomic) NSString *screenName;
 @property(weak, nonatomic) IBOutlet UILabel *tweetLabel;
 
 
@@ -24,14 +23,6 @@
 
 @implementation NewTweetViewController
 
-- (id)initWithScreenName:(NSString *)screenName {
-    self = [super init];
-    if (self) {
-        self.screenName = screenName;
-    }
-    return self;
-
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -62,28 +53,26 @@
 
     // round image
     if (!self.imageURL) {
-        if (self.screenName) {
-            [[TwitterClient sharedInstance] showUserForScreenName:self.screenName
-                                                       completion:^(NSDictionary *dictionary, NSError *error) {
-                                                           NSLog(@"Getting user info for %@ ...", self.screenName);
+        [[TwitterClient sharedInstance] showSignedInUserInfoWithCompletion:^(NSDictionary *dictionary, NSError *error) {
+            NSLog(@"Getting user info for logged in user ...");
 
-                                                           if (error) {
-                                                               // quietly error out
-                                                           } else {
-                                                               self.imageURL = [NSURL URLWithString:dictionary[@"profile_image_url"]];
-                                                               dispatch_async(dispatch_get_main_queue(), ^{
-                                                                   [self.imageView setImageWithURL:self.imageURL];
-                                                               });
-                                                           }
-                                                       }];
-        }
+            if (error) {
+                // quietly error out
+            } else {
+                self.imageURL = [NSURL URLWithString:dictionary[@"profile_image_url"]];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.imageView setImageWithURL:self.imageURL];
+                });
+                NSString *screenName = dictionary[@"screen_name"];
+                self.tweetLabel.text = [NSString stringWithFormat:@"@%@ tweets:", screenName];
+            }
+        }];
     } else {
         [self.imageView setImageWithURL:self.imageURL];
     }
     self.imageView.layer.cornerRadius = self.imageView.frame.size.width / 2.0f;
     self.imageView.clipsToBounds = YES;
 
-    self.tweetLabel.text = [NSString stringWithFormat:@"@%@ tweets:", self.screenName];
 
 
 }

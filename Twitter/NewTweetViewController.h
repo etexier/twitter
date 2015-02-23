@@ -9,6 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface NewTweetViewController : UIViewController
--(id) initWithScreenName:(NSString *)screenName;
 
 @end
