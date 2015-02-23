@@ -179,7 +179,7 @@ static TwitterClient *_sharedInstance = nil;
                           completion(responseObject, nil);
                       }
                       failure:^(NSURLSessionDataTask *task, NSError *error) {
-                          NSLog(@"Failed to load timeline!");
+                          NSLog(@"Failed to update status!");
                           completion(nil, error);
                       }];
 }

@@ -73,9 +73,9 @@
         _retweetInfoLabel.text = _tweet.retweetInfo;
     }
 
-    [self.replyImageView initWithImage:[UIImage imageNamed:@"reply.png"]];
-    [self.retweetImageView initWithImage:[UIImage imageNamed:@"retweet.png"]];
-    [self.likeImageView initWithImage:[UIImage imageNamed:@"like.png"]];
+    self.replyImageView.image = [UIImage imageNamed:@"reply.png"];
+    self.retweetImageView.image = [UIImage imageNamed:@"retweet.png"];
+    self.likeImageView.image = [UIImage imageNamed:@"like.png"];
 
     // Calculate how long ago
     _createdTimeLabel.text = [Helper calculateTimeAgoTillDate:_tweet.createdAt];

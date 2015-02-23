@@ -59,9 +59,9 @@
 
     [self.tweetLabel drawTextInRect:UIEdgeInsetsInsetRect(self.tweetLabel.layer.visibleRect, insets)];
 
-    [self.replyImageView initWithImage:[UIImage imageNamed:@"reply.png"]];
-    [self.retweetImageView initWithImage:[UIImage imageNamed:@"retweet.png"]];
-    [self.likeImageView initWithImage:[UIImage imageNamed:@"like.png"]];
+    self.replyImageView.image = [UIImage imageNamed:@"reply.png"];
+    self.retweetImageView.image = [UIImage imageNamed:@"retweet.png"];
+    self.likeImageView.image = [UIImage imageNamed:@"like.png"];
 
     // retweet label is not always there
 //        if (_tweet.retweetInfo) {
