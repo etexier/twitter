@@ -121,12 +121,11 @@ static TwitterClient *_sharedInstance = nil;
                                                method:@"POST"
                                          requestToken:[BDBOAuth1Credential credentialWithQueryString:url.query]
                                               success:^(BDBOAuth1Credential *accessToken) {
-                                                  self.userInfo = [accessToken.userInfo copy];
                                                   NSLog(@"Received access token for %@", accessToken.userInfo[@"screen_name"]);
                                                   // notify all listeners
                                                   [[NSNotificationCenter defaultCenter] postNotificationName:TwitterClientDidSignInNotification
                                                                                                       object:self
-                                                                                                    userInfo:self.userInfo];
+                                                                                                    userInfo:accessToken.userInfo];
                                               }
                                               failure:^(NSError *error) {
                                                   NSLog(@"Error: %@", error.localizedDescription);

@@ -23,7 +23,6 @@ FOUNDATION_EXPORT NSString *const kTwitterClientOAuthCallbackURL;
 #pragma mark - properties
 
 @property(nonatomic, assign, readonly, getter = isAuthorized) BOOL authorized;
-@property(nonatomic, copy, readonly) NSDictionary *userInfo;
 
 #pragma mark - initialization
 

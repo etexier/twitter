@@ -18,4 +18,42 @@
 }
 
 
++ (NSString *)calculateTimeAgoTillDate:(NSDate *)date {
+    NSDate *now = [NSDate date];
+    NSString *timeAgo;
+    NSDateComponents *timeComponents = [[NSCalendar currentCalendar]
+            components:NSCalendarUnitSecond
+              fromDate:date
+                toDate:now
+               options:0];
+    if (timeComponents.second) {
+        long secondsAgo = timeComponents.second;
+        if (secondsAgo < 60) {
+            timeAgo = [NSString stringWithFormat:@"%lus", secondsAgo ];
+            return timeAgo;
+        }
+
+        long minutesAgo = secondsAgo/60;
+        if (minutesAgo < 60) {
+            timeAgo = [NSString stringWithFormat:@"%lum", minutesAgo];
+            return timeAgo;
+        }
+
+        long hoursAgo = secondsAgo/(60*60);
+        if (hoursAgo < 60) {
+            timeAgo = [NSString stringWithFormat:@"%luh", hoursAgo];
+            return timeAgo;
+        }
+
+        // check n days ago
+        long daysAgo = secondsAgo / (60*60*24);
+        if (daysAgo > 0) {
+            timeAgo = [NSString stringWithFormat:@"%lud", daysAgo ];
+            return timeAgo;
+        }
+
+    }
+    return @"0s";
+
+}
 @end

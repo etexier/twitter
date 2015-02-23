@@ -75,40 +75,7 @@
     }
 
     // Calculate how long ago
-    NSDate *now = [NSDate date];
-    NSDateComponents *timeComponents = [[NSCalendar currentCalendar]
-            components:NSCalendarUnitSecond
-              fromDate:_tweet.createdAt
-                toDate:now
-               options:0];
-    if (timeComponents.second) {
-        long secondsAgo = timeComponents.second;
-        if (secondsAgo < 60) {
-            _createdTimeLabel.text = [NSString stringWithFormat:@"%lus", secondsAgo ];
-            return;
-        }
-        
-        long minutesAgo = (long) (secondsAgo/60);
-        if (minutesAgo < 60) {
-            _createdTimeLabel.text = [NSString stringWithFormat:@"%lum", minutesAgo];
-            return;
-        }
-
-        long hoursAgo = (long) (secondsAgo/(60*60));
-        if (hoursAgo < 60) {
-            _createdTimeLabel.text = [NSString stringWithFormat:@"%luh", hoursAgo];
-            return;
-        }
-
-        // check n days ago
-        long daysAgo = (long) (secondsAgo / (60*60*24));
-        if (daysAgo > 0) {
-            _createdTimeLabel.text = [NSString stringWithFormat:@"%lud", daysAgo ];
-            return;
-        }
-        
-        
-    }
+    _createdTimeLabel.text = [Helper calculateTimeAgoTillDate:_tweet.createdAt];
 }
 
 - (void)layoutSubviews {

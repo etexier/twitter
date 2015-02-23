@@ -11,4 +11,5 @@
 + (void) fadeInImage:(UIImageView *)imageView url:(NSURL *) url;
 
 
++ (NSString *)calculateTimeAgoTillDate:(NSDate *)date;
 @end

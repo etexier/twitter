@@ -16,11 +16,11 @@
 #import "MBProgressHUD.h"
 
 static NSString *const kTweetCell = @"TweetCell";
+
 @interface TweetsViewController () <UITableViewDataSource, UITableViewDelegate>
 @property(weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property(nonatomic, strong) UIRefreshControl *refreshControl;
-@property(nonatomic) NSMutableDictionary *offScreenCells;
 @property(nonatomic, strong) NSArray *tweets;
 @property(nonatomic, copy) NSString *userScreenName;
 
@@ -41,7 +41,6 @@ static NSString *const kTweetCell = @"TweetCell";
     self = [super init];
 
     if (self) {
-        self.offScreenCells = [NSMutableDictionary dictionary];
         self.tweets = [NSArray array];
 
         // only on 7.0+
@@ -57,6 +56,7 @@ static NSString *const kTweetCell = @"TweetCell";
                                                       usingBlock:^(NSNotification *note) {
                                                           [self loadTweets];
                                                           [self.navigationItem.leftBarButtonItem setTitle:@"Sign Out"];
+                                                          [self.navigationItem.rightBarButtonItem setImage:nil];
                                                       }];
 
 
@@ -77,7 +77,8 @@ static NSString *const kTweetCell = @"TweetCell";
                                                           self.userScreenName = note.userInfo[@"screen_name"];
                                                           NSLog(@"Got notification for sign in with notification userInfo: %@", self.userScreenName);;
                                                       }];
-        
+
+
 
     }
 
@@ -110,9 +111,20 @@ static NSString *const kTweetCell = @"TweetCell";
 
     NSString *logInOutString = [[TwitterClient sharedInstance] isAuthorized] ? @"Sign Out" : @"Sign In";
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:logInOutString
-                                                                              style:UIBarButtonItemStylePlain
-                                                                             target:self
-                                                                             action:@selector(logInOut)];
+                                                                             style:UIBarButtonItemStylePlain
+                                                                            target:self
+                                                                            action:@selector(logInOut)];
+
+    UIBarButtonItem *newTweetButton = [[UIBarButtonItem alloc] initWithTitle:@"New"/*initWithImage:[UIImage imageNamed:@"Twitter_logo_blue_32.png"]*/
+                                                                       style:UIBarButtonItemStylePlain
+                                                                      target:self
+                                                                      action:@selector(onNewTweet)];
+    self.navigationItem.rightBarButtonItem = newTweetButton;
+
+
+
+    self.tableView.separatorColor = [UIColor clearColor];
+
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -122,13 +134,6 @@ static NSString *const kTweetCell = @"TweetCell";
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    UIBarButtonItem *newTweetButton = [[UIBarButtonItem alloc] initWithTitle:@"New"
-                                                                       style:UIBarButtonItemStylePlain
-                                                                      target:self
-                                                                      action:@selector(onNewTweet)];
-    self.navigationItem.rightBarButtonItem = newTweetButton;
-    self.tableView.separatorColor = [UIColor clearColor];
-    
     // Do we want to reload the data everytime?
     if (!self.willReloadTweets) {
         self.willReloadTweets = YES;
@@ -138,7 +143,7 @@ static NSString *const kTweetCell = @"TweetCell";
     if ([[TwitterClient sharedInstance] isAuthorized]) {
         [self loadTweets];
     }
-    
+
 }
 
 
@@ -148,16 +153,19 @@ static NSString *const kTweetCell = @"TweetCell";
 }
 
 #pragma mark - table view delegate method
+
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    TweetDetailsViewController * detailsVc = [[TweetDetailsViewController alloc] initWithTweet:self.tweets[(NSUInteger) indexPath.row]];
+    TweetDetailsViewController *detailsVc = [[TweetDetailsViewController alloc] initWithTweet:self.tweets[(NSUInteger) indexPath.row]];
 
     [[self navigationController] setNavigationBarHidden:NO animated:YES];
     self.willReloadTweets = NO; // do not reload the tweet.
     [self.navigationController pushViewController:detailsVc animated:YES];
 
 }
+
 #pragma mark - data source method
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
@@ -167,10 +175,10 @@ static NSString *const kTweetCell = @"TweetCell";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    TweetCell * cell = (TweetCell *)[tableView dequeueReusableCellWithIdentifier:kTweetCell forIndexPath:indexPath];
+    TweetCell *cell = (TweetCell *) [tableView dequeueReusableCellWithIdentifier:kTweetCell forIndexPath:indexPath];
     cell.tweet = self.tweets[(NSUInteger) indexPath.row];
     // show the separator line
-    if (indexPath.row == self.tweets.count-1) {
+    if (indexPath.row == self.tweets.count - 1) {
         cell.separatorInset = UIEdgeInsetsMake(0.f, cell.bounds.size.width, 0.f, 0.f);
     }
     return cell;
@@ -182,7 +190,7 @@ static NSString *const kTweetCell = @"TweetCell";
     dispatch_once(&onceToken, ^{
         sizingCell = [self.tableView dequeueReusableCellWithIdentifier:kTweetCell];
     });
-    
+
     sizingCell.tweet = self.tweets[indexPath.row];
     return [self calculateHeightForConfiguredSizingCell:sizingCell];
 }
@@ -212,6 +220,14 @@ static NSString *const kTweetCell = @"TweetCell";
 #pragma mark - button action
 
 - (void)onNewTweet {
+    if (![[TwitterClient sharedInstance] isAuthorized]) {
+        [[[UIAlertView alloc] initWithTitle:@"Error"
+                                    message:@"You must sign in to tweet"
+                                   delegate:self
+                          cancelButtonTitle:@"Dismiss"
+                          otherButtonTitles:nil] show];
+        return;
+    }
     NSURL *imageURL = nil; // TODO get it from current user.
     NewTweetViewController *vc = [[NewTweetViewController alloc] initWithScreenName:self.userScreenName];
     [self.navigationController pushViewController:vc animated:YES];
@@ -279,15 +295,14 @@ static NSString *const kTweetCell = @"TweetCell";
 }
 
 #pragma mark - other private methods
+
 - (CGFloat)calculateHeightForConfiguredSizingCell:(UITableViewCell *)sizingCell {
     [sizingCell setNeedsLayout];
     [sizingCell layoutIfNeeded];
-    
+
     CGSize size = [sizingCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
     return size.height + 1.0f; // Add 1.0f for the cell separator height
 }
-
-
 
 
 @end
