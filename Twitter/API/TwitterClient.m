@@ -14,7 +14,11 @@
 
 // internal
 static NSString *const kTwitterClientAPIURL = @"https://api.twitter.com/1.1/";
-static NSString *const kTimeLinePath = @"statuses/home_timeline.json?count=10";
+
+// GET timeline query params are 'count' and 'max_id'
+static NSString *const kTimeLinePath = @"statuses/home_timeline.json";
+
+// send post or reply
 static NSString *const kUpdateStatusRequest = @"statuses/update.json";
 // ex: POST https://api.twitter.com/1.1/statuses/retweet/:id.json
 static NSString *const kRetweetRequest = @"statuses/retweet/:id.json";
@@ -183,17 +187,14 @@ static TwitterClient *_sharedInstance = nil;
 
 #pragma mark Tweets
 
+- (void)loadTimelineOlderThanId:(NSString *) id completion:(void (^)(NSArray *tweets, NSError *error))completion {
+    NSDictionary *params = @{@"count":@"20", @"max_id":id};
+    [self listWithQuery:kTimeLinePath parameters:params completion:completion];
+}
+
 - (void)loadTimelineWithCompletion:(void (^)(NSArray *, NSError *))completion {
-    [self.networkManager GET:kTimeLinePath
-                  parameters:nil
-                     success:^(NSURLSessionDataTask *task, id responseObject) {
-                         NSLog(@"Time line Response; %@", @"..."); //responseObject);
-                         [TwitterClient parseTweetsFromListResponse:responseObject completion:completion];
-                     }
-                     failure:^(NSURLSessionDataTask *task, NSError *error) {
-                         NSLog(@"Failed to load timeline!");
-                         completion(nil, error);
-                     }];
+    NSDictionary *params = @{@"count":@"20"};
+    [self listWithQuery:kTimeLinePath parameters:params completion:completion];
 }
 
 - (void)updateStatus:(NSString *)text completion:(void (^)(NSDictionary *, NSError *error))completion {
