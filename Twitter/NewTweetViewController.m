@@ -14,7 +14,7 @@
 
 #pragma mark -
 
-@interface NewTweetViewController ()
+@interface NewTweetViewController () <UITextViewDelegate>
 @property(weak, nonatomic) IBOutlet UITextView *tweetTextView;
 @property(weak, nonatomic) IBOutlet UIImageView *imageView;
 @property(weak, nonatomic) IBOutlet UILabel *tweetLabel;
@@ -23,6 +23,7 @@
 
 @property(nonatomic, strong) NSString *replyToScreenName;
 @property(nonatomic, strong) NSString *replyToTweetId;
+@property (weak, nonatomic) IBOutlet UILabel *limitLabel;
 
 
 @end
@@ -41,6 +42,19 @@
     }
     return self;
 
+}
+
+#pragma mark - text view delegate methods
+
+-(void)textViewDidChange:(UITextView *)textView {
+    int left = 140 - [self.tweetTextView.text length];
+    self.limitLabel.text = [NSString stringWithFormat:@"%i", left];
+    if (left >= 0) {
+        self.limitLabel.textColor = [UIColor lightGrayColor];
+    } else {
+        self.limitLabel.textColor = [UIColor redColor];
+
+    }
 }
 
 #pragma mark - ui view controller method
@@ -99,6 +113,7 @@
     }
     self.imageView.layer.cornerRadius = self.imageView.frame.size.width / 2.0f;
     self.imageView.clipsToBounds = YES;
+    self.tweetTextView.delegate = self;
 
 
 }

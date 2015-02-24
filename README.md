@@ -19,7 +19,7 @@ Time spent: `22h`
 
 #### Optional
 
-- [ ] When composing, you should have a countdown in the upper right for the tweet limit.
+- [X] When composing, you should have a countdown in the upper right for the tweet limit.
 - [X] After creating a new tweet, a user should be able to view it in the timeline immediately without refetching the timeline from the network.
 - [X] Retweeting and favoriting should increment the retweet and favorite count.
 - [X] User should be able to unretweet and unfavorite and should decrement the retweet and favorite count.

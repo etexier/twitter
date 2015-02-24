@@ -7,6 +7,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="NewTweetViewController">
             <connections>
                 <outlet property="imageView" destination="Q3g-H6-say" id="qeE-zE-W9y"/>
+                <outlet property="limitLabel" destination="xWD-nJ-C1F" id="baS-dH-Qhr"/>
                 <outlet property="tweetLabel" destination="mOD-fK-fnQ" id="Sv5-mO-meF"/>
                 <outlet property="tweetTextView" destination="24t-2R-OZh" id="Jfj-dn-1qH"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -39,6 +40,12 @@
                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="140" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xWD-nJ-C1F">
+                    <rect key="frame" x="286" y="80" width="26" height="18"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
@@ -47,8 +54,10 @@
                 <constraint firstItem="24t-2R-OZh" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="8" id="LI1-TM-9xE"/>
                 <constraint firstItem="Q3g-H6-say" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="8" id="OdP-wg-xdt"/>
                 <constraint firstItem="mOD-fK-fnQ" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="105" id="PB3-oA-Nzx"/>
+                <constraint firstItem="xWD-nJ-C1F" firstAttribute="baseline" secondItem="mOD-fK-fnQ" secondAttribute="baseline" id="TQx-z7-QDc"/>
                 <constraint firstItem="mOD-fK-fnQ" firstAttribute="leading" secondItem="Q3g-H6-say" secondAttribute="trailing" constant="8" id="Tue-Fm-iDY"/>
                 <constraint firstAttribute="trailing" secondItem="24t-2R-OZh" secondAttribute="trailing" constant="8" id="nOM-Po-cdM"/>
+                <constraint firstAttribute="trailing" secondItem="xWD-nJ-C1F" secondAttribute="trailing" constant="8" id="qyD-2C-xVv"/>
                 <constraint firstItem="mOD-fK-fnQ" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="78" id="tNq-BC-RTI"/>
                 <constraint firstItem="24t-2R-OZh" firstAttribute="top" secondItem="mOD-fK-fnQ" secondAttribute="bottom" constant="13" id="taW-hT-uPv"/>
             </constraints>
