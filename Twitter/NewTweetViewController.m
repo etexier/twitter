@@ -69,8 +69,8 @@
 
 
 - (void)textViewDidChange:(UITextView *)textView {
-    int left = 140 - [self.tweetTextView.text length];
-    self.limitLabel.text = [NSString stringWithFormat:@"%i", left];
+    long left = 140 - [self.tweetTextView.text length];
+    self.limitLabel.text = [NSString stringWithFormat:@"%ld", left];
     if (left >= 0) {
         self.limitLabel.textColor = [UIColor lightGrayColor];
     } else {

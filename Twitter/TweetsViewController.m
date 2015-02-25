@@ -44,12 +44,6 @@ static NSString *const kTweetCell = @"TweetCell";
     if (self) {
         self.tweets = [NSMutableArray array];
 
-        // only on 7.0+
-//        self.tableView.separatorInset = UIEdgeInsetsZero;
-
-        // contextual log in/out right button based on login status
-        // register notifications
-
         // Log out button if already logged in
         [[NSNotificationCenter defaultCenter] addObserverForName:TwitterClientDidSignInNotification
                                                           object:nil
