@@ -11,12 +11,14 @@
 #import "TweetsViewController.h"
 #import "User.h"
 
-NSString *const kTwitterConsumerKey = @"5C74UkLNroHcsRsY2OnapFBx6";
-NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUVoMFLLVMAycK6J";
+//NSString *const kTwitterConsumerKey = @"5C74UkLNroHcsRsY2OnapFBx6";
+//NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUVoMFLLVMAycK6J";
 
 //NSString *const kTwitterConsumerKey = @"dqDJBbZXgTqQNm7j3c17vk4BP";
 //NSString *const kTwitterConsumerSecret = @"IvGcSlFq5GbG0Lbk1vMR577mHsd8bTH5yPhOL9rUubdLWG36Tt";
 
+NSString *const kTwitterConsumerKey = @"RGnU7YY7LJf2zV0zZ7J7Ikg1Z";
+NSString *const kTwitterConsumerSecret = @"x0we7O4KSFo1AAwppS2I43HD1v5Z0zDShoUu0spt6rJzhlT1rI";
 @interface AppDelegate ()
 
 @end

@@ -213,15 +213,22 @@ static TwitterClient *_sharedInstance = nil;
 #pragma mark Tweets
 
 - (void)loadTimelineOlderThanId:(NSString *)id
-                     completion:
-                             (void (^)(NSArray *tweets, NSError *error))completion {
-    NSDictionary *params = @{@"count" : @"20", @"max_id" : id};
+                 andNewerThanId:minId
+                     completion: (void (^)(NSArray *tweets, NSError *error))completion {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"count"] = @"20";
+    if (id) {
+        params[@"max_id"] = id;
+    }
+    if (minId) {
+        params[@"since_id"] = minId;
+    }
+
     [self listWithQuery:kTimeLinePath parameters:params completion:completion];
 }
 
 - (void)loadTimelineWithCompletion:(void (^)(NSArray *, NSError *))completion {
-    NSDictionary *params = @{@"count" : @"20"};
-    [self listWithQuery:kTimeLinePath parameters:params completion:completion];
+    [self loadTimelineOlderThanId:nil andNewerThanId:nil completion:completion];
 }
 
 - (void)updateStatus:(NSString *)text
@@ -344,7 +351,7 @@ static TwitterClient *_sharedInstance = nil;
     [self.networkManager GET:query
                   parameters:params
                      success:^(NSURLSessionDataTask *task, id responseObject) {
-                         NSLog(@"GET LIST  : %@ with params %@ SUCCESS. Response:%@", query, params, responseObject);
+//                         NSLog(@"GET LIST  : %@ with params %@ SUCCESS. Response:%@", query, params, responseObject);
                          completion(responseObject, nil);
                      }
                      failure:^(NSURLSessionDataTask *task, NSError *error) {

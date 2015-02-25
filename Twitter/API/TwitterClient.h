@@ -48,7 +48,9 @@ FOUNDATION_EXPORT NSString *const kTwitterClientOAuthCallbackURL;
 
 - (void)loadTimelineWithCompletion:(void (^)(NSArray *tweets, NSError *error))completion;
 
-- (void)loadTimelineOlderThanId:(NSString *)id completion:(void (^)(NSArray *tweets, NSError *error))completion;
+- (void)loadTimelineOlderThanId:(NSString *)id
+                 andNewerThanId:(NSString *)minId
+                     completion:(void (^)(NSArray *tweets, NSError *error))completion;
 
 - (void)updateStatus:(NSString *)text completion:(void (^)(NSDictionary *, NSError *))completion;
 

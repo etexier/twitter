@@ -72,13 +72,20 @@
         self.retweetImageView.hidden = YES;
         self.retweetImageView.userInteractionEnabled = NO;
     } else {
+        self.replyImageView.hidden = NO;
+        self.replyImageView.userInteractionEnabled = YES;
         [Helper updateReplyImageView:self.replyImageView tweet:_tweet];
         [self registerGestureOnImageView:self.replyImageView selector:@selector(onSelectReplyImage)];
+
+        self.retweetImageView.hidden = NO;
+        self.retweetImageView.userInteractionEnabled = YES;
         [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
         [self registerGestureOnImageView:self.retweetImageView selector:@selector(onSwitchRetweetStatus)];
 
     }
     // always supported
+    self.likeImageView.hidden = NO;
+    self.likeImageView.userInteractionEnabled = YES;
     [Helper updateFavoriteImageView:self.likeImageView tweet:_tweet];
     [self registerGestureOnImageView:self.likeImageView selector:@selector(onSwitchFavoriteStatus)];
 

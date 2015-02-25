@@ -29,7 +29,7 @@
     for (NSString *key in allKeys) {
         filteredDictionary[key] = dictionary[key];
     }
-    NSLog(@"User filteredDictionary : \n%@", filteredDictionary);
+//    NSLog(@"User filteredDictionary : \n%@", filteredDictionary);
     self = [MTLJSONAdapter modelOfClass:User.class fromJSONDictionary:filteredDictionary error:nil];
     return self;
 }

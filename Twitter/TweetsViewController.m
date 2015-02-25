@@ -15,7 +15,7 @@
 #import "Tweet.h"
 #import "TweetCell.h"
 #import "MBProgressHUD.h"
-#import "NewTweetViewControllerDelegate.h"
+#import "UIScrollView+SVInfiniteScrolling.h"
 #import "Helper.h"
 
 static NSString *const kTweetCell = @"TweetCell";
@@ -57,7 +57,7 @@ static NSString *const kTweetCell = @"TweetCell";
                                                            queue:nil
                                                       usingBlock:^(NSNotification *note) {
                                                           NSDictionary *userInfo = note.userInfo;
-                                                          [Helper  setCurrentUser:[[User alloc] initWithJson:userInfo]];
+                                                          [Helper setCurrentUser:[[User alloc] initWithJson:userInfo]];
                                                           NSLog(@"Welcome user %@", [Helper currentUser].name);
                                                           [self loadTweets];
                                                           [self.navigationItem.leftBarButtonItem setTitle:@"Sign Out"];
@@ -83,28 +83,35 @@ static NSString *const kTweetCell = @"TweetCell";
 }
 
 #pragma mark -
+
 - (void)newTweetViewController:(NewTweetViewController *)controller sentTweet:(Tweet *)tweet {
     [self.tweets insertObject:tweet atIndex:0];
 }
 
 
 #pragma mark - ui view controller methods
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
     self.title = @"Tweets";
-    
+
     // Do any additional setup after loading the view from its nib.
     self.tableView.dataSource = self;
 
     // cell auto dim.
     self.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableView.estimatedRowHeight = 100;
+    self.tableView.separatorColor = [UIColor lightGrayColor];
+
     self.tableView.delegate = self;
 
 
     // refresh control reloads tweets on swipe down
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(loadTweets) forControlEvents:UIControlEventValueChanged];
+    [self.tableView insertSubview:self.refreshControl atIndex:0];
+
     [self.refreshControl addTarget:self action:@selector(loadTweets) forControlEvents:UIControlEventValueChanged];
     [self.tableView insertSubview:self.refreshControl atIndex:0];
 
@@ -125,7 +132,14 @@ static NSString *const kTweetCell = @"TweetCell";
     self.navigationItem.rightBarButtonItem = newTweetButton;
 
 
-    self.tableView.separatorColor = [UIColor clearColor];
+    [self.tableView  addInfiniteScrollingWithActionHandler:^{
+        // call [tableView.pullToRefreshView stopAnimating] when done
+        NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+        [self loadTweetsPriorToMaxId:((Tweet *)[self.tweets lastObject]).id andAfterMinId:nil withProgress:YES];
+
+    }];
+    [self loadTweets];
+
 
 
 
@@ -163,26 +177,6 @@ static NSString *const kTweetCell = @"TweetCell";
     TweetCell *cell = (TweetCell *) [tableView dequeueReusableCellWithIdentifier:kTweetCell forIndexPath:indexPath];
     cell.tweet = self.tweets[(NSUInteger) indexPath.row];
     cell.delegate = self;
-    // show the separator line
-    if (indexPath.row == self.tweets.count - 1) {
-        cell.separatorInset = UIEdgeInsetsMake(0.f, cell.bounds.size.width, 0.f, 0.f);
-        if ([[TwitterClient sharedInstance] isAuthorized]) {
-            [[TwitterClient sharedInstance] loadTimelineOlderThanId:cell.tweet.id completion:^(NSArray *rawTweets, NSError *error) {
-                if (!error) {
-                    [TwitterClient parseTweetsFromListResponse:rawTweets completion:^(NSMutableArray *parsedTweets, NSError *error1) {
-                        if (!error1) {
-                            NSMutableArray *newTweets = [self.tweets mutableCopy];
-                            [newTweets addObjectsFromArray:parsedTweets];
-                            self.tweets = newTweets;
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [self loadTweets:NO];
-                            });
-                        }
-                    }];
-                }
-            }];
-        }
-    }
     return cell;
 }
 
@@ -230,6 +224,19 @@ static NSString *const kTweetCell = @"TweetCell";
 }
 
 - (void)loadTweets:(BOOL)withProgress {
+    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+    f.numberStyle = NSNumberFormatterDecimalStyle;
+    NSString *minId = nil;
+    if (self.tweets && self.tweets.count > 0) {
+        minId = ((Tweet *) self.tweets[0]).id;
+    }
+    [self loadTweetsPriorToMaxId:nil andAfterMinId:minId withProgress:withProgress];
+}
+
+
+
+- (void)loadTweetsPriorToMaxId:(NSString *)maxId andAfterMinId:(NSString *)minId withProgress:(BOOL) withProgress{
+
     // show spinner while searching
     if (withProgress) {
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -265,13 +272,24 @@ static NSString *const kTweetCell = @"TweetCell";
         [self.refreshControl beginRefreshing];
     }
 
-    [[TwitterClient sharedInstance] loadTimelineWithCompletion:^(NSArray *tweets, NSError *error) {
+    [[TwitterClient sharedInstance] loadTimelineOlderThanId:maxId
+                                             andNewerThanId:minId
+                                                 completion:^(NSArray *tweets, NSError *error) {
         if (error) {
             NSLog(@"Error: %@", error.localizedDescription);
         } else {
             [TwitterClient parseTweetsFromListResponse:tweets completion:^(NSMutableArray *parsedTweets, NSError *error1) {
                 if (!error1) {
-                    self.tweets = parsedTweets;
+                    if (maxId) { // add at tail
+                        [self.tweets addObjectsFromArray:parsedTweets];
+                    } else if (minId) { // add at beginning
+                        self.tweets = [[parsedTweets arrayByAddingObjectsFromArray:self.tweets] mutableCopy];
+                    } else {
+                        self.tweets = parsedTweets;
+                    }
+                } else {
+                    NSLog(@"couldn't parse tweets");
+                    return;
                 }
             }];
 

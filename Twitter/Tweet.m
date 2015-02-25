@@ -50,7 +50,7 @@
     for (NSString *key in allKeys) {
         filteredDictionary[key] = dictionary[key];
     }
-    NSLog(@"filteredDictionary : \n%@", filteredDictionary);
+//    NSLog(@"filteredDictionary : \n%@", filteredDictionary);
     self = [MTLJSONAdapter modelOfClass:Tweet.class fromJSONDictionary:filteredDictionary error:nil];
     return self;
 }
