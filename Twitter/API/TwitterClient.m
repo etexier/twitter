@@ -278,7 +278,12 @@ static TwitterClient *_sharedInstance = nil;
     NSMutableArray *tweets = [NSMutableArray array];
 
     for (NSDictionary *tweetInfo in response) {
-        Tweet *tweet = [[Tweet alloc] initWithDictionary:tweetInfo];
+        NSError *error;
+        Tweet *tweet = [[Tweet alloc] initWithJson:tweetInfo];
+        if (error) {
+            NSLog(@"init tweet error: %@", error );
+        }
+
         [tweets addObject:tweet];
     }
     NSLog(@"Created array of %lu tweet instances...", (unsigned long) tweets.count);

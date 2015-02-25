@@ -341,7 +341,7 @@ static NSString *const kTweetCell = @"TweetCell";
 
             // update tweet array.
             NSMutableArray *newTweets = [self.tweets mutableCopy];
-            newTweets[(NSUInteger) found] = [[Tweet alloc] initWithDictionary:dictionary];
+            newTweets[(NSUInteger) found] = [[Tweet alloc] initWithJson:dictionary];
             self.tweets = newTweets;
             [self.tableView reloadData];
         }

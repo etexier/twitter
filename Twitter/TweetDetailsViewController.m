@@ -41,20 +41,20 @@
     [super viewDidLoad];
     self.title = @"Tweet";
 
-    [self.userImageView setImageWithURL:_tweet.userImageURL];
-//    [Helper fadeInImage:self.imageView url:tweet.userImageURL]; // fade in effect
+    [self.userImageView setImageWithURL:_tweet.user.profileImageUrl];
+//    [Helper fadeInImage:self.imageView url:tweet.user.profileImageUrl]; // fade in effect
     // round image
     self.userImageView.layer.cornerRadius = self.userImageView.frame.size.width / 2.0f;
     self.userImageView.clipsToBounds = YES;
 
 
-    self.userNameLabel.text = _tweet.userName;
-    self.screenNameLabel.text = [NSString stringWithFormat:@"@%@", _tweet.userScreenName];
+    self.userNameLabel.text = _tweet.user.name;
+    self.screenNameLabel.text = [NSString stringWithFormat:@"@%@", _tweet.user.screenName];
 
     // Calculate how long ago
     self.timeAgoLabel.text = [NSString stringWithFormat:@"%@ ago", [Helper calculateTimeAgoTillDate:_tweet.createdAt]];
     self.dateLabel.text = [Helper calculateLocalDate:_tweet.createdAt];
-    self.tweetLabel.text = _tweet.tweetText;
+    self.tweetLabel.text = _tweet.text;
     self.tweetLabel.layer.borderColor = [UIColor whiteColor].CGColor;
     self.tweetLabel.layer.cornerRadius = 4.0;
     self.tweetLabel.layer.borderWidth = 1;

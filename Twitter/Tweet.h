@@ -1,24 +1,24 @@
-
-
 @import Foundation;
 
-#pragma mark -
-@interface Tweet : NSObject
+#import <Mantle/MTLModel.h>
+#import "User.h"
 
-@property (nonatomic, copy, readonly) NSDate *createdAt;
-@property (nonatomic, copy, readonly) NSURL *userImageURL;
-@property (nonatomic, copy, readonly) NSString *userName;
-@property (nonatomic, copy, readonly) NSString *userScreenName;
-@property (nonatomic, copy, readonly) NSString *retweetInfo;
-@property (nonatomic, copy, readonly) NSString *tweetText;
-@property (nonatomic, assign) NSUInteger retweetCount;
-@property (nonatomic, assign) NSUInteger favoriteCount;
-@property (nonatomic, assign) BOOL favorited;
-@property (nonatomic, assign) BOOL retweeted;
-@property (nonatomic, readonly) NSString *id;
 
-@property(nonatomic, readonly) NSString *originalTweetId;
+@interface Tweet : MTLModel
 
-- (id)initWithDictionary:(NSDictionary *)dictionary;
+#pragma mark - properties
+
+@property(nonatomic, readonly) NSString *id;
+@property(nonatomic, copy, readonly) NSString *text;
+@property(nonatomic, copy, readonly) NSDate *createdAt;
+@property(nonatomic, assign) NSUInteger retweetCount;
+@property(nonatomic, assign) NSUInteger favoriteCount;
+@property(nonatomic, assign) BOOL favorited;
+@property(nonatomic, assign) BOOL retweeted;
+@property(nonatomic, readonly) User *user;
+
+#pragma mark - init
+
+- (instancetype)initWithJson:(NSDictionary *)dictionary;
 
 @end

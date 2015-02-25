@@ -114,7 +114,7 @@
     int i;
     for (i = 0; i < [tweets count]; i++) {
         Tweet *t = tweets[(NSUInteger) i];
-        if ([t.userScreenName isEqualToString:screenName]) {
+        if ([t.user.screenName isEqualToString:screenName]) {
             found = i;
             break;
         }
@@ -212,6 +212,20 @@
 
 + (void)updateReplyImageView:(UIImageView *)imageView tweet:(Tweet *)tweet {
     imageView.image = [UIImage imageNamed:@"reply.png"];
+}
+
++ (NSDateFormatter *) dateFormatter {
+    static NSDateFormatter *instance = nil;
+
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        if(instance == nil) {
+            instance =  [[NSDateFormatter alloc] init];
+            instance.dateFormat = @"EEE MMM d HH:mm:ss Z y";
+        }
+    });
+
+    return instance;
 }
 
 @end

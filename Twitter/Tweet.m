@@ -9,73 +9,66 @@
 //  Tweet.m
 //
 
+#import <Mantle/MTLJSONAdapter.h>
+#import <Mantle/MTLValueTransformer.h>
+#import <Mantle/NSValueTransformer+MTLPredefinedTransformerAdditions.h>
 #import "Tweet.h"
+#import "Helper.h"
+#import "User.h"
 
+@interface Tweet() <MTLJSONSerializing>
 
-static NSString *const kTweetTweetTextName = @"text";
-static NSString *const kTweetUserInfoName = @"user";
-static NSString *const kTweetUserImageURLName = @"profile_image_url";
-static NSString *const kTweetUserNameName = @"name";
-static NSString *const kTweetCreatedAtName = @"created_at";
-static NSString *const kTweetUserScreenNameName = @"screen_name";
-static NSString *const kTweetRetweetCountName = @"retweet_count";
-static NSString *const kTweetFavoriteCountName = @"favorite_count";
-static NSString *const kTweetFavoritedName = @"favorited";
-static NSString *const kTweetRetweetedName = @"retweeted";
-static NSString *const kTweetIdName = @"id_str";
-static NSString *const kTweetOriginalTweetId = @"retweeted_status.id_str";
++ (NSValueTransformer *)createdAtJSONTransformer;
+
++ (NSValueTransformer *)userJSONTransformer;
+@end
 
 #pragma mark - implementation class
 
 @implementation Tweet
+#pragma mark -  Mantle mapping
++(NSDictionary *)JSONKeyPathsByPropertyKey {
+    return @{
+            @"id" : @"id_str",
+            @"text": @"text",
+            @"createdAt": @"created_at",
+            @"user": @"user",
+            @"favoriteCount": @"favorite_count",
+            @"retweetCount": @"retweet_count",
+            @"favorited" : @"favorited",
+            @"retweeted" : @"retweeted"
+    };
+}
 
-- (id)initWithDictionary:(NSDictionary *)dictionary {
-    NSLog(@"Creating tweet from %@", dictionary);
-    self = [super init];
+#pragma mark - init
 
-    if (self) {
-        // 1. text
-        _tweetText = [dictionary[kTweetTweetTextName] copy];
-
-        // 2. date
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.dateFormat = @"EEE MMM d HH:mm:ss Z y";
-        _createdAt = [dateFormatter dateFromString:[dictionary[kTweetCreatedAtName] copy]];
-
-        NSDictionary *userInfo = dictionary[kTweetUserInfoName];
-
-        // 3. image
-        if (userInfo[kTweetUserImageURLName]) {
-            NSString *userImageURLString = [userInfo[kTweetUserImageURLName] stringByReplacingOccurrencesOfString:@"_normal"
-                                                                                                       withString:@"_bigger"];
-
-            _userImageURL = [NSURL URLWithString:userImageURLString];
-        }
-
-        // 4. username
-        _userName = userInfo[kTweetUserNameName];
-
-        // 5. screen name
-        _userScreenName = userInfo[kTweetUserScreenNameName];
-        NSLog(@"Created tweet from %@", self.userScreenName);
-
-        _favoriteCount = [dictionary[kTweetFavoriteCountName] unsignedIntegerValue];
-        _retweetCount = [dictionary[kTweetRetweetCountName] unsignedIntegerValue];
-        _favorited = [dictionary[kTweetFavoritedName] boolValue];
-        _retweeted = [dictionary[kTweetRetweetedName] boolValue];
-        if (_retweeted) {
-            _originalTweetId = [dictionary valueForKeyPath:kTweetOriginalTweetId];
-        }
-        _id = dictionary[kTweetIdName];
-
-        // create user now:
-
-
-//        // 6. retweet info
-//        _retweetInfo = userInfo[]
+- (instancetype)initWithJson:(NSDictionary *)dictionary {
+    NSMutableDictionary *filteredDictionary = [NSMutableDictionary dictionary];
+    NSArray *allKeys = [[Tweet JSONKeyPathsByPropertyKey] allValues];
+    for (NSString *key in allKeys) {
+        filteredDictionary[key] = dictionary[key];
     }
-
+    NSLog(@"filteredDictionary : \n%@", filteredDictionary);
+    self = [MTLJSONAdapter modelOfClass:Tweet.class fromJSONDictionary:filteredDictionary error:nil];
     return self;
 }
+
+#pragma mark - Mantle transformers
+// transformer for createdAt date
++ (NSValueTransformer *)createdAtJSONTransformer
+{
+    NSDateFormatter *dateFormatter = [Helper dateFormatter];
+    return [MTLValueTransformer reversibleTransformerWithForwardBlock:^(NSString *str) {
+        return [dateFormatter dateFromString:str];
+    } reverseBlock:^(NSDate *date) {
+        return [dateFormatter stringFromDate:date];
+    }];
+}
+
+// User transformer
++ (NSValueTransformer *)userJSONTransformer {
+    return [NSValueTransformer mtl_JSONDictionaryTransformerWithModelClass:User.class];
+}
+
 
 @end

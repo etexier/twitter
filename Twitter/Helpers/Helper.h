@@ -33,4 +33,5 @@
 
 + (void)updateReplyImageView:(UIImageView *)view tweet:(Tweet *)tweet;
 
++ (NSDateFormatter *) dateFormatter;
 @end

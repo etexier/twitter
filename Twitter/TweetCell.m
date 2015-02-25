@@ -19,7 +19,6 @@
 @property(weak, nonatomic) IBOutlet UILabel *userScreenNameLabel;
 @property(weak, nonatomic) IBOutlet UILabel *createdTimeLabel;
 @property(weak, nonatomic) IBOutlet UILabel *tweetTextLabel;
-@property(weak, nonatomic) IBOutlet UILabel *retweetInfoLabel;
 
 @property(weak, nonatomic) IBOutlet UIImageView *replyImageView;
 @property(weak, nonatomic) IBOutlet UIImageView *retweetImageView;
@@ -62,18 +61,13 @@
 - (void)setTweet:(Tweet *)tweet {
     _tweet = tweet;
 
-    [self.userImageView setImageWithURL:_tweet.userImageURL];
-//    [Helper fadeInImage:self.imageView url:tweet.userImageURL]; // fade in effect
+    [self.userImageView setImageWithURL:_tweet.user.profileImageUrl];
+//    [Helper fadeInImage:self.imageView url:tweet.user.profileImageUrl]; // fade in effect
 
 
-    _userNameLabel.text = _tweet.userName;
-    _userScreenNameLabel.text = [NSString stringWithFormat:@"@%@", _tweet.userScreenName];
-    _tweetTextLabel.text = _tweet.tweetText;
-
-    // retweet label is not always there
-    if (_tweet.retweetInfo) {
-        _retweetInfoLabel.text = _tweet.retweetInfo;
-    }
+    _userNameLabel.text = _tweet.user.name;
+    _userScreenNameLabel.text = [NSString stringWithFormat:@"@%@", _tweet.user.screenName];
+    _tweetTextLabel.text = _tweet.text;
 
     [Helper updateReplyImageView:self.replyImageView tweet:_tweet];
     [Helper updateFavoriteImageView:self.likeImageView tweet:_tweet];
@@ -121,7 +115,7 @@
                           otherButtonTitles:nil] show];
         return;
     }
-    NewTweetViewController *vc = [[NewTweetViewController alloc] initAsReplyTo:_tweet.userScreenName forTweetId:_tweet.id];
+    NewTweetViewController *vc = [[NewTweetViewController alloc] initAsReplyTo:_tweet.user.screenName forTweetId:_tweet.id];
     UITableView *tv = (UITableView *) self.superview.superview;
     UITableViewController *tvc = (UITableViewController *) tv.dataSource;
     [tvc.navigationController pushViewController:vc animated:YES];
