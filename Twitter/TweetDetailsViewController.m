@@ -44,7 +44,7 @@
     [self.userImageView setImageWithURL:_tweet.user.profileImageUrl];
 //    [Helper fadeInImage:self.imageView url:tweet.user.profileImageUrl]; // fade in effect
     // round image
-    self.userImageView.layer.cornerRadius = self.userImageView.frame.size.width / 2.0f;
+    self.userImageView.layer.cornerRadius = 5; // self.userImageView.frame.size.width / 2.0f;
     self.userImageView.clipsToBounds = YES;
 
 

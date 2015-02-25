@@ -24,7 +24,6 @@
                     <constraints>
                         <constraint firstAttribute="height" constant="120" id="gFP-ar-fFp"/>
                     </constraints>
-                    <color key="textColor" red="0.18194930386329405" green="0.29038194551931895" blue="0.94903761148452759" alpha="1" colorSpace="calibratedRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                 </textView>

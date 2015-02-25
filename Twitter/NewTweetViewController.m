@@ -58,6 +58,16 @@
 
 #pragma mark - text view delegate methods
 
+- (BOOL) textViewShouldBeginEditing:(UITextView *)textView {
+    if (self.tweetTextView.textColor == [UIColor lightGrayColor]) {
+        self.tweetTextView.text = @"";
+        self.tweetTextView.textColor = [UIColor blackColor];
+    }
+
+    return YES;
+}
+
+
 - (void)textViewDidChange:(UITextView *)textView {
     int left = 140 - [self.tweetTextView.text length];
     self.limitLabel.text = [NSString stringWithFormat:@"%i", left];
@@ -72,6 +82,10 @@
 #pragma mark - ui view controller method
 
 
+-(void) viewDidAppear:(BOOL) animated {
+    [super viewDidAppear:animated];
+    [self.tweetTextView becomeFirstResponder];
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     if (self.replyToScreenName) {
@@ -91,25 +105,21 @@
                                                                              target:self
                                                                              action:@selector(onSendTweet)];
 
-    self.tweetTextView.backgroundColor = [UIColor whiteColor];
+
     // do this because the navigation controller is pushing down the text view, we want to start editing at the top line
     [self setEdgesForExtendedLayout:UIRectEdgeNone];
     self.tweetTextView.contentInset = UIEdgeInsetsMake(-7.0, 0.0, 0, 0.0);
 
-    //To make the border look very close to a UITextField
-    [self.tweetTextView.layer setBorderColor:[[[UIColor grayColor] colorWithAlphaComponent:0.5] CGColor]];
-    [self.tweetTextView.layer setBorderWidth:2.0];
-
-    //The rounded corner part, where you specify your view's corner radius:
-    self.tweetTextView.layer.cornerRadius = 7;
-    self.tweetTextView.clipsToBounds = YES;
-
     // round image
     [self.imageView setImageWithURL:[Helper currentUser].profileImageUrl];
     self.tweetLabel.text = [Helper currentUser].screenName;
-    self.imageView.layer.cornerRadius = self.imageView.frame.size.width / 2.0f;
+    self.imageView.layer.cornerRadius = 5 ; //self.imageView.frame.size.width / 2.0f; // completely round
     self.imageView.clipsToBounds = YES;
     self.tweetTextView.delegate = self;
+    [self.tweetTextView setText:@"What's happening..."];
+    [self.tweetTextView setTextColor:[UIColor lightGrayColor]];
+
+
 
 
 }

@@ -16,6 +16,7 @@
 #import "TweetCell.h"
 #import "MBProgressHUD.h"
 #import "UIScrollView+SVInfiniteScrolling.h"
+#import "UIScrollView+SVPullToRefresh.h"
 #import "Helper.h"
 
 static NSString *const kTweetCell = @"TweetCell";
@@ -23,9 +24,7 @@ static NSString *const kTweetCell = @"TweetCell";
 @interface TweetsViewController () <UITableViewDataSource, UITableViewDelegate, NewTweetViewControllerDelegate>
 @property(weak, nonatomic) IBOutlet UITableView *tableView;
 
-@property(nonatomic, strong) UIRefreshControl *refreshControl;
 @property(nonatomic, strong) NSMutableArray *tweets;
-@property(nonatomic, strong) UIActivityIndicatorView *footerView;
 
 @end
 
@@ -106,15 +105,6 @@ static NSString *const kTweetCell = @"TweetCell";
 
     self.tableView.delegate = self;
 
-
-    // refresh control reloads tweets on swipe down
-    self.refreshControl = [[UIRefreshControl alloc] init];
-    [self.refreshControl addTarget:self action:@selector(loadTweets) forControlEvents:UIControlEventValueChanged];
-    [self.tableView insertSubview:self.refreshControl atIndex:0];
-
-    [self.refreshControl addTarget:self action:@selector(loadTweets) forControlEvents:UIControlEventValueChanged];
-    [self.tableView insertSubview:self.refreshControl atIndex:0];
-
     // cell registration
     [self.tableView registerNib:[UINib nibWithNibName:kTweetCell bundle:nil] forCellReuseIdentifier:kTweetCell];
 
@@ -131,11 +121,14 @@ static NSString *const kTweetCell = @"TweetCell";
                                                                       action:@selector(onNewTweet)];
     self.navigationItem.rightBarButtonItem = newTweetButton;
 
+    [self.tableView addPullToRefreshWithActionHandler:^{
+        [self.tableView.pullToRefreshView startAnimating];
+        [self loadTweetsPriorToMaxId:nil andAfterMinId:self.actualMinId withProgress:YES];
+    }];
 
-    [self.tableView  addInfiniteScrollingWithActionHandler:^{
-        // call [tableView.pullToRefreshView stopAnimating] when done
-        NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-        [self loadTweetsPriorToMaxId:((Tweet *)[self.tweets lastObject]).id andAfterMinId:nil withProgress:YES];
+    [self.tableView addInfiniteScrollingWithActionHandler:^{
+        [self.tableView.infiniteScrollingView startAnimating];
+        [self loadTweetsPriorToMaxId:((Tweet *) [self.tweets lastObject]).id andAfterMinId:nil withProgress:YES];
 
     }];
     [self loadTweets];
@@ -224,28 +217,32 @@ static NSString *const kTweetCell = @"TweetCell";
 }
 
 - (void)loadTweets:(BOOL)withProgress {
+    [self loadTweetsPriorToMaxId:nil andAfterMinId:self.actualMinId withProgress:withProgress];
+}
+
+- (NSString *)actualMinId {
     NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
     f.numberStyle = NSNumberFormatterDecimalStyle;
     NSString *minId = nil;
     if (self.tweets && self.tweets.count > 0) {
         minId = ((Tweet *) self.tweets[0]).id;
         if ([minId isEqualToString:[@ULLONG_MAX stringValue]]) {
-         // find first minId where id is not UULONG_MAX
-         for (int i = 0; i < self.tweets.count; i++) {
-             NSString *id = ((Tweet *)self.tweets[(NSUInteger) i]).id;
-             if ([id isEqualToString:[@ULLONG_MAX stringValue]]) {
-                 continue;
-             }
-             minId = id;
-         }
+            // find first minId where id is not UULONG_MAX
+            for (int i = 0; i < self.tweets.count; i++) {
+                NSString *id = ((Tweet *) self.tweets[(NSUInteger) i]).id;
+                if ([id isEqualToString:[@ULLONG_MAX stringValue]]) {
+                    continue;
+                }
+                minId = id;
+            }
         }
     }
-    [self loadTweetsPriorToMaxId:nil andAfterMinId:minId withProgress:withProgress];
+    return minId;
 }
 
 
+- (void)loadTweetsPriorToMaxId:(NSString *)maxId andAfterMinId:(NSString *)minId withProgress:(BOOL)withProgress {
 
-- (void)loadTweetsPriorToMaxId:(NSString *)maxId andAfterMinId:(NSString *)minId withProgress:(BOOL) withProgress{
 
     // show spinner while searching
     if (withProgress) {
@@ -259,6 +256,7 @@ static NSString *const kTweetCell = @"TweetCell";
             if (withProgress) {
                 [MBProgressHUD hideHUDForView:self.view animated:YES];
             }
+
             [[[UIAlertView alloc] initWithTitle:@"Not Signed In"
                                         message:@"You have to sign in first!"
                               cancelButtonTitle:@"Cancel"
@@ -271,22 +269,20 @@ static NSString *const kTweetCell = @"TweetCell";
                     show];
         });
 
-        [self.refreshControl endRefreshing];
 
         return;
     }
 
-    if (!self.refreshControl.isRefreshing) {
-        [self.tableView setContentOffset:CGPointMake(0, self.tableView.contentOffset.y - self.refreshControl.frame.size.height)
-                                animated:NO];
-        [self.refreshControl beginRefreshing];
-    }
+    [self.tableView.infiniteScrollingView startAnimating];
 
-    [[TwitterClient sharedInstance] loadTimelineOlderThanId:maxId
-                                             andNewerThanId:minId
-                                                 completion:^(NSArray *tweets, NSError *error) {
+
+    [[TwitterClient sharedInstance] loadTimelineOlderThanId:maxId andNewerThanId:minId completion:^(NSArray *tweets, NSError *error) {
         if (error) {
             NSLog(@"Error: %@", error.localizedDescription);
+            [self.tableView.pullToRefreshView stopAnimating];
+            [self.tableView.infiniteScrollingView stopAnimating];
+
+            return;
         } else {
             [TwitterClient parseTweetsFromListResponse:tweets completion:^(NSMutableArray *parsedTweets, NSError *error1) {
                 if (!error1) {
@@ -305,8 +301,10 @@ static NSString *const kTweetCell = @"TweetCell";
                     }
                 } else {
                     NSLog(@"couldn't parse tweets");
-                    return;
                 }
+                [self.tableView.pullToRefreshView stopAnimating];
+                [self.tableView.infiniteScrollingView stopAnimating];
+
             }];
 
         }
@@ -316,6 +314,9 @@ static NSString *const kTweetCell = @"TweetCell";
             if (withProgress) {
                 [MBProgressHUD hideHUDForView:self.view animated:YES];
             }
+            [self.tableView.pullToRefreshView stopAnimating];
+            [self.tableView.infiniteScrollingView stopAnimating];
+
             if (error) {
                 [[[UIAlertView alloc] initWithTitle:@"Error"
                                             message:error.localizedDescription
@@ -326,9 +327,7 @@ static NSString *const kTweetCell = @"TweetCell";
             [self.tableView reloadData];
         });
 
-        [self.refreshControl endRefreshing];
     }];
-    [self.refreshControl endRefreshing];
 
 }
 

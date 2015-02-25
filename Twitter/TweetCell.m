@@ -35,7 +35,7 @@
     self.userNameLabel.preferredMaxLayoutWidth = self.userNameLabel.frame.size.width;
 
     // round image
-    self.userImageView.layer.cornerRadius = self.userImageView.frame.size.width / 2.0f;
+    self.userImageView.layer.cornerRadius = 5; // self.userImageView.frame.size.width / 2.0f;
     self.userImageView.clipsToBounds = YES;
 
     // for performance 

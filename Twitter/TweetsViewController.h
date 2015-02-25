@@ -16,4 +16,5 @@
 
 - (void)loadTweets:(BOOL)withProgress;
 
+- (NSString *)actualMinId;
 @end
