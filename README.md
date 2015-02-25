@@ -1,8 +1,8 @@
-## Twitter [(raw)](https://gist.githubusercontent.com/timothy1ee/b9b1860c8ecb4b0b1c18/raw/2adc3f63677d81644e00245cee891eee88907767/gistfile1.md)
 
-This is a basic twitter app to read and compose tweets the [Twitter API](https://apps.twitter.com/).
+Twitter REDUX project (week4)
 
-Time spent: `22h`
+Time spent: `1h`
+
 
 ### Features
 
