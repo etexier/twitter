@@ -9,7 +9,7 @@
 #import "BDBOAuth1RequestOperationManager.h"
 
 
-@import Foundation;
+@import Foundation;@class User;
 
 
 FOUNDATION_EXPORT NSString *const TwitterClientErrorDomain;
@@ -36,7 +36,7 @@ FOUNDATION_EXPORT NSString *const kTwitterClientOAuthCallbackURL;
 
 + (BOOL)isAuthorizationCallbackURL:(NSURL *)url;
 
-+ (void)parseTweetsFromListResponse:(id)responseObject completion:(void (^)(NSArray *, NSError *))completion;
++ (void)parseTweetsFromListResponse:(id)responseObject completion:(void (^)(NSMutableArray *, NSError *))completion;
 
 - (void)authorize;
 
@@ -48,7 +48,7 @@ FOUNDATION_EXPORT NSString *const kTwitterClientOAuthCallbackURL;
 
 - (void)loadTimelineWithCompletion:(void (^)(NSArray *tweets, NSError *error))completion;
 
-- (void)loadTimelineOlderThanId:(NSString *) id completion:(void (^)(NSArray *tweets, NSError *error))completion;
+- (void)loadTimelineOlderThanId:(NSString *)id completion:(void (^)(NSArray *tweets, NSError *error))completion;
 
 - (void)updateStatus:(NSString *)text completion:(void (^)(NSDictionary *, NSError *))completion;
 
@@ -64,11 +64,13 @@ FOUNDATION_EXPORT NSString *const kTwitterClientOAuthCallbackURL;
 
 - (void)destroyTweet:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion;
 
-- (void)replyTo:(NSString *)id withTweetText:(NSString *) text completion:(void (^)(NSDictionary *, NSError *error))completion;
+- (void)replyTo:(NSString *)id withTweetText:(NSString *)text completion:(void (^)(NSDictionary *, NSError *error))completion;
 
 - (void)showTweet:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion;
 
 - (void)showUserForScreenName:(NSString *)screenName completion:(void (^)(NSDictionary *, NSError *))completion;
 
 - (void)showSignedInUserInfoWithCompletion:(void (^)(NSDictionary *dictionary, NSError *error))completion;
+
+- (void)loginWithCompletion:(void (^)(User *, NSError *))pFunction;
 @end

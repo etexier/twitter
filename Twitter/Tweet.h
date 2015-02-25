@@ -21,4 +21,5 @@
 
 - (instancetype)initWithJson:(NSDictionary *)dictionary;
 
+- (instancetype)initFromCurrentUserTweetText:(NSString *)text;
 @end

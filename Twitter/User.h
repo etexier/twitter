@@ -5,9 +5,9 @@
 
 #import <Foundation/Foundation.h>
 #import <Mantle/MTLModel.h>
+#import <Mantle/MTLJSONAdapter.h>
 
-
-@interface User : MTLModel
+@interface User : MTLModel <MTLJSONSerializing>
 
 #pragma mark - property
 @property(nonatomic, copy, readonly) NSURL *profileImageUrl;

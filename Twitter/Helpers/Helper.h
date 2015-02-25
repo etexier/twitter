@@ -13,6 +13,10 @@
 + (void) fadeInImage:(UIImageView *)imageView url:(NSURL *) url;
 
 
++ (User *) currentUser;
++ (void) setCurrentUser:(User *) user;
+
+
 + (NSString *)calculateTimeAgoTillDate:(NSDate *)date;
 
 + (NSString *)calculateLocalDate:(NSDate *)date;

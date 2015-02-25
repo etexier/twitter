@@ -6,11 +6,15 @@
 //  Copyright (c) 2015 Emmanuel Texier. All rights reserved.
 //
 
+#import <Mantle/MTLJSONAdapter.h>
 #import "TwitterClient.h"
 #import "BDBOAuth1SessionManager.h"
 #import "NSDictionary+BDBOAuth1Manager.h"
 #import "Tweet.h"
+#import "User.h"
 
+// internal key used to store current user
+static NSString *const kCurrentUserKey = @"kTwitterClientCurrentUserKey";
 
 // internal
 static NSString *const kTwitterClientAPIURL = @"https://api.twitter.com/1.1/";
@@ -62,7 +66,7 @@ NSString *const kTwitterClientOAuthAccessTokenPath = @"/oauth/access_token";
 @interface TwitterClient ()
 
 @property(nonatomic) BDBOAuth1SessionManager *networkManager;
-@property(nonatomic, readwrite, copy) NSDictionary *userInfo;
+@property(nonatomic, strong, readwrite) User *currentUser;
 #pragma mark - init
 
 - (id)initWithConsumerKey:(NSString *)key secret:(NSString *)secret;
@@ -84,7 +88,9 @@ NSString *const kTwitterClientOAuthAccessTokenPath = @"/oauth/access_token";
 #pragma mark - init
 static TwitterClient *_sharedInstance = nil;
 
-+ (instancetype)createWithConsumerKey:(NSString *)key secret:(NSString *)secret {
++ (instancetype)createWithConsumerKey:(NSString *)key
+                               secret:
+                                       (NSString *)secret {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedInstance = [[[self class] alloc] initWithConsumerKey:key secret:secret];
@@ -93,7 +99,9 @@ static TwitterClient *_sharedInstance = nil;
     return _sharedInstance;
 }
 
-- (id)initWithConsumerKey:(NSString *)key secret:(NSString *)secret {
+- (id)initWithConsumerKey:(NSString *)key
+                   secret:
+                           (NSString *)secret {
     self = [super init];
 
     if (self) {
@@ -110,6 +118,7 @@ static TwitterClient *_sharedInstance = nil;
 
     return _sharedInstance;
 }
+
 
 #pragma mark Authorization
 
@@ -153,14 +162,30 @@ static TwitterClient *_sharedInstance = nil;
     if (parameters[BDBOAuth1OAuthTokenParameter] && parameters[BDBOAuth1OAuthVerifierParameter]) {
         [self.networkManager fetchAccessTokenWithPath:kTwitterClientOAuthAccessTokenPath
                                                method:@"POST"
-                                         requestToken:[BDBOAuth1Credential credentialWithQueryString:url.query]
-                                              success:^(BDBOAuth1Credential *accessToken) {
-                                                  NSLog(@"Received access token for %@", accessToken.userInfo[@"screen_name"]);
-                                                  // notify all listeners
-                                                  [[NSNotificationCenter defaultCenter] postNotificationName:TwitterClientDidSignInNotification
-                                                                                                      object:self
-                                                                                                    userInfo:accessToken.userInfo];
-                                              }
+                                         requestToken:[BDBOAuth1Credential credentialWithQueryString:url.query] success:^(BDBOAuth1Credential *accessToken) {
+                    NSLog(@"Received access token for %@", accessToken.userInfo[@"screen_name"]);
+                    [self showSignedInUserInfoWithCompletion:^(NSDictionary *userDictionary, NSError *error) {
+                        NSLog(@"Getting user info for logged in user %@", accessToken.userInfo[@"screen_name"]);
+                        if (error) {
+                            NSLog(@"Error: %@", error.localizedDescription);
+
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [[[UIAlertView alloc] initWithTitle:@"Error"
+                                                            message:@"Could not get current user info. Try again later."
+                                                           delegate:self
+                                                  cancelButtonTitle:@"Dismiss"
+                                                  otherButtonTitles:nil] show];
+                                return;
+                            });
+                        }
+                        // notify all listeners
+                        [[NSNotificationCenter defaultCenter] postNotificationName:TwitterClientDidSignInNotification
+                                                                            object:self
+                                                                          userInfo:userDictionary];
+
+                    }];
+
+                }
                                               failure:^(NSError *error) {
                                                   NSLog(@"Error: %@", error.localizedDescription);
 
@@ -187,37 +212,47 @@ static TwitterClient *_sharedInstance = nil;
 
 #pragma mark Tweets
 
-- (void)loadTimelineOlderThanId:(NSString *) id completion:(void (^)(NSArray *tweets, NSError *error))completion {
-    NSDictionary *params = @{@"count":@"20", @"max_id":id};
+- (void)loadTimelineOlderThanId:(NSString *)id
+                     completion:
+                             (void (^)(NSArray *tweets, NSError *error))completion {
+    NSDictionary *params = @{@"count" : @"20", @"max_id" : id};
     [self listWithQuery:kTimeLinePath parameters:params completion:completion];
 }
 
 - (void)loadTimelineWithCompletion:(void (^)(NSArray *, NSError *))completion {
-    NSDictionary *params = @{@"count":@"20"};
+    NSDictionary *params = @{@"count" : @"20"};
     [self listWithQuery:kTimeLinePath parameters:params completion:completion];
 }
 
-- (void)updateStatus:(NSString *)text completion:(void (^)(NSDictionary *, NSError *error))completion {
+- (void)updateStatus:(NSString *)text
+          completion:
+                  (void (^)(NSDictionary *, NSError *error))completion {
     NSString *encodedText = [text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     NSString *query = [NSString stringWithFormat:@"%@?status=%@", kUpdateStatusRequest, encodedText];
     [self postWithQuery:query completion:completion];
 }
 
-- (void)favorite:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion {
+- (void)favorite:(NSString *)tweetId
+      completion:
+              (void (^)(NSDictionary *, NSError *))completion {
     NSString *query = [kFavoriteRequest stringByReplacingOccurrencesOfString:@":id" withString:tweetId];
     [self postWithQuery:query completion:completion];
 
 }
 
 
-- (void)unfavorite:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion {
+- (void)unfavorite:(NSString *)tweetId
+        completion:
+                (void (^)(NSDictionary *, NSError *))completion {
     NSString *query = [kUnfavoriteRequest stringByReplacingOccurrencesOfString:@":id" withString:tweetId];
     [self postWithQuery:query completion:completion];
 }
 
 
-- (void)retweet:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion {
+- (void)retweet:(NSString *)tweetId
+     completion:
+             (void (^)(NSDictionary *, NSError *))completion {
     NSString *query = [kRetweetRequest stringByReplacingOccurrencesOfString:@":id" withString:tweetId];
     [self postWithQuery:query completion:completion];
 }
@@ -227,34 +262,44 @@ static TwitterClient *_sharedInstance = nil;
     [self listWithQuery:query parameters:nil completion:completion];
 }
 
-- (void) listRetweetsForTweetId:(NSString *) tweetId completion:(void(^)(NSArray *, NSError *error)) completion{
+- (void)listRetweetsForTweetId:(NSString *)tweetId
+                    completion:
+                            (void (^)(NSArray *, NSError *error))completion {
     NSString *query = [kReTweetsForTweetRequest stringByReplacingOccurrencesOfString:@":id" withString:tweetId];
     [self listWithQuery:query parameters:nil completion:completion];
-    
+
 }
 
 // Warning! you can only destroy your own tweets or retweet. Otherwise API returns "Forbidden 403" errors
-- (void)destroyTweet:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion {
+- (void)destroyTweet:(NSString *)tweetId
+          completion:
+                  (void (^)(NSDictionary *, NSError *))completion {
     NSString *query = [kDestroyRequest stringByReplacingOccurrencesOfString:@":id" withString:tweetId];
     [self postWithQuery:query completion:completion];
 }
 
 
 - (void)replyTo:(NSString *)id
-  withTweetText:(NSString *) text
-     completion:(void (^)(NSDictionary *, NSError *error))completion {
+  withTweetText:
+          (NSString *)text
+     completion:
+             (void (^)(NSDictionary *, NSError *error))completion {
     NSString *encodedText = [text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *query = [NSString stringWithFormat:@"%@?status=%@&in_reply_to_status_id=%@", kUpdateStatusRequest, encodedText, id];
     [self postWithQuery:query completion:completion];
 }
 
-- (void)showTweet:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion {
+- (void)showTweet:(NSString *)tweetId
+       completion:
+               (void (^)(NSDictionary *, NSError *))completion {
     NSDictionary *params = @{@"id" : tweetId};
     [self getWithQuery:kShowTweetRequest parameters:params completion:completion];
 };
 
 
-- (void)showUserForScreenName:(NSString *)screenName completion:(void (^)(NSDictionary *dictionary, NSError *error))completion {
+- (void)showUserForScreenName:(NSString *)screenName
+                   completion:
+                           (void (^)(NSDictionary *dictionary, NSError *error))completion {
     NSDictionary *params = @{@"screen_name" : screenName};
     [self getWithQuery:kUsersShowRequest parameters:params completion:completion];
 }
@@ -263,7 +308,10 @@ static TwitterClient *_sharedInstance = nil;
     [self getWithQuery:kAccountInfoRequest parameters:nil completion:completion];
 }
 
-+ (void)parseTweetsFromListResponse:(id)responseObject completion:(void (^)(NSArray *, NSError *))completion {
++ (void)parseTweetsFromListResponse:(id)responseObject
+                         completion:
+                                 (void (^)(NSMutableArray *, NSError *))completion {
+
     if (![responseObject isKindOfClass:[NSArray class]]) {
         NSError *error = [NSError errorWithDomain:TwitterClientErrorDomain
                                              code:1000
@@ -272,18 +320,12 @@ static TwitterClient *_sharedInstance = nil;
         return completion(nil, error);
     }
 
-
     NSArray *response = responseObject;
 
     NSMutableArray *tweets = [NSMutableArray array];
 
     for (NSDictionary *tweetInfo in response) {
-        NSError *error;
         Tweet *tweet = [[Tweet alloc] initWithJson:tweetInfo];
-        if (error) {
-            NSLog(@"init tweet error: %@", error );
-        }
-
         [tweets addObject:tweet];
     }
     NSLog(@"Created array of %lu tweet instances...", (unsigned long) tweets.count);
@@ -292,10 +334,13 @@ static TwitterClient *_sharedInstance = nil;
 }
 
 
-
 #pragma mark - private utility methods
 
-- (void)listWithQuery:(NSString *)query parameters:(NSDictionary *)params completion:(void (^)(NSArray *, NSError *))completion {
+- (void)listWithQuery:(NSString *)query
+           parameters:
+                   (NSDictionary *)params
+           completion:
+                   (void (^)(NSArray *, NSError *))completion {
     [self.networkManager GET:query
                   parameters:params
                      success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -309,7 +354,11 @@ static TwitterClient *_sharedInstance = nil;
 
 }
 
-- (void)getWithQuery:(NSString *)query parameters:(NSDictionary *)params completion:(void (^)(NSDictionary *, NSError *))completion {
+- (void)getWithQuery:(NSString *)query
+          parameters:
+                  (NSDictionary *)params
+          completion:
+                  (void (^)(NSDictionary *, NSError *))completion {
     [self.networkManager GET:query
                   parameters:params
                      success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -323,7 +372,9 @@ static TwitterClient *_sharedInstance = nil;
 
 }
 
-- (void)postWithQuery:(NSString *)query completion:(void (^)(NSDictionary *, NSError *))completion {
+- (void)postWithQuery:(NSString *)query
+           completion:
+                   (void (^)(NSDictionary *, NSError *))completion {
     [self.networkManager POST:query
                    parameters:nil
                       success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -338,4 +389,7 @@ static TwitterClient *_sharedInstance = nil;
 }
 
 
+- (void)loginWithCompletion:(void (^)(User *, NSError *))pFunction {
+
+}
 @end

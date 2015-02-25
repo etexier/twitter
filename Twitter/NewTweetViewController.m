@@ -10,7 +10,9 @@
 #import "TwitterClient.h"
 #import "TweetsViewController.h"
 #import "UIImageView+AFNetworking.h"
+#import "NewTweetViewControllerDelegate.h"
 #import "Helper.h"
+#import "NewTweetViewControllerDelegate.h"
 
 #pragma mark -
 
@@ -23,7 +25,7 @@
 
 @property(nonatomic, strong) NSString *replyToScreenName;
 @property(nonatomic, strong) NSString *replyToTweetId;
-@property (weak, nonatomic) IBOutlet UILabel *limitLabel;
+@property(weak, nonatomic) IBOutlet UILabel *limitLabel;
 
 
 @end
@@ -34,8 +36,18 @@
 
 #pragma mark - init
 
-- (id)initAsReplyTo:(NSString *)replyToScreenName forTweetId:(NSString *)replyToTweetId {
+- (id)initWithDelegate:(id) delegate{
     self = [super init];
+    if (self) {
+        self.delegate = delegate;
+    }
+    return self;
+    
+}
+
+
+- (id)initAsReplyTo:(NSString *)replyToScreenName forTweetId:(NSString *)replyToTweetId delegate:(id) delegate {
+    self = [self initWithDelegate:delegate];
     if (self) {
         self.replyToScreenName = replyToScreenName;
         self.replyToTweetId = replyToTweetId;
@@ -46,7 +58,7 @@
 
 #pragma mark - text view delegate methods
 
--(void)textViewDidChange:(UITextView *)textView {
+- (void)textViewDidChange:(UITextView *)textView {
     int left = 140 - [self.tweetTextView.text length];
     self.limitLabel.text = [NSString stringWithFormat:@"%i", left];
     if (left >= 0) {
@@ -93,24 +105,8 @@
     self.tweetTextView.clipsToBounds = YES;
 
     // round image
-    if (!self.imageURL) {
-        [[TwitterClient sharedInstance] showSignedInUserInfoWithCompletion:^(NSDictionary *dictionary, NSError *error) {
-            NSLog(@"Getting user info for logged in user ...");
-
-            if (error) {
-                // quietly error out
-            } else {
-                self.imageURL = [NSURL URLWithString:dictionary[@"profile_image_url"]];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.imageView setImageWithURL:self.imageURL];
-                    NSString *screenName = dictionary[@"screen_name"];
-                    self.tweetLabel.text = [NSString stringWithFormat:@"@%@ tweets:", screenName];
-                });
-            }
-        }];
-    } else {
-        [self.imageView setImageWithURL:self.imageURL];
-    }
+    [self.imageView setImageWithURL:[Helper currentUser].profileImageUrl];
+    self.tweetLabel.text = [Helper currentUser].screenName;
     self.imageView.layer.cornerRadius = self.imageView.frame.size.width / 2.0f;
     self.imageView.clipsToBounds = YES;
     self.tweetTextView.delegate = self;
@@ -140,42 +136,42 @@
 }
 
 - (void)onCancelTweet {
-    [self navigateBackAndReload:NO];
+    [[self navigationController] popViewControllerAnimated:YES];
 }
 
 
 #pragma mark - private
 
-- (void)navigateBackAndReload:(BOOL)reload {
-    TweetsViewController *vc = [Helper backViewController:self.navigationController];
-    vc.willReloadTweets = reload; // no need to reload tweet if no tweet is sent. Let the user pull down the table
-    [[self navigationController] popViewControllerAnimated:YES];
-}
-
 - (void)sendTweetText:(NSString *)text {
+
+    // reply message
     if (self.replyToScreenName) {
         [[TwitterClient sharedInstance] replyTo:self.replyToTweetId withTweetText:text completion:^(NSDictionary *response, NSError *error) {
             if (error) {
                 NSLog(@"Error: %@", error.localizedDescription);
                 return;
             }
+            [self.delegate newTweetViewController:self sentTweet:[[Tweet alloc] initFromCurrentUserTweetText:text]];
             NSLog(@"Reply tweet sent");
             // Must dispatch on UI thread for UI interaction
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self navigateBackAndReload:YES];
+                [[self navigationController] popViewControllerAnimated:YES];
             });
         }];
         return;
     }
+
+    // update status only
     [[TwitterClient sharedInstance] updateStatus:text completion:^(NSDictionary *response, NSError *error) {
         if (error) {
             NSLog(@"Error: %@", error.localizedDescription);
             return;
         }
         NSLog(@"Tweet sent");
+        [self.delegate newTweetViewController:self sentTweet:[[Tweet alloc] initFromCurrentUserTweetText:text]];
         // Must dispatch on UI thread for UI interaction
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self navigateBackAndReload:YES];
+            [[self navigationController] popViewControllerAnimated:YES];
         });
     }];
 

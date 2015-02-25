@@ -8,13 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TweetsViewController : UIViewController
+@class User;
 
-@property(nonatomic) BOOL willReloadTweets;
+@interface TweetsViewController : UIViewController
 
 - (void)loadTweets;
 
 - (void)loadTweets:(BOOL)withProgress;
 
-- (void)reloadSingleTweetById:(NSString *)id;
 @end

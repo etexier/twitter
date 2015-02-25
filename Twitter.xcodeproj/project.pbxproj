@@ -66,6 +66,7 @@
 		330651CC98A34C11CD732B1E /* TwitterClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwitterClient.h; sourceTree = "<group>"; };
 		330654FE6FB7D30F6362D722 /* Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Helper.m; sourceTree = "<group>"; };
 		33065641358F3E9A463CE5D9 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		33065845FE4565DB4805C016 /* NewTweetViewControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewTweetViewControllerDelegate.h; sourceTree = "<group>"; };
 		33065D3733442FD9325A5875 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		33065D6F00DAB8F51560D335 /* TwitterClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwitterClient.m; sourceTree = "<group>"; };
 		4361155735D8EAB4128ABD6B /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -178,6 +179,7 @@
 				32F0B3221A9926C000ED623D /* NewTweetViewController.h */,
 				32F0B3231A9926C000ED623D /* NewTweetViewController.m */,
 				32F0B3241A9926C000ED623D /* NewTweetViewController.xib */,
+				33065845FE4565DB4805C016 /* NewTweetViewControllerDelegate.h */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";

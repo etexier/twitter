@@ -10,19 +10,21 @@
 #import "NewTweetViewController.h"
 #import "TwitterClient.h"
 #import "BBlock/UIKit+BBlock.h"
+#import "User.h"
 #import "TweetDetailsViewController.h"
 #import "Tweet.h"
 #import "TweetCell.h"
 #import "MBProgressHUD.h"
+#import "NewTweetViewControllerDelegate.h"
 #import "Helper.h"
 
 static NSString *const kTweetCell = @"TweetCell";
 
-@interface TweetsViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface TweetsViewController () <UITableViewDataSource, UITableViewDelegate, NewTweetViewControllerDelegate>
 @property(weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property(nonatomic, strong) UIRefreshControl *refreshControl;
-@property(nonatomic, strong) NSArray *tweets;
+@property(nonatomic, strong) NSMutableArray *tweets;
 @property(nonatomic, strong) UIActivityIndicatorView *footerView;
 
 @end
@@ -41,7 +43,7 @@ static NSString *const kTweetCell = @"TweetCell";
     self = [super init];
 
     if (self) {
-        self.tweets = [NSArray array];
+        self.tweets = [NSMutableArray array];
 
         // only on 7.0+
 //        self.tableView.separatorInset = UIEdgeInsetsZero;
@@ -54,6 +56,9 @@ static NSString *const kTweetCell = @"TweetCell";
                                                           object:nil
                                                            queue:nil
                                                       usingBlock:^(NSNotification *note) {
+                                                          NSDictionary *userInfo = note.userInfo;
+                                                          [Helper  setCurrentUser:[[User alloc] initWithJson:userInfo]];
+                                                          NSLog(@"Welcome user %@", [Helper currentUser].name);
                                                           [self loadTweets];
                                                           [self.navigationItem.leftBarButtonItem setTitle:@"Sign Out"];
                                                           [self.navigationItem.rightBarButtonItem setImage:nil];
@@ -65,7 +70,8 @@ static NSString *const kTweetCell = @"TweetCell";
                                                           object:nil
                                                            queue:nil
                                                       usingBlock:^(NSNotification *note) {
-                                                          self.tweets = [NSArray array];
+                                                          [Helper setCurrentUser:nil];
+                                                          self.tweets = [NSMutableArray array];
                                                           [self.tableView reloadData];
                                                           [self.navigationItem.leftBarButtonItem setTitle:@"Sign In"];
                                                       }];
@@ -76,12 +82,18 @@ static NSString *const kTweetCell = @"TweetCell";
     return self;
 }
 
+#pragma mark -
+- (void)newTweetViewController:(NewTweetViewController *)controller sentTweet:(Tweet *)tweet {
+    [self.tweets insertObject:tweet atIndex:0];
+}
+
+
+#pragma mark - ui view controller methods
 - (void)viewDidLoad {
     [super viewDidLoad];
 
     self.title = @"Tweets";
-    self.willReloadTweets = YES;
-
+    
     // Do any additional setup after loading the view from its nib.
     self.tableView.dataSource = self;
 
@@ -121,28 +133,9 @@ static NSString *const kTweetCell = @"TweetCell";
 }
 
 
-- (void)viewDidAppear:(BOOL)animated {
-    // do not reload here as this will you will visually see the cell's height being re-adjusted -> use viewWillAppear
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    // Do we want to reload the data everytime?
-    if (!self.willReloadTweets) {
-        self.willReloadTweets = YES;
-        [self.tableView reloadData];
-        return;
-    }
-    if ([[TwitterClient sharedInstance] isAuthorized]) {
-        [self loadTweets];
-    }
-
-}
-
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    [self.tableView reloadData];
 }
 
 #pragma mark - table view delegate method
@@ -152,7 +145,6 @@ static NSString *const kTweetCell = @"TweetCell";
     TweetDetailsViewController *detailsVc = [[TweetDetailsViewController alloc] initWithTweet:self.tweets[(NSUInteger) indexPath.row]];
 
     [[self navigationController] setNavigationBarHidden:NO animated:YES];
-    self.willReloadTweets = NO; // do not reload the tweet.
     [self.navigationController pushViewController:detailsVc animated:YES];
 
 }
@@ -170,20 +162,19 @@ static NSString *const kTweetCell = @"TweetCell";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     TweetCell *cell = (TweetCell *) [tableView dequeueReusableCellWithIdentifier:kTweetCell forIndexPath:indexPath];
     cell.tweet = self.tweets[(NSUInteger) indexPath.row];
+    cell.delegate = self;
     // show the separator line
     if (indexPath.row == self.tweets.count - 1) {
         cell.separatorInset = UIEdgeInsetsMake(0.f, cell.bounds.size.width, 0.f, 0.f);
         if ([[TwitterClient sharedInstance] isAuthorized]) {
-            [self footerViewStart];
             [[TwitterClient sharedInstance] loadTimelineOlderThanId:cell.tweet.id completion:^(NSArray *rawTweets, NSError *error) {
                 if (!error) {
-                    [TwitterClient parseTweetsFromListResponse:rawTweets completion:^(NSArray *parsedTweets, NSError *error1) {
+                    [TwitterClient parseTweetsFromListResponse:rawTweets completion:^(NSMutableArray *parsedTweets, NSError *error1) {
                         if (!error1) {
                             NSMutableArray *newTweets = [self.tweets mutableCopy];
                             [newTweets addObjectsFromArray:parsedTweets];
                             self.tweets = newTweets;
                             dispatch_async(dispatch_get_main_queue(), ^{
-                                [self footerViewStop];
                                 [self loadTweets:NO];
                             });
                         }
@@ -194,18 +185,6 @@ static NSString *const kTweetCell = @"TweetCell";
     }
     return cell;
 }
-
-- (CGFloat)heightForBasicCellAtIndexPath:(NSIndexPath *)indexPath {
-    static TweetCell *sizingCell = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sizingCell = [self.tableView dequeueReusableCellWithIdentifier:kTweetCell];
-    });
-
-    sizingCell.tweet = self.tweets[(NSUInteger) indexPath.row];
-    return [self calculateHeightForConfiguredSizingCell:sizingCell];
-}
-
 
 #pragma mark Authorization
 
@@ -239,12 +218,13 @@ static NSString *const kTweetCell = @"TweetCell";
                           otherButtonTitles:nil] show];
         return;
     }
-    NewTweetViewController *vc = [[NewTweetViewController alloc] init];
+    NewTweetViewController *vc = [[NewTweetViewController alloc] initWithDelegate:self];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
 
 #pragma mark - load data
+
 - (void)loadTweets {
     [self loadTweets:YES];
 }
@@ -289,7 +269,7 @@ static NSString *const kTweetCell = @"TweetCell";
         if (error) {
             NSLog(@"Error: %@", error.localizedDescription);
         } else {
-            [TwitterClient parseTweetsFromListResponse:tweets completion:^(NSArray *parsedTweets, NSError *error1) {
+            [TwitterClient parseTweetsFromListResponse:tweets completion:^(NSMutableArray *parsedTweets, NSError *error1) {
                 if (!error1) {
                     self.tweets = parsedTweets;
                 }
@@ -300,7 +280,7 @@ static NSString *const kTweetCell = @"TweetCell";
         dispatch_async(dispatch_get_main_queue(), ^{
             // end spinner
             if (withProgress) {
-               [MBProgressHUD hideHUDForView:self.view animated:YES];
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
             }
             if (error) {
                 [[[UIAlertView alloc] initWithTitle:@"Error"
@@ -314,57 +294,6 @@ static NSString *const kTweetCell = @"TweetCell";
 
         [self.refreshControl endRefreshing];
     }];
-}
-
-#pragma mark - other private methods
-
-- (CGFloat)calculateHeightForConfiguredSizingCell:(UITableViewCell *)sizingCell {
-    [sizingCell setNeedsLayout];
-    [sizingCell layoutIfNeeded];
-
-    CGSize size = [sizingCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-    return size.height + 1.0f; // Add 1.0f for the cell separator height
-}
-
-
-// not used
-- (void)reloadSingleTweetById:(NSString *)id {
-    [[TwitterClient sharedInstance] showTweet:id completion:^(NSDictionary *dictionary, NSError *error) {
-        if (error) {
-            NSLog(@"Error showing tweet: %@", error.localizedDescription);
-            // quietly forget it
-        } else {
-            int found = [Helper findTweetIndexWithId:id fromTweets:self.tweets];
-            if (found == -1) {
-                NSLog(@"Error: couldn't find tweet with id %d", found);
-            }
-
-            // update tweet array.
-            NSMutableArray *newTweets = [self.tweets mutableCopy];
-            newTweets[(NSUInteger) found] = [[Tweet alloc] initWithJson:dictionary];
-            self.tweets = newTweets;
-            [self.tableView reloadData];
-        }
-    }];
-
-}
-
--(void) footerViewStart {
-
-    // TODO: implement auto-layout
-    
-//    UIView *tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 50)];
-//    UIActivityIndicatorView *loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-//    self.footerView = loadingView;
-//    [self.footerView startAnimating];
-//    self.footerView.center = tableFooterView.center;
-//    [tableFooterView addSubview:self.footerView];
-//    self.tableView.tableFooterView = tableFooterView;
-    
-}
-
--(void) footerViewStop {
-//    [self.footerView stopAnimating];
 }
 
 @end

@@ -69,13 +69,23 @@
     _userScreenNameLabel.text = [NSString stringWithFormat:@"@%@", _tweet.user.screenName];
     _tweetTextLabel.text = _tweet.text;
 
-    [Helper updateReplyImageView:self.replyImageView tweet:_tweet];
-    [Helper updateFavoriteImageView:self.likeImageView tweet:_tweet];
-    [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
+    if ([[Helper currentUser].screenName isEqualToString:_tweet.user.screenName]) {
+        // no reply is possible
+        self.replyImageView.hidden = YES;
+        self.replyImageView.userInteractionEnabled = NO;
+        self.retweetImageView.hidden = YES;
+        self.retweetImageView.userInteractionEnabled = NO;
+    } else {
+        [Helper updateReplyImageView:self.replyImageView tweet:_tweet];
+        [self registerGestureOnImageView:self.replyImageView selector:@selector(onSelectReplyImage)];
+        [Helper updateRetweetImageView:self.retweetImageView tweet:_tweet];
+        [self registerGestureOnImageView:self.retweetImageView selector:@selector(onSwitchRetweetStatus)];
 
+    }
+    [Helper updateFavoriteImageView:self.likeImageView tweet:_tweet];
     [self registerGestureOnImageView:self.likeImageView selector:@selector(onSwitchFavoriteStatus)];
-    [self registerGestureOnImageView:self.retweetImageView selector:@selector(onSwitchRetweetStatus)];
-    [self registerGestureOnImageView:self.replyImageView selector:@selector(onSelectReplyImage)];
+
+
 
     // Calculate how long ago
     _createdTimeLabel.text = [Helper calculateTimeAgoTillDate:_tweet.createdAt];
@@ -115,7 +125,8 @@
                           otherButtonTitles:nil] show];
         return;
     }
-    NewTweetViewController *vc = [[NewTweetViewController alloc] initAsReplyTo:_tweet.user.screenName forTweetId:_tweet.id];
+    NewTweetViewController *vc = [[NewTweetViewController alloc] initAsReplyTo:_tweet.user.screenName forTweetId:_tweet.id
+                                                                      delegate:self.delegate];
     UITableView *tv = (UITableView *) self.superview.superview;
     UITableViewController *tvc = (UITableViewController *) tv.dataSource;
     [tvc.navigationController pushViewController:vc animated:YES];

@@ -8,7 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol NewTweetViewControllerDelegate;
+
 @interface NewTweetViewController : UIViewController
 
-- (id)initAsReplyTo:(NSString *)replyToScreenName forTweetId:(NSString *)replyToTweetId;
+@property (nonatomic, weak) id <NewTweetViewControllerDelegate> delegate;
+
+- (instancetype)initWithDelegate:(id) delegate;
+
+- (instancetype)initAsReplyTo:(NSString *)replyToScreenName forTweetId:(NSString *)replyToTweetId delegate:(id)delegate;
 @end

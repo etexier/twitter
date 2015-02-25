@@ -136,7 +136,7 @@
             }
 
             // parse tweets
-            [TwitterClient parseTweetsFromListResponse:array completion:^(NSArray *array1, NSError *error1) {
+            [TwitterClient parseTweetsFromListResponse:array completion:^(NSMutableArray *array1, NSError *error1) {
                 if (error1) {
                     NSLog(@"Couldn't parse list of retweets. Error:%@", error1.localizedDescription);
                     completion(nil, error1);
@@ -146,32 +146,23 @@
                 NSArray *tweets = array1;
 
                 // get user screen name
-                [[TwitterClient sharedInstance] showSignedInUserInfoWithCompletion:^(NSDictionary *dictionary, NSError *error4) {
-                    NSLog(@"Getting user info for logged in user ...");
+                NSLog(@"Getting user info for logged in user ...");
+                NSString *screenName = [Helper currentUser].screenName;
+                int found = [Helper findReTweetIndexForScreenName:screenName fromTweets:tweets];
+                if (found == -1) {
+                    NSLog(@"Couldn't find retweeted tweet with id %@", tweet.id);
+                    completion(nil, error1);
+                    return;
+                }
 
-                    if (error) {
-                        NSLog(@"Couldn't get user screen name. Error:%@", error1.localizedDescription);
-                        completion(nil, error4);
-                        return;
+                Tweet *retweet = tweets[(NSUInteger) found];
+                // delete my retweet
+                [[TwitterClient sharedInstance] destroyTweet:retweet.id completion:^(NSDictionary *array2, NSError *error2) {
+                    if (error2) {
+                        NSLog(@"Couldn't destroy retweet. Error:%@", error2.localizedDescription);
                     }
-                    NSString *screenName = dictionary[@"screen_name"];
-
-                    int found = [Helper findReTweetIndexForScreenName:screenName fromTweets:tweets];
-                    if (found == -1) {
-                        NSLog(@"Couldn't find retweeted tweet with id %@", tweet.id);
-                        completion(nil, error1);
-                        return;
-                    }
-
-                    Tweet *retweet = tweets[(NSUInteger) found];
-                    // delete my retweet
-                    [[TwitterClient sharedInstance] destroyTweet:retweet.id completion:^(NSDictionary *array2, NSError *error2) {
-                        if (error2) {
-                            NSLog(@"Couldn't destroy retweet. Error:%@", error2.localizedDescription);
-                        }
-                        completion(tweet.id, error2);
-                        return;
-                    }];
+                    completion(tweet.id, error2);
+                    return;
                 }];
 
             }];
@@ -214,18 +205,46 @@
     imageView.image = [UIImage imageNamed:@"reply.png"];
 }
 
-+ (NSDateFormatter *) dateFormatter {
++ (NSDateFormatter *)dateFormatter {
     static NSDateFormatter *instance = nil;
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        if(instance == nil) {
-            instance =  [[NSDateFormatter alloc] init];
+        if (instance == nil) {
+            instance = [[NSDateFormatter alloc] init];
             instance.dateFormat = @"EEE MMM d HH:mm:ss Z y";
         }
     });
 
     return instance;
 }
+
+#pragma mark - user management
+static User *_currentUser = nil;
+static NSString *const kCurrentUserKey = @"kTwitterCurrentUserKey";
+
++ (User *)currentUser {
+    if (!_currentUser) {
+        NSData *data = [[NSUserDefaults standardUserDefaults] objectForKey:kCurrentUserKey];
+        if (data) {
+            NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
+            _currentUser = [MTLJSONAdapter modelOfClass:User.class fromJSONDictionary:dictionary error:nil];
+        }
+    }
+    return _currentUser;
+}
+
++ (void)setCurrentUser:(User *)user {
+    _currentUser = user;
+
+    NSData *data = nil;
+    if (_currentUser) {
+        data = [NSJSONSerialization dataWithJSONObject:[MTLJSONAdapter JSONDictionaryFromModel:user] options:0 error:NULL];
+    }
+
+    [[NSUserDefaults standardUserDefaults] setObject:data forKey:kCurrentUserKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
 
 @end

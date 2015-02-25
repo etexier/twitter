@@ -7,7 +7,7 @@
 #import <Mantle/MTLValueTransformer.h>
 #import "User.h"
 
-@interface User () <MTLJSONSerializing>
+@interface User ()
 
 @end
 
@@ -45,8 +45,5 @@
         return [url absoluteString];
     }];
 }
-
-
-
 
 @end
