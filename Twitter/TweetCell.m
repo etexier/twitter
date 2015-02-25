@@ -82,6 +82,7 @@
         [self registerGestureOnImageView:self.retweetImageView selector:@selector(onSwitchRetweetStatus)];
 
     }
+    // always supported
     [Helper updateFavoriteImageView:self.likeImageView tweet:_tweet];
     [self registerGestureOnImageView:self.likeImageView selector:@selector(onSwitchFavoriteStatus)];
 
