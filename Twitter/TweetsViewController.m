@@ -229,6 +229,16 @@ static NSString *const kTweetCell = @"TweetCell";
     NSString *minId = nil;
     if (self.tweets && self.tweets.count > 0) {
         minId = ((Tweet *) self.tweets[0]).id;
+        if ([minId isEqualToString:[@ULLONG_MAX stringValue]]) {
+         // find first minId where id is not UULONG_MAX
+         for (int i = 0; i < self.tweets.count; i++) {
+             NSString *id = ((Tweet *)self.tweets[(NSUInteger) i]).id;
+             if ([id isEqualToString:[@ULLONG_MAX stringValue]]) {
+                 continue;
+             }
+             minId = id;
+         }
+        }
     }
     [self loadTweetsPriorToMaxId:nil andAfterMinId:minId withProgress:withProgress];
 }
@@ -283,6 +293,12 @@ static NSString *const kTweetCell = @"TweetCell";
                     if (maxId) { // add at tail
                         [self.tweets addObjectsFromArray:parsedTweets];
                     } else if (minId) { // add at beginning
+                        // first remove all invalid tweets (those that were not loaded, but just appended
+                        [self.tweets enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(Tweet *p, NSUInteger index, BOOL *stop) {
+                            if ([p.id isEqualToString:[NSString stringWithFormat:@"%llu", ULLONG_MAX]]) {
+                                [self.tweets removeObjectAtIndex:index];
+                            }
+                        }];
                         self.tweets = [[parsedTweets arrayByAddingObjectsFromArray:self.tweets] mutableCopy];
                     } else {
                         self.tweets = parsedTweets;
@@ -312,6 +328,8 @@ static NSString *const kTweetCell = @"TweetCell";
 
         [self.refreshControl endRefreshing];
     }];
+    [self.refreshControl endRefreshing];
+
 }
 
 @end

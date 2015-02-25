@@ -83,11 +83,19 @@
         [self registerGestureOnImageView:self.retweetImageView selector:@selector(onSwitchRetweetStatus)];
 
     }
-    // always supported
-    self.likeImageView.hidden = NO;
-    self.likeImageView.userInteractionEnabled = YES;
-    [Helper updateFavoriteImageView:self.likeImageView tweet:_tweet];
-    [self registerGestureOnImageView:self.likeImageView selector:@selector(onSwitchFavoriteStatus)];
+    if ([self.tweet.id isEqualToString:[NSString stringWithFormat:@"%llu", ULLONG_MAX]]) {
+        // always supported
+        self.likeImageView.hidden = YES;
+        self.likeImageView.userInteractionEnabled = NO;
+
+    } else {
+        // always supported
+        self.likeImageView.hidden = NO;
+        self.likeImageView.userInteractionEnabled = YES;
+        [Helper updateFavoriteImageView:self.likeImageView tweet:_tweet];
+        [self registerGestureOnImageView:self.likeImageView selector:@selector(onSwitchFavoriteStatus)];
+
+    }
 
 }
 
