@@ -9,10 +9,16 @@
 #import "MenuViewController.h"
 #import "TweetsViewController.h"
 
+
+
 @interface MenuViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+
 @property (nonatomic, strong) NSArray *menuActions;
+
+@property (nonatomic, strong) TweetsViewController *tweetsViewController;
 
 typedef NS_ENUM(NSInteger, MenuActionType) {
     MenuActionTypeHome = 0,
@@ -26,7 +32,7 @@ typedef NS_ENUM(NSInteger, MenuActionType) {
 @implementation MenuViewController
 
 #pragma mark - init
-#pragma mark - view controllers
+
 
 - (instancetype) init {
     self = [super init];
@@ -36,6 +42,8 @@ typedef NS_ENUM(NSInteger, MenuActionType) {
     return self;
     
 }
+
+#pragma mark - view controllers
 
 - (void)viewDidLoad {
     [super viewDidLoad];

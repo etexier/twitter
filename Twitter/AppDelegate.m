@@ -11,6 +11,7 @@
 #import "TweetsViewController.h"
 #import "MenuViewController.h"
 #import "User.h"
+#import "ViewController.h"
 
 //NSString *const kTwitterConsumerKey = @"5C74UkLNroHcsRsY2OnapFBx6";
 //NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUVoMFLLVMAycK6J";
@@ -35,10 +36,11 @@ NSString *const kTwitterConsumerSecret = @"IvGcSlFq5GbG0Lbk1vMR577mHsd8bTH5yPhOL
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
-    TweetsViewController *vc = [[TweetsViewController alloc] init];
-    MenuViewController *mvc = [[MenuViewController alloc] init];
-//    UINavigationController *nvc = [[UINavigationController alloc] initWithRootViewController:vc]
-    UINavigationController *nvc = [[UINavigationController alloc] initWithRootViewController:mvc];
+    TweetsViewController *tvc = [[TweetsViewController alloc] init];
+    //MenuViewController *mvc = [[MenuViewController alloc] init];
+    ViewController *vc = [[ViewController alloc] initWithTweetsViewController:tvc];
+    
+    UINavigationController *nvc = [[UINavigationController alloc] initWithRootViewController:vc];
     nvc.navigationBar.translucent = NO; // so table view first row is not hidden behind it
 
     self.window.rootViewController = nvc;

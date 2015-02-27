@@ -19,10 +19,12 @@
 #import "UIScrollView+SVPullToRefresh.h"
 #import "Helper.h"
 
+
 static NSString *const kTweetCell = @"TweetCell";
 
 @interface TweetsViewController () <UITableViewDataSource, UITableViewDelegate, NewTweetViewControllerDelegate>
 @property(weak, nonatomic) IBOutlet UITableView *tableView;
+
 
 @property(nonatomic, strong) NSMutableArray *tweets;
 
@@ -323,6 +325,10 @@ static NSString *const kTweetCell = @"TweetCell";
 
     }];
 
+}
+- (IBAction)onPanGesture:(UIPanGestureRecognizer *)sender {
+    NSLog(@"On Pan gesture");
+    [self.tweetViewControllerDelegate onPanGesture:sender onController:self];
 }
 
 @end

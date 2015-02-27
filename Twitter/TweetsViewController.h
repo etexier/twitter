@@ -7,10 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TweetsViewControllerDelegate.h"
 
 @class User;
 
 @interface TweetsViewController : UIViewController
+
+@property(weak, nonatomic) id<TweetsViewControllerDelegate> tweetViewControllerDelegate;
 
 - (void)loadTweets;
 

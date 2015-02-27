@@ -7,8 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TweetsViewController.h"
+#import "TweetsViewControllerDelegate.h"
 
-@interface MenuViewController : UIViewController
+@interface MenuViewController : UIViewController <TweetsViewControllerDelegate>
 
+-(instancetype) initWithTweetsViewController:(TweetsViewController *)controller;
 
 @end

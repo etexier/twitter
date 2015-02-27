@@ -18,9 +18,14 @@
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="3fh-ag-s2W">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <gestureRecognizers/>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="jtB-Fk-iNy" appends="YES" id="tKR-aq-sYq"/>
+                    </connections>
                 </tableView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <gestureRecognizers/>
             <constraints>
                 <constraint firstItem="3fh-ag-s2W" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="0n5-Eh-XSQ"/>
                 <constraint firstItem="3fh-ag-s2W" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="LcQ-LB-uSE"/>
@@ -29,6 +34,11 @@
             </constraints>
             <point key="canvasLocation" x="356" y="255"/>
         </view>
+        <panGestureRecognizer minimumNumberOfTouches="1" id="jtB-Fk-iNy">
+            <connections>
+                <action selector="onPanGesture:" destination="-1" id="gAW-EL-Ksm"/>
+            </connections>
+        </panGestureRecognizer>
     </objects>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
