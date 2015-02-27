@@ -13,7 +13,7 @@
 
 @interface TweetsViewController : UIViewController
 
-@property(weak, nonatomic) id<TweetsViewControllerDelegate> tweetViewControllerDelegate;
+@property(weak, nonatomic) id<TweetsViewControllerDelegate> tweetsViewControllerDelegate;
 
 - (void)loadTweets;
 

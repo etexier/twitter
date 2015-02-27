@@ -7,10 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "TweetsViewController.h"
-#import "TweetsViewControllerDelegate.h"
+#import "RevealController.h"
 
-@interface MenuViewController : UIViewController <TweetsViewControllerDelegate>
+@interface MenuViewController : UIViewController <RevealControllerDelegate>
+- (instancetype) initWithMenuActions:(NSArray *) menuActions;
+
+@property (weak, nonatomic) id<RevealControllerDelegate> revealControllerDelegate;
 
 
 @end

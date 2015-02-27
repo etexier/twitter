@@ -7,7 +7,7 @@
 //
 
 #import "MenuViewController.h"
-#import "TweetsViewController.h"
+#import "RevealController.h"
 
 
 
@@ -15,16 +15,7 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
-
 @property (nonatomic, strong) NSArray *menuActions;
-
-@property (nonatomic, strong) TweetsViewController *tweetsViewController;
-
-typedef NS_ENUM(NSInteger, MenuActionType) {
-    MenuActionTypeHome = 0,
-    MenuActionTypeAccount,
-    MenuActionTypeSettings,
-};
 
 
 @end
@@ -34,10 +25,11 @@ typedef NS_ENUM(NSInteger, MenuActionType) {
 #pragma mark - init
 
 
-- (instancetype) init {
+
+- (instancetype) initWithMenuActions:(NSArray *) menuActions{
     self = [super init];
     if (self) {
-        self.menuActions = @[@"Home", @"Account", @"Settings"];
+        self.menuActions = menuActions;
     }
     return self;
     
@@ -63,7 +55,7 @@ typedef NS_ENUM(NSInteger, MenuActionType) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"MenuActionCell"];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
-    cell.textLabel.text = self.menuActions[indexPath.row];
+    cell.textLabel.text = self.menuActions[(NSUInteger) indexPath.row][@"name"];
     cell.imageView.image = nil;
     return cell;
 
@@ -72,27 +64,23 @@ typedef NS_ENUM(NSInteger, MenuActionType) {
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    switch (indexPath.row) {
-        case MenuActionTypeHome: {
-            NSLog(@"Home selected");
-            TweetsViewController *vc = [[TweetsViewController alloc] init];
-            [self.navigationController pushViewController:vc animated:YES];
-            break;
-        }
-        case MenuActionTypeAccount:
-            NSLog(@"Account selected. Not supported yet");
-            break;
-        case MenuActionTypeSettings:
-            NSLog(@"Settings selected. Not supported yet");
-            break;
-        default:
-            NSAssert(NO, @"Unsupported selection");
+    NSLog(@"%@ selected", (NSString *) self.menuActions[(NSUInteger) indexPath.row][@"name"]);
+    id value = self.menuActions[(NSUInteger) indexPath.row][@"controller"];
+    if (value == [NSNull null]) {
+        NSLog(@"Menu Action Not supported yet");
+        return;
     }
+    
+    UIViewController *vc = (UIViewController *) value;
+    [self.revealControllerDelegate onPresentController:vc previousController:self];
+
     
 }
 
-
-
+- (void)onPresentController:(UIViewController *)controller previousController:(UIViewController *)previousController {
+    NSLog(@"onPresentController with delegate %@", self.revealControllerDelegate);
+    [self.revealControllerDelegate onPresentController:controller previousController:previousController];
+}
 
 
 @end

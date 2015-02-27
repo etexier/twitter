@@ -41,6 +41,7 @@ static NSString *const kTweetCell = @"TweetCell";
 #pragma mark - Initialization
 
 - (id)init {
+    NSLog(@"Initializing a new TweetsViewController");
     self = [super init];
 
     if (self) {
@@ -327,8 +328,8 @@ static NSString *const kTweetCell = @"TweetCell";
 
 }
 - (IBAction)onPanGesture:(UIPanGestureRecognizer *)sender {
-    NSLog(@"On Pan gesture");
-    [self.tweetViewControllerDelegate onPanGesture:sender onController:self];
+    NSLog(@"On Pan gesture, will cal delegate %@", self.tweetsViewControllerDelegate);
+    [self.tweetsViewControllerDelegate onPanGesture:sender onController:self];
 }
 
 @end
