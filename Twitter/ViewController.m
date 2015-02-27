@@ -9,8 +9,11 @@
 #import "ViewController.h"
 #import "TweetsViewControllerDelegate.h"
 #import "TweetsViewController.h"
+#import "MenuViewController.h"
 
 @interface ViewController () <TweetsViewControllerDelegate>
+@property (nonatomic, strong) UIViewController *contentController;
+@property (nonatomic, strong) MenuViewController *menuViewController;
 @property (nonatomic, strong) TweetsViewController *tweetsViewController;
 
 - (void)onPanGesture:(UIPanGestureRecognizer *)sender onController:(TweetsViewController *) controller;
@@ -23,13 +26,29 @@
 CGPoint originalTweetsViewCenter;
 
 
--(instancetype) initWithTweetsViewController:(TweetsViewController *)controller {
+-(id) init {
     self = [super init];
     if (self) {
-        self.tweetsViewController = controller;
-        [self.view addSubview:controller.view];
-        [self addChildViewController:controller];
-        controller.tweetViewControllerDelegate = self;
+        // tweets view controller
+        TweetsViewController *tvc = [[TweetsViewController alloc] init];
+        tvc.tweetViewControllerDelegate = self;
+        UINavigationController *nvc = [[UINavigationController alloc] initWithRootViewController:tvc];
+        nvc.navigationBar.translucent = NO; // so table view first row is not hidden behind it
+        self.tweetsViewController = tvc;
+
+        // menu view controller
+        MenuViewController *mvc = [[MenuViewController alloc] init];
+        [self.view addSubview:mvc.view];
+        [self addChildViewController:mvc];
+        self.menuViewController = mvc;
+        
+
+        // make current controller the tweets view controller's navigation controller
+        self.contentController = nvc;
+        [self.view addSubview:nvc.view];
+        [self addChildViewController:nvc];
+        
+        
     }
     return self;
 }
@@ -62,15 +81,15 @@ CGPoint originalTweetsViewCenter;
 
     if (sender.state == UIGestureRecognizerStateBegan) {
         NSLog(@"Pan began");
-        originalTweetsViewCenter = sender.view.center;
+        originalTweetsViewCenter = self.contentController.view.center;
     } else if (sender.state == UIGestureRecognizerStateChanged) {
         NSLog(@"Pan changed");
-        sender.view.center = CGPointMake(originalTweetsViewCenter.x + translation.x, originalTweetsViewCenter.y);
+        self.contentController.view.center = CGPointMake(originalTweetsViewCenter.x + translation.x, originalTweetsViewCenter.y);
     } else if (sender.state == UIGestureRecognizerStateEnded) {
         NSLog(@"Pan ended");
         if (velocity.x > 0) { // moving right
             [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.6 initialSpringVelocity:0.2 options:UIViewAnimationOptionCurveEaseOut animations:^{
-                sender.view.frame = CGRectMake(controller.view.frame.size.width - 50, 0,  controller.view.frame.size.width,  controller.view.frame.size.height);
+                self.contentController.view.frame = CGRectMake(self.contentController.view.frame.size.width - 50, 0,  self.contentController.view.frame.size.width,  self.contentController.view.frame.size.height);
                 
             } completion:^(BOOL finished) {
                 //
@@ -81,7 +100,7 @@ CGPoint originalTweetsViewCenter;
                 //                CGRect frame = self.trayView.frame;
                 //                frame.origin.y = 100;
                 //                self.trayView.frame = frame;
-                sender.view.frame = CGRectMake(0, 0,  controller.view.frame.size.width,  controller.view.frame.size.height);
+                self.contentController.view.frame = CGRectMake(0, 0,  self.contentController.view.frame.size.width,  self.contentController.view.frame.size.height);
                 
             } completion:^(BOOL finished) {
                 //

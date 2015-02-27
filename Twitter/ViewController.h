@@ -10,6 +10,5 @@
 @class TweetsViewController;
 
 @interface ViewController : UIViewController
--(instancetype) initWithTweetsViewController:(TweetsViewController *)controller;
 
 @end

@@ -12,6 +12,5 @@
 
 @interface MenuViewController : UIViewController <TweetsViewControllerDelegate>
 
--(instancetype) initWithTweetsViewController:(TweetsViewController *)controller;
 
 @end
