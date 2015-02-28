@@ -5,7 +5,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "TweetsViewController.h"
+#import "TimelineViewController.h"
 #import "Tweet.h"
 
 
@@ -25,7 +25,7 @@
 
 + (void)updateRetweetImageView:(UIImageView *)imageView tweet:(Tweet *)tweet;
 
-+ (TweetsViewController *)backViewController:(UINavigationController *)nvc;
++ (TimelineViewController *)backViewController:(UINavigationController *)nvc;
 
 + (int)findTweetIndexWithId:(NSString *)id fromTweets:(NSArray *)tweets;
 
@@ -34,6 +34,8 @@
 + (void)onSwitchRetweetStatusForTweet:(Tweet *)tweet completion:(void (^)(NSString *, NSError *))completion;
 
 + (void)onSwitchFavoriteStatus:(Tweet *)tweet completion:(void (^)(NSString *, NSError *))completion;
+
++ (CGFloat)statusBarAdjustment:(UIView *)view;
 
 + (void)updateReplyImageView:(UIImageView *)view tweet:(Tweet *)tweet;
 

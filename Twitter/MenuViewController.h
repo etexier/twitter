@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "RevealController.h"
+#import "RevealViewController.h"
 
-@interface MenuViewController : UIViewController <RevealControllerDelegate>
+@interface MenuViewController : UIViewController
 - (instancetype) initWithMenuActions:(NSArray *) menuActions;
 
 @property (weak, nonatomic) id<RevealControllerDelegate> revealControllerDelegate;

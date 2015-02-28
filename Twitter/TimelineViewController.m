@@ -1,15 +1,16 @@
 //
-//  TweetsViewController.m
+//  TimelineViewController.m
 //  Twitter
 //
 //  Created by Emmanuel Texier on 2/21/15.
 //  Copyright (c) 2015 Emmanuel Texier. All rights reserved.
 //
 
-#import "TweetsViewController.h"
+#import "TimelineViewController.h"
 #import "NewTweetViewController.h"
 #import "TwitterClient.h"
 #import "BBlock/UIKit+BBlock.h"
+#import "RevealViewController.h"
 #import "User.h"
 #import "TweetDetailsViewController.h"
 #import "Tweet.h"
@@ -22,7 +23,7 @@
 
 static NSString *const kTweetCell = @"TweetCell";
 
-@interface TweetsViewController () <UITableViewDataSource, UITableViewDelegate, NewTweetViewControllerDelegate>
+@interface TimelineViewController () <UITableViewDataSource, UITableViewDelegate, NewTweetViewControllerDelegate>
 @property(weak, nonatomic) IBOutlet UITableView *tableView;
 
 
@@ -30,7 +31,7 @@ static NSString *const kTweetCell = @"TweetCell";
 
 @end
 
-@implementation TweetsViewController
+@implementation TimelineViewController
 
 #pragma mark - NSObject
 
@@ -41,7 +42,7 @@ static NSString *const kTweetCell = @"TweetCell";
 #pragma mark - Initialization
 
 - (id)init {
-    NSLog(@"Initializing a new TweetsViewController");
+    NSLog(@"Initializing a new TimelineViewController");
     self = [super init];
 
     if (self) {
@@ -90,7 +91,7 @@ static NSString *const kTweetCell = @"TweetCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.title = @"Tweets";
+    self.title = @"Timeline";
 
     // Do any additional setup after loading the view from its nib.
     self.tableView.dataSource = self;
@@ -328,8 +329,8 @@ static NSString *const kTweetCell = @"TweetCell";
 
 }
 - (IBAction)onPanGesture:(UIPanGestureRecognizer *)sender {
-    NSLog(@"On Pan gesture, will cal delegate %@", self.tweetsViewControllerDelegate);
-    [self.tweetsViewControllerDelegate onPanGesture:sender onController:self];
+    NSLog(@"On Pan gesture, will call delegate %@", self.revealControllerDelegate);
+    [self.revealControllerDelegate onPanGesture:sender onController:self];
 }
 
 @end

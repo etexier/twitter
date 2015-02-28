@@ -8,7 +8,7 @@
 
 #import "NewTweetViewController.h"
 #import "TwitterClient.h"
-#import "TweetsViewController.h"
+#import "TimelineViewController.h"
 #import "UIImageView+AFNetworking.h"
 #import "NewTweetViewControllerDelegate.h"
 #import "Helper.h"

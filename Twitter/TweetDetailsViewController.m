@@ -150,7 +150,7 @@
 - (void)renderCounters {
     self.retweetLabel.text = [NSString stringWithFormat:@"RETWEETS %lu", (unsigned long) _tweet.retweetCount];
     self.favoritedLabel.text = [NSString stringWithFormat:@"FAVORITES %lu", (unsigned long) _tweet.favoriteCount];
-//    TweetsViewController *vc = [Helper backViewController:self.navigationController];
+//    TimelineViewController *vc = [Helper backViewController:self.navigationController];
 //    [vc reloadSingleTweetById:id];
 }
 

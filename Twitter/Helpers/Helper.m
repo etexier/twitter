@@ -3,7 +3,7 @@
 // Copyright (c) 2015 Emmanuel Texier. All rights reserved.
 //
 
-#import "TweetsViewController.h"
+#import "TimelineViewController.h"
 #import "Tweet.h"
 #import "Helper.h"
 #import "UIImageView+AFNetworking.h"
@@ -86,13 +86,13 @@
     }
 }
 
-+ (TweetsViewController *)backViewController:(UINavigationController *)nvc {
++ (TimelineViewController *)backViewController:(UINavigationController *)nvc {
     NSInteger numberOfViewControllers = nvc.viewControllers.count;
     if (numberOfViewControllers < 2) {
         return nil;
     } else {
         NSUInteger index = (NSUInteger) (numberOfViewControllers - 2);
-        return (TweetsViewController *) nvc.viewControllers[index];
+        return (TimelineViewController *) nvc.viewControllers[index];
     }
 }
 
@@ -199,6 +199,18 @@
         }];
 
     }
+}
+
++(CGFloat) statusBarAdjustment:( UIView*) view {
+    CGFloat adjustment = 0.0f;
+    UIApplication *app = [UIApplication sharedApplication];
+    CGRect viewFrame = [view convertRect:view.bounds toView:[app keyWindow]];
+    CGRect statusBarFrame = [app statusBarFrame];
+
+    if ( CGRectIntersectsRect(viewFrame, statusBarFrame) )
+        adjustment = fminf(statusBarFrame.size.width, statusBarFrame.size.height);
+
+    return adjustment;
 }
 
 + (void)updateReplyImageView:(UIImageView *)imageView tweet:(Tweet *)tweet {

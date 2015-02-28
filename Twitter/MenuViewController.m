@@ -7,7 +7,6 @@
 //
 
 #import "MenuViewController.h"
-#import "RevealController.h"
 
 
 
@@ -30,6 +29,7 @@
     self = [super init];
     if (self) {
         self.menuActions = menuActions;
+        self.title = @"Menu";
     }
     return self;
     
@@ -47,6 +47,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.menuActions.count;
 }
+
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -71,15 +72,9 @@
         return;
     }
     
-    UIViewController *vc = (UIViewController *) value;
-    [self.revealControllerDelegate onPresentController:vc previousController:self];
+    [self.revealControllerDelegate onPresentController:(UIViewController *) value];
 
     
-}
-
-- (void)onPresentController:(UIViewController *)controller previousController:(UIViewController *)previousController {
-    NSLog(@"onPresentController with delegate %@", self.revealControllerDelegate);
-    [self.revealControllerDelegate onPresentController:controller previousController:previousController];
 }
 
 

@@ -1,5 +1,5 @@
 //
-//  TweetsViewController.h
+//  TimelineViewController.h
 //  Twitter
 //
 //  Created by Emmanuel Texier on 2/21/15.
@@ -7,13 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "TweetsViewControllerDelegate.h"
 
 @class User;
+@protocol RevealControllerDelegate;
 
-@interface TweetsViewController : UIViewController
+@interface TimelineViewController : UIViewController
 
-@property(weak, nonatomic) id<TweetsViewControllerDelegate> tweetsViewControllerDelegate;
+@property(weak, nonatomic) id<RevealControllerDelegate> revealControllerDelegate;
 
 - (void)loadTweets;
 

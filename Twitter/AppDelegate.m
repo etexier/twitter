@@ -9,7 +9,11 @@
 #import "AppDelegate.h"
 #import "TwitterClient.h"
 #import "User.h"
-#import "RevealController.h"
+#import "RevealViewController.h"
+#import "TimelineViewController.h"
+#import "ProfileViewController.h"
+#import "MentionsViewController.h"
+#import "MenuViewController.h"
 
 //NSString *const kTwitterConsumerKey = @"5C74UkLNroHcsRsY2OnapFBx6";
 //NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUVoMFLLVMAycK6J";
@@ -19,7 +23,7 @@ NSString *const kTwitterConsumerSecret = @"IvGcSlFq5GbG0Lbk1vMR577mHsd8bTH5yPhOL
 
 //NSString *const kTwitterConsumerKey = @"RGnU7YY7LJf2zV0zZ7J7Ikg1Z";
 //NSString *const kTwitterConsumerSecret = @"x0we7O4KSFo1AAwppS2I43HD1v5Z0zDShoUu0spt6rJzhlT1rI";
-@interface AppDelegate ()
+@interface AppDelegate () <RevealControllerDelegate>
 
 @end
 
@@ -34,14 +38,48 @@ NSString *const kTwitterConsumerSecret = @"IvGcSlFq5GbG0Lbk1vMR577mHsd8bTH5yPhOL
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
-    
-    RevealController *vc = [[RevealController alloc]init];
-    
-    // navigation controller
-    UINavigationController *nvc = [[UINavigationController alloc] initWithRootViewController:vc];
-    nvc.navigationBar.translucent = NO; // so table view first row is not hidden behind it
 
-    self.window.rootViewController = nvc;
+    // Timeline view controller
+    TimelineViewController *timelineVc = [[TimelineViewController alloc] init];
+
+    ProfileViewController *profileVc = [[ProfileViewController alloc] init];
+
+    MentionsViewController *mentionsVc = [[MentionsViewController alloc] init];
+
+
+
+    // menu view controller
+
+    UINavigationController *mentionsNavigationController = [[UINavigationController alloc] initWithRootViewController:mentionsVc];
+    mentionsNavigationController.navigationBar.translucent = NO;
+
+    UINavigationController *profileNavigationController = [[UINavigationController alloc] initWithRootViewController:profileVc];
+    profileNavigationController.navigationBar.translucent = NO;
+
+    UINavigationController *timelineNavigationController = [[UINavigationController alloc] initWithRootViewController:timelineVc];
+    timelineNavigationController.navigationBar.translucent = NO;
+
+    NSArray *menuActions =
+    @[
+      @{@"name" : @"Home", @"controller" : timelineNavigationController},
+      @{@"name" : @"Profile", @"controller" : profileNavigationController},
+      @{@"name" : @"Mentions", @"controller" : mentionsNavigationController},
+      ];
+
+    MenuViewController *menuVc = [[MenuViewController alloc] initWithMenuActions:menuActions];
+    UINavigationController *menuNavigationController = [[UINavigationController alloc] initWithRootViewController:menuVc];
+    menuNavigationController.navigationBar.translucent = NO;
+
+    
+
+    RevealViewController *revealVc = [[RevealViewController alloc] initWithFrontViewController:profileNavigationController
+                                                                     andRearController:menuNavigationController];
+    mentionsVc.revealControllerDelegate = revealVc;
+    timelineVc.revealControllerDelegate = revealVc;
+    profileVc.revealControllerDelegate = revealVc;
+    menuVc.revealControllerDelegate = revealVc;
+
+    self.window.rootViewController = revealVc;
     [self.window makeKeyAndVisible];
 
     return YES;
@@ -55,6 +93,7 @@ NSString *const kTwitterConsumerSecret = @"IvGcSlFq5GbG0Lbk1vMR577mHsd8bTH5yPhOL
     }
     return NO;
 }
+
 
 
 
