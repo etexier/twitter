@@ -26,11 +26,11 @@ static NSString *const kTweetCell = @"TweetCell";
 
 @interface TimelineViewController () <UITableViewDataSource, UITableViewDelegate, NewTweetViewControllerDelegate, ProfileImageTapDelegate>
 @property(weak, nonatomic) IBOutlet UITableView *tableView;
-@property(strong, nonatomic) IBOutlet UIPanGestureRecognizer *slideGestureRecognizer;
 @property(nonatomic, assign) BOOL presentationMode;
 
 
 @property(nonatomic, strong) NSMutableArray *tweets;
+@property(strong, nonatomic) IBOutlet UIPanGestureRecognizer *slideGestureRecognizer;
 
 @end
 
@@ -77,6 +77,7 @@ static NSString *const kTweetCell = @"TweetCell";
                                                       }];
 
 
+        self.slideable = YES; // by default
     }
 
     return self;
@@ -131,7 +132,12 @@ static NSString *const kTweetCell = @"TweetCell";
 
     }];
     [self loadTweets];
-    self.slideGestureRecognizer.delegate = self.revealControllerDelegate;
+    if (self.slideable) {
+        self.slideGestureRecognizer.delegate = self.revealControllerDelegate;
+        self.slideGestureRecognizer.enabled = YES;
+    } else {
+        self.slideGestureRecognizer.enabled = NO;
+    }
     
 
     // Do any additional setup after loading the view from its nib.
@@ -368,6 +374,7 @@ static NSString *const kTweetCell = @"TweetCell";
         }
         ProfileViewController *profileVc = [[ProfileViewController alloc] initWithNibName:@"TimelineViewController" bundle:nil];
         profileVc.user = [[User alloc] initWithJson:dictionary];
+        profileVc.slideable = NO;
         [self.navigationController pushViewController:profileVc animated:YES];
     }];
 

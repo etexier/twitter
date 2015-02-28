@@ -17,6 +17,8 @@
 @end
 
 @interface TimelineViewController : UIViewController
+@property(nonatomic, assign) BOOL slideable;
+
 
 @property(strong, nonatomic) User *user;
 

@@ -42,17 +42,20 @@ NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUV
 
     // Timeline view controller
     HomeTimelineViewController *homeVc =  [[HomeTimelineViewController alloc] initWithNibName:@"TimelineViewController" bundle:nil];
+    homeVc.slideable = YES;
 
 
     ProfileViewController *profileVc = [[ProfileViewController alloc] initWithNibName:@"TimelineViewController" bundle:nil];
+    profileVc.slideable = YES;
 
-    MentionsTimelineViewController *mentionsTimelineVc = [[MentionsTimelineViewController alloc] initWithNibName:@"TimelineViewController" bundle:nil];
+    MentionsTimelineViewController *mentionsVc = [[MentionsTimelineViewController alloc] initWithNibName:@"TimelineViewController" bundle:nil];
+    mentionsVc.slideable = YES;
 
 
 
     // menu view controller
 
-    UINavigationController *mentionsNavigationController = [[UINavigationController alloc] initWithRootViewController:mentionsTimelineVc];
+    UINavigationController *mentionsNavigationController = [[UINavigationController alloc] initWithRootViewController:mentionsVc];
     mentionsNavigationController.navigationBar.translucent = NO;
 
     UINavigationController *profileNavigationController = [[UINavigationController alloc] initWithRootViewController:profileVc];
@@ -76,7 +79,7 @@ NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUV
 
     RevealViewController *revealVc = [[RevealViewController alloc] initWithFrontViewController:homeNavigationController
                                                                      andRearController:menuNavigationController];
-    mentionsTimelineVc.revealControllerDelegate = revealVc;
+    mentionsVc.revealControllerDelegate = revealVc;
     homeVc.revealControllerDelegate = revealVc;
     profileVc.revealControllerDelegate = revealVc;
     menuVc.revealControllerDelegate = revealVc;
