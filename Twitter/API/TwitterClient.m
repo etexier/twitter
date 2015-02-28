@@ -58,7 +58,7 @@ NSString *const kTwitterClientOAuthRequestTokenPath = @"/oauth/request_token";
 NSString *const kTwitterClientOAuthAccessTokenPath = @"/oauth/access_token";
 
 // GET timeline query params are 'count' and 'max_id'
-NSString *const kTwitterClientHomeTimelinePath =  @"statuses/home_timeline.json";
+NSString *const kTwitterClientHomeTimelinePath = @"statuses/home_timeline.json";
 // doc: https://dev.twitter.com/rest/reference/get/statuses/mentions_timeline
 // ex: GET https://api.twitter.com/1.1/statuses/mentions_timeline.json?count=2&since_id=14927799
 NSString *const kTwitterClientMentionsTimelinePath = @"statuses/mentions_timeline.json";
@@ -221,8 +221,17 @@ static TwitterClient *_sharedInstance = nil;
 #pragma mark Tweets
 
 // generic load timeline
--(void) loadTimelineWithCompletion:(void (^)(NSArray *tweets, NSError *error))completion
-                              path:(NSString *) path
+- (void)loadTimelineWithCompletion:(void (^)(NSArray *tweets, NSError *error))completion
+                              path:(NSString *)path
+                          beforeId:(NSString *)id
+                           afterId:(NSString *)minId {
+    [self loadTimelineWithCompletion:completion path:path screenName:nil beforeId:id afterId:minId];
+}
+
+// generare load timeline with screenname
+- (void)loadTimelineWithCompletion:(void (^)(NSArray *tweets, NSError *error))completion
+                              path:(NSString *)path
+                        screenName:(NSString *) screenName
                           beforeId:(NSString *)id
                            afterId:(NSString *)minId {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -234,6 +243,9 @@ static TwitterClient *_sharedInstance = nil;
         params[@"since_id"] = minId;
     }
 
+    if (screenName) {
+        params[@"screen_name"] = screenName;
+    }
     [self listWithQuery:path parameters:params completion:completion];
 }
 

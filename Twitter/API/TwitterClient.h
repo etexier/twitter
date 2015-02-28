@@ -53,6 +53,8 @@ FOUNDATION_EXPORT NSString *const kTwitterClientProfileTimelinePath;
 
 - (void)loadTimelineWithCompletion:(void (^)(NSArray *tweets, NSError *error))completion path:(NSString *)path beforeId:(NSString *)id1 afterId:(NSString *)minId;
 
+- (void)loadTimelineWithCompletion:(void (^)(NSArray *tweets, NSError *error))completion path:(NSString *)path screenName:(NSString *)screenName beforeId:(NSString *)id1 afterId:(NSString *)minId;
+
 - (void)updateStatus:(NSString *)text completion:(void (^)(NSDictionary *, NSError *))completion;
 
 - (void)favorite:(NSString *)tweetId completion:(void (^)(NSDictionary *, NSError *))completion;

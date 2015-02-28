@@ -28,7 +28,6 @@ static NSString *const kTweetCell = @"TweetCell";
 @property(nonatomic, assign) BOOL presentationMode;
 
 
-
 @property(nonatomic, strong) NSMutableArray *tweets;
 
 @end
@@ -357,7 +356,11 @@ static NSString *const kTweetCell = @"TweetCell";
 
     };
 
-    [[TwitterClient sharedInstance] loadTimelineWithCompletion:timelineCompletion path:[self timelinePath] beforeId:maxId afterId:minId];
+    [[TwitterClient sharedInstance] loadTimelineWithCompletion:timelineCompletion
+                                                          path:[self timelinePath]
+                                                    screenName:self.screenName
+                                                      beforeId:maxId
+                                                       afterId:minId];
 }
 
 

@@ -14,6 +14,9 @@
 
 @interface TimelineViewController : UIViewController
 
+@property(weak, nonatomic) NSString *screenName;
+
+
 @property(weak, nonatomic) id <RevealViewControllerDelegate> revealControllerDelegate;
 
 - (void)loadTweets;
