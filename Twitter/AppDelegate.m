@@ -74,7 +74,7 @@ NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUV
 
     
 
-    RevealViewController *revealVc = [[RevealViewController alloc] initWithFrontViewController:profileNavigationController
+    RevealViewController *revealVc = [[RevealViewController alloc] initWithFrontViewController:homeNavigationController
                                                                      andRearController:menuNavigationController];
     mentionsTimelineVc.revealControllerDelegate = revealVc;
     homeVc.revealControllerDelegate = revealVc;
