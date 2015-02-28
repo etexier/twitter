@@ -11,7 +11,7 @@
 @class User;
 @protocol RevealControllerDelegate;
 
-@interface TimelineViewController : UIViewController
+@interface TimelineViewController : UIViewController <UIGestureRecognizerDelegate>
 
 @property(weak, nonatomic) id<RevealControllerDelegate> revealControllerDelegate;
 

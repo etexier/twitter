@@ -25,6 +25,7 @@ static NSString *const kTweetCell = @"TweetCell";
 
 @interface TimelineViewController () <UITableViewDataSource, UITableViewDelegate, NewTweetViewControllerDelegate>
 @property(weak, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) IBOutlet UIPanGestureRecognizer *slideGestureRecognizer;
 
 
 @property(nonatomic, strong) NSMutableArray *tweets;
@@ -130,6 +131,8 @@ static NSString *const kTweetCell = @"TweetCell";
 
     }];
     [self loadTweets];
+    self.slideGestureRecognizer.delegate = self;
+
 
 
 
@@ -333,4 +336,8 @@ static NSString *const kTweetCell = @"TweetCell";
     [self.revealControllerDelegate onPanGesture:sender onController:self];
 }
 
+-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    NSLog(@"shouldRecognizeSimultaneouslyWithGestureRecognizer called");
+    return YES;
+}
 @end

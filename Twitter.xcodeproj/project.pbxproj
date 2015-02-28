@@ -17,6 +17,7 @@
 		32B1D51C1AA0FF9A004E34D8 /* ProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 32B1D51A1AA0FF9A004E34D8 /* ProfileViewController.xib */; };
 		32B1D5201AA0FFAD004E34D8 /* MentionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B1D51E1AA0FFAD004E34D8 /* MentionsViewController.m */; };
 		32B1D5211AA0FFAD004E34D8 /* MentionsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 32B1D51F1AA0FFAD004E34D8 /* MentionsViewController.xib */; };
+		32B1D5241AA20E3E004E34D8 /* SlideGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B1D5231AA20E3E004E34D8 /* SlideGestureRecognizer.m */; };
 		32C5812B1A9E585500C1FEF3 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C581291A9E585500C1FEF3 /* MenuViewController.m */; };
 		32C5812C1A9E585500C1FEF3 /* MenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 32C5812A1A9E585500C1FEF3 /* MenuViewController.xib */; };
 		32F0B31B1A9925BC00ED623D /* TimelineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32F0B3191A9925BC00ED623D /* TimelineViewController.m */; };
@@ -64,6 +65,8 @@
 		32B1D51D1AA0FFAD004E34D8 /* MentionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MentionsViewController.h; sourceTree = "<group>"; };
 		32B1D51E1AA0FFAD004E34D8 /* MentionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MentionsViewController.m; sourceTree = "<group>"; };
 		32B1D51F1AA0FFAD004E34D8 /* MentionsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MentionsViewController.xib; sourceTree = "<group>"; };
+		32B1D5221AA20E3E004E34D8 /* SlideGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlideGestureRecognizer.h; sourceTree = "<group>"; };
+		32B1D5231AA20E3E004E34D8 /* SlideGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SlideGestureRecognizer.m; sourceTree = "<group>"; };
 		32C581281A9E585500C1FEF3 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
 		32C581291A9E585500C1FEF3 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
 		32C5812A1A9E585500C1FEF3 /* MenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MenuViewController.xib; sourceTree = "<group>"; };
@@ -148,6 +151,7 @@
 		31F522AA1A964FF700C5545C /* Twitter */ = {
 			isa = PBXGroup;
 			children = (
+				32B1D5251AA20E4A004E34D8 /* Recognizers */,
 				32F0B3271A9926CA00ED623D /* Views */,
 				32F0B3171A99256C00ED623D /* View Controllers */,
 				31C4AD481A96BC9200507116 /* Models */,
@@ -227,6 +231,15 @@
 				32F0B3191A9925BC00ED623D /* TimelineViewController.m */,
 			);
 			name = Timeline;
+			sourceTree = "<group>";
+		};
+		32B1D5251AA20E4A004E34D8 /* Recognizers */ = {
+			isa = PBXGroup;
+			children = (
+				32B1D5221AA20E3E004E34D8 /* SlideGestureRecognizer.h */,
+				32B1D5231AA20E3E004E34D8 /* SlideGestureRecognizer.m */,
+			);
+			name = Recognizers;
 			sourceTree = "<group>";
 		};
 		32C581271A9E583200C1FEF3 /* Menu */ = {
@@ -479,6 +492,7 @@
 				330656939227C110341A81A7 /* Helper.m in Sources */,
 				32B1D51B1AA0FF9A004E34D8 /* ProfileViewController.m in Sources */,
 				33065E3EDB76D94C82EE0714 /* TwitterClient.m in Sources */,
+				32B1D5241AA20E3E004E34D8 /* SlideGestureRecognizer.m in Sources */,
 				32C5812B1A9E585500C1FEF3 /* MenuViewController.m in Sources */,
 				330651CB504A8042C9DBB9BB /* User.m in Sources */,
 				330654AF2BDA52C21EC96067 /* RevealViewController.m in Sources */,
