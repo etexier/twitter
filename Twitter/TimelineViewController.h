@@ -12,10 +12,13 @@
 @class User;
 @protocol RevealViewControllerDelegate;
 
+@protocol ProfileImageTapDelegate <NSObject>
+- (void) onProfileImageTap:(NSString *) screenName;
+@end
+
 @interface TimelineViewController : UIViewController
 
-@property(weak, nonatomic) NSString *screenName;
-
+@property(strong, nonatomic) User *user;
 
 @property(weak, nonatomic) id <RevealViewControllerDelegate> revealControllerDelegate;
 

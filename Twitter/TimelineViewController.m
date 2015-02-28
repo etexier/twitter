@@ -18,11 +18,13 @@
 #import "UIScrollView+SVInfiniteScrolling.h"
 #import "UIScrollView+SVPullToRefresh.h"
 #import "Helper.h"
+#import "ProfileViewController.h"
 
 
 static NSString *const kTweetCell = @"TweetCell";
 
-@interface TimelineViewController () <UITableViewDataSource, UITableViewDelegate, NewTweetViewControllerDelegate>
+
+@interface TimelineViewController () <UITableViewDataSource, UITableViewDelegate, NewTweetViewControllerDelegate, ProfileImageTapDelegate>
 @property(weak, nonatomic) IBOutlet UITableView *tableView;
 @property(strong, nonatomic) IBOutlet UIPanGestureRecognizer *slideGestureRecognizer;
 @property(nonatomic, assign) BOOL presentationMode;
@@ -80,6 +82,8 @@ static NSString *const kTweetCell = @"TweetCell";
     return self;
 }
 
+
+// TODO: not used yet
 - (void)updateToPresentationMode:(BOOL)inPresentationMode {
     self.navigationController.view.userInteractionEnabled = inPresentationMode;
     self.presentationMode = inPresentationMode;
@@ -115,17 +119,6 @@ static NSString *const kTweetCell = @"TweetCell";
     [self.tableView registerNib:[UINib nibWithNibName:kTweetCell bundle:nil] forCellReuseIdentifier:kTweetCell];
 
 
-    NSString *logInOutString = [[TwitterClient sharedInstance] isAuthorized] ? @"Sign Out" : @"Sign In";
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:logInOutString
-                                                                             style:UIBarButtonItemStylePlain
-                                                                            target:self
-                                                                            action:@selector(logInOut)];
-
-    UIBarButtonItem *newTweetButton = [[UIBarButtonItem alloc] initWithTitle:@"New"/*initWithImage:[UIImage imageNamed:@"Twitter_logo_blue_32.png"]*/
-                                                                       style:UIBarButtonItemStylePlain
-                                                                      target:self
-                                                                      action:@selector(onNewTweet)];
-    self.navigationItem.rightBarButtonItem = newTweetButton;
 
     [self.tableView addPullToRefreshWithActionHandler:^{
         [self.tableView.pullToRefreshView startAnimating];
@@ -139,10 +132,7 @@ static NSString *const kTweetCell = @"TweetCell";
     }];
     [self loadTweets];
     self.slideGestureRecognizer.delegate = self.revealControllerDelegate;
-
-
-
-
+    
 
     // Do any additional setup after loading the view from its nib.
 }
@@ -187,6 +177,7 @@ static NSString *const kTweetCell = @"TweetCell";
     TweetCell *cell = (TweetCell *) [tableView dequeueReusableCellWithIdentifier:kTweetCell forIndexPath:indexPath];
     cell.tweet = self.tweets[(NSUInteger) indexPath.row];
     cell.delegate = self;
+    cell.profileImageTapDelegate = self;
     return cell;
 }
 
@@ -358,7 +349,7 @@ static NSString *const kTweetCell = @"TweetCell";
 
     [[TwitterClient sharedInstance] loadTimelineWithCompletion:timelineCompletion
                                                           path:[self timelinePath]
-                                                    screenName:self.screenName
+                                                    screenName:[self.user screenName]
                                                       beforeId:maxId
                                                        afterId:minId];
 }
@@ -368,5 +359,19 @@ static NSString *const kTweetCell = @"TweetCell";
     NSLog(@"On Pan gesture, will call delegate %@", self.revealControllerDelegate);
     [self.revealControllerDelegate onPanGesture:sender onController:self];
 }
+
+- (void)onProfileImageTap:(NSString *)screenName {
+    [[TwitterClient sharedInstance] showUserForScreenName:screenName completion:^(NSDictionary *dictionary, NSError *error) {
+        if (error) {
+            NSLog(@"Couldn't push profile controller for screen name %@", screenName);
+            return;
+        }
+        ProfileViewController *profileVc = [[ProfileViewController alloc] initWithNibName:@"TimelineViewController" bundle:nil];
+        profileVc.user = [[User alloc] initWithJson:dictionary];
+        [self.navigationController pushViewController:profileVc animated:YES];
+    }];
+
+}
+
 
 @end

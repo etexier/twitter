@@ -333,6 +333,7 @@ static TwitterClient *_sharedInstance = nil;
     [self getWithQuery:kAccountInfoRequest parameters:nil completion:completion];
 }
 
+
 + (void)parseTweetsFromListResponse:(id)responseObject
                          completion:
                                  (void (^)(NSMutableArray *, NSError *))completion {

@@ -11,6 +11,7 @@
 #import "Helper.h"
 #import "TwitterClient.h"
 #import "NewTweetViewController.h"
+#import "TimelineViewController.h"
 
 @interface TweetCell ()
 
@@ -69,6 +70,7 @@
     _userScreenNameLabel.text = [NSString stringWithFormat:@"@%@", _tweet.user.screenName];
     _tweetTextLabel.text = _tweet.text;
 
+    [self registerGestureOnImageView:self.userImageView selector:@selector(onProfileImageTap)];
     if ([[Helper currentUser].screenName isEqualToString:_tweet.user.screenName]) {
         // no reply is possible
         self.replyImageView.hidden = YES;
@@ -106,6 +108,11 @@
 
     // Calculate how long ago
     _createdTimeLabel.text = [Helper calculateTimeAgoTillDate:_tweet.createdAt];
+}
+
+- (void)onProfileImageTap {
+    [self.profileImageTapDelegate onProfileImageTap:self.tweet.user.screenName];
+
 }
 
 - (void)layoutSubviews {

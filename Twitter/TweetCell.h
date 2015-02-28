@@ -9,7 +9,11 @@
 #import "Tweet.h"
 #import "NewTweetViewControllerDelegate.h"
 
+@protocol ProfileImageTapDelegate;
+
+
 @interface TweetCell : UITableViewCell
 @property (nonatomic, strong) Tweet *tweet;
 @property (nonatomic, weak) id<NewTweetViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<ProfileImageTapDelegate> profileImageTapDelegate;
 @end

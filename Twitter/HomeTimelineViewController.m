@@ -17,6 +17,21 @@
     return @"Home";
 }
 
+- (void) viewDidLoad {
+    [super viewDidLoad];
+    NSString *logInOutString = [[TwitterClient sharedInstance] isAuthorized] ? @"Sign Out" : @"Sign In";
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:logInOutString
+                                                                                 style:UIBarButtonItemStylePlain
+                                                                                target:self
+                                                                                action:@selector(logInOut)];
+    
+        UIBarButtonItem *newTweetButton = [[UIBarButtonItem alloc] initWithTitle:@"New"/*initWithImage:[UIImage imageNamed:@"Twitter_logo_blue_32.png"]*/
+                                                                           style:UIBarButtonItemStylePlain
+                                                                          target:self
+                                                                          action:@selector(onNewTweet)];
+        self.navigationItem.rightBarButtonItem = newTweetButton;
+
+}
 
 
 

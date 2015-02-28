@@ -9,6 +9,7 @@
 #import "ProfileViewController.h"
 #import "RevealViewController.h"
 #import "TwitterClient.h"
+#import "Helper.h"
 
 @interface ProfileViewController ()
 
@@ -22,6 +23,6 @@
 
 
 - (NSString *)timelineTitle {
-    return @"Profile";
+    return self.user ? self.user.name : [Helper currentUser].name;
 }
 @end
