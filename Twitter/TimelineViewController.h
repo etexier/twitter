@@ -7,17 +7,24 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RevealViewController.h"
 
 @class User;
-@protocol RevealControllerDelegate;
+@protocol RevealViewControllerDelegate;
 
-@interface TimelineViewController : UIViewController <UIGestureRecognizerDelegate>
+@interface TimelineViewController : UIViewController
 
-@property(weak, nonatomic) id<RevealControllerDelegate> revealControllerDelegate;
+@property(weak, nonatomic) id <RevealViewControllerDelegate> revealControllerDelegate;
 
 - (void)loadTweets;
 
 - (void)loadTweets:(BOOL)withProgress;
 
 - (NSString *)actualMinId;
+
+- (NSString *)timelinePath;
+
+- (NSString *)timelineTitle;
+
+
 @end

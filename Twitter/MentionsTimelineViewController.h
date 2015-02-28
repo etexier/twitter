@@ -1,5 +1,5 @@
 //
-//  ProfileViewController.h
+//  MentionsTimelineViewController.h
 //  Twitter
 //
 //  Created by Emmanuel Texier on 2/27/15.
@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "TimelineViewController.h"
 
-@interface ProfileViewController : TimelineViewController
+@interface MentionsTimelineViewController : TimelineViewController
 
 @end

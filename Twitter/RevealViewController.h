@@ -8,19 +8,21 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol RevealControllerDelegate<NSObject>
-@optional
+
+@protocol RevealViewControllerDelegate <UIGestureRecognizerDelegate>
+@required
 - (void)onPresentController:(UIViewController *)presentViewController;
 - (void)onPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *) controller ;
 @end
 
-@interface RevealViewController : UIViewController<RevealControllerDelegate>
+@interface RevealViewController : UIViewController<RevealViewControllerDelegate>
+
+@property (nonatomic, strong) UIViewController *frontViewController;
+@property (nonatomic, strong) UIViewController *rearViewController;
 
 - (void)onPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *)controller;
 - (void)onPresentController:(UIViewController *)presentViewController;
 
 - (id)initWithFrontViewController:(UIViewController *)frontViewController andRearController:(UIViewController *)rearViewController;
 
-@property (nonatomic, strong) UIViewController *frontViewController;
-@property (nonatomic, strong) UIViewController *rearViewController;
 @end

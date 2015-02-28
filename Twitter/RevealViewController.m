@@ -8,12 +8,10 @@
 
 #import "RevealViewController.h"
 #import "RevealView.h"
-#import "Helper.h"
 
 @interface RevealViewController ()
 
 @property (nonatomic, strong) RevealView *contentView;
-
 
 @end
 
@@ -80,7 +78,7 @@ CGPoint originalFrontViewCenter;
 
 - (void)onPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *)controller {
     NSLog(@"Pan gesture in delegate");
-    UIView *targetView = [self targetViewForController:controller.navigationController]; // the actual frontView container
+    UIView *targetView = self.contentView.frontView; // the actual frontView container
     if (sender.state == UIGestureRecognizerStateBegan) {
         NSLog(@"Pan began");
         originalFrontViewCenter = targetView.center;
@@ -92,32 +90,38 @@ CGPoint originalFrontViewCenter;
         NSLog(@"Pan ended");
         CGPoint velocity = [sender velocityInView:targetView];
         if (velocity.x > 0) { // moving right
-            [self rightSlideModeForView:targetView];
+            [self rightSlideMode];
         } else { // moving left
-            [self presentationModeForView:targetView];
+            [self presentationMode];
         }
+
     }
 }
-
 - (void)translateView:(UIView *) targetView translationX:(CGFloat)x fromCenter:(CGPoint)center {
     targetView.center = CGPointMake(center.x + x, center.y);
 }
 
-- (void)rightSlideModeForView:(UIView *)targetView {
+- (void)rightSlideMode {
+    UIView *targetView = self.contentView.frontView;
     NSLog(@"Moving %@ in right slide mode", targetView);
     [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.6 initialSpringVelocity:0.2 options:UIViewAnimationOptionCurveEaseOut animations:^{
         targetView.frame = CGRectMake(targetView.frame.size.width - 50, 0, targetView.frame.size.width, targetView.frame.size.height);
     } completion:^(BOOL finished) {
-        // nothing
+        [self updateFrontViewInPresentationMode:NO];
     }];
 }
 
-- (void)presentationModeForView:(UIView *)targetView {
-    NSLog(@"Moving %@ in presentation mode", targetView);
+- (void)updateFrontViewInPresentationMode:(BOOL)mode {
+    //[self.frontViewController updateToPresentationMode:mode];
+}
+
+- (void)presentationMode {
+    NSLog(@"Moving in presentation mode");
+    UIView *targetView = self.contentView.frontView;
     [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.6 initialSpringVelocity:0.2 options:UIViewAnimationOptionCurveEaseOut animations:^{
         targetView.frame = CGRectMake(0, 0, targetView.frame.size.width, targetView.frame.size.height);
     } completion:^(BOOL finished) {
-        // nothing
+        [self updateFrontViewInPresentationMode:YES];
     }];
 }
 
@@ -131,11 +135,13 @@ CGPoint originalFrontViewCenter;
         [self deployViewOfController:presentedController inView:self.contentView.frontView];
         self.frontViewController = presentedController;
     } // else already on the side
-    [self presentationModeForView:[self targetViewForController:presentedController]];
+    [self presentationMode];
 }
 
-- (UIView *) targetViewForController:(UIViewController *) controller {
-    return controller.view.superview;
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    NSLog(@"shouldRecognizeSimultaneouslyWithGestureRecognizer called");
+    return YES;
 }
 
 

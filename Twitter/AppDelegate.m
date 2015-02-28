@@ -12,18 +12,19 @@
 #import "RevealViewController.h"
 #import "TimelineViewController.h"
 #import "ProfileViewController.h"
-#import "MentionsViewController.h"
+#import "MentionsTimelineViewController.h"
 #import "MenuViewController.h"
+#import "HomeTimelineViewController.h"
 
-//NSString *const kTwitterConsumerKey = @"5C74UkLNroHcsRsY2OnapFBx6";
-//NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUVoMFLLVMAycK6J";
+NSString *const kTwitterConsumerKey = @"5C74UkLNroHcsRsY2OnapFBx6";
+NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUVoMFLLVMAycK6J";
 
-NSString *const kTwitterConsumerKey = @"dqDJBbZXgTqQNm7j3c17vk4BP";
-NSString *const kTwitterConsumerSecret = @"IvGcSlFq5GbG0Lbk1vMR577mHsd8bTH5yPhOL9rUubdLWG36Tt";
+//NSString *const kTwitterConsumerKey = @"dqDJBbZXgTqQNm7j3c17vk4BP";
+//NSString *const kTwitterConsumerSecret = @"IvGcSlFq5GbG0Lbk1vMR577mHsd8bTH5yPhOL9rUubdLWG36Tt";
 
 //NSString *const kTwitterConsumerKey = @"RGnU7YY7LJf2zV0zZ7J7Ikg1Z";
 //NSString *const kTwitterConsumerSecret = @"x0we7O4KSFo1AAwppS2I43HD1v5Z0zDShoUu0spt6rJzhlT1rI";
-@interface AppDelegate () <RevealControllerDelegate>
+@interface AppDelegate () <RevealViewControllerDelegate>
 
 @end
 
@@ -40,28 +41,29 @@ NSString *const kTwitterConsumerSecret = @"IvGcSlFq5GbG0Lbk1vMR577mHsd8bTH5yPhOL
     self.window.backgroundColor = [UIColor whiteColor];
 
     // Timeline view controller
-    TimelineViewController *timelineVc = [[TimelineViewController alloc] init];
+    HomeTimelineViewController *homeVc =  [[HomeTimelineViewController alloc] initWithNibName:@"TimelineViewController" bundle:nil];
 
-    ProfileViewController *profileVc = [[ProfileViewController alloc] init];
 
-    MentionsViewController *mentionsVc = [[MentionsViewController alloc] init];
+    ProfileViewController *profileVc = [[ProfileViewController alloc] initWithNibName:@"TimelineViewController" bundle:nil];
+
+    MentionsTimelineViewController *mentionsTimelineVc = [[MentionsTimelineViewController alloc] initWithNibName:@"TimelineViewController" bundle:nil];
 
 
 
     // menu view controller
 
-    UINavigationController *mentionsNavigationController = [[UINavigationController alloc] initWithRootViewController:mentionsVc];
+    UINavigationController *mentionsNavigationController = [[UINavigationController alloc] initWithRootViewController:mentionsTimelineVc];
     mentionsNavigationController.navigationBar.translucent = NO;
 
     UINavigationController *profileNavigationController = [[UINavigationController alloc] initWithRootViewController:profileVc];
     profileNavigationController.navigationBar.translucent = NO;
 
-    UINavigationController *timelineNavigationController = [[UINavigationController alloc] initWithRootViewController:timelineVc];
-    timelineNavigationController.navigationBar.translucent = NO;
+    UINavigationController *homeNavigationController = [[UINavigationController alloc] initWithRootViewController:homeVc];
+    homeNavigationController.navigationBar.translucent = NO;
 
     NSArray *menuActions =
     @[
-      @{@"name" : @"Home", @"controller" : timelineNavigationController},
+      @{@"name" : @"Home", @"controller" : homeNavigationController},
       @{@"name" : @"Profile", @"controller" : profileNavigationController},
       @{@"name" : @"Mentions", @"controller" : mentionsNavigationController},
       ];
@@ -74,8 +76,8 @@ NSString *const kTwitterConsumerSecret = @"IvGcSlFq5GbG0Lbk1vMR577mHsd8bTH5yPhOL
 
     RevealViewController *revealVc = [[RevealViewController alloc] initWithFrontViewController:profileNavigationController
                                                                      andRearController:menuNavigationController];
-    mentionsVc.revealControllerDelegate = revealVc;
-    timelineVc.revealControllerDelegate = revealVc;
+    mentionsTimelineVc.revealControllerDelegate = revealVc;
+    homeVc.revealControllerDelegate = revealVc;
     profileVc.revealControllerDelegate = revealVc;
     menuVc.revealControllerDelegate = revealVc;
 

@@ -11,7 +11,6 @@
 #import "BDBOAuth1SessionManager.h"
 #import "NSDictionary+BDBOAuth1Manager.h"
 #import "Tweet.h"
-#import "User.h"
 
 // internal key used to store current user
 static NSString *const kCurrentUserKey = @"kTwitterClientCurrentUserKey";
@@ -19,8 +18,6 @@ static NSString *const kCurrentUserKey = @"kTwitterClientCurrentUserKey";
 // internal
 static NSString *const kTwitterClientAPIURL = @"https://api.twitter.com/1.1/";
 
-// GET timeline query params are 'count' and 'max_id'
-static NSString *const kTimeLinePath = @"statuses/home_timeline.json";
 
 // send post or reply
 static NSString *const kUpdateStatusRequest = @"statuses/update.json";
@@ -60,6 +57,16 @@ NSString *const kTwitterClientOAuthCallbackURL = @"etexiertwitter://authorize";
 NSString *const kTwitterClientOAuthRequestTokenPath = @"/oauth/request_token";
 NSString *const kTwitterClientOAuthAccessTokenPath = @"/oauth/access_token";
 
+// GET timeline query params are 'count' and 'max_id'
+NSString *const kTwitterClientHomeTimelinePath =  @"statuses/home_timeline.json";
+// doc: https://dev.twitter.com/rest/reference/get/statuses/mentions_timeline
+// ex: GET https://api.twitter.com/1.1/statuses/mentions_timeline.json?count=2&since_id=14927799
+NSString *const kTwitterClientMentionsTimelinePath = @"statuses/mentions_timeline.json";
+// doc: https://dev.twitter.com/rest/reference/get/statuses/user_timeline
+// ex: GET https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=twitterapi&count=2&exclude_replies=false
+NSString *const kTwitterClientProfileTimelinePath = @"statuses/user_timeline.json";
+
+
 
 #pragma mark -
 
@@ -75,6 +82,7 @@ NSString *const kTwitterClientOAuthAccessTokenPath = @"/oauth/access_token";
 #pragma mark - private utility methods
 
 - (void)postWithQuery:(NSString *)query completion:(void (^)(NSDictionary *, NSError *))completion;
+
 
 - (void)listWithQuery:(NSString *)query parameters:(NSDictionary *)params completion:(void (^)(NSArray *, NSError *))completion;
 
@@ -212,9 +220,11 @@ static TwitterClient *_sharedInstance = nil;
 
 #pragma mark Tweets
 
-- (void)loadTimelineOlderThanId:(NSString *)id
-                 andNewerThanId:minId
-                     completion: (void (^)(NSArray *tweets, NSError *error))completion {
+// generic load timeline
+-(void) loadTimelineWithCompletion:(void (^)(NSArray *tweets, NSError *error))completion
+                              path:(NSString *) path
+                          beforeId:(NSString *)id
+                           afterId:(NSString *)minId {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"count"] = @"20";
     if (id) {
@@ -224,11 +234,7 @@ static TwitterClient *_sharedInstance = nil;
         params[@"since_id"] = minId;
     }
 
-    [self listWithQuery:kTimeLinePath parameters:params completion:completion];
-}
-
-- (void)loadTimelineWithCompletion:(void (^)(NSArray *, NSError *))completion {
-    [self loadTimelineOlderThanId:nil andNewerThanId:nil completion:completion];
+    [self listWithQuery:path parameters:params completion:completion];
 }
 
 - (void)updateStatus:(NSString *)text

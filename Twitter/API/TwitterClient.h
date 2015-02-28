@@ -19,6 +19,11 @@ FOUNDATION_EXPORT NSString *const TwitterClientDidSignOutNotification;
 FOUNDATION_EXPORT NSString *const kTwitterClientOAuthCallbackURL;
 
 
+FOUNDATION_EXPORT NSString *const kTwitterClientHomeTimelinePath;
+FOUNDATION_EXPORT NSString *const kTwitterClientMentionsTimelinePath;
+FOUNDATION_EXPORT NSString *const kTwitterClientProfileTimelinePath;
+
+
 @interface TwitterClient : NSObject
 #pragma mark - properties
 
@@ -46,11 +51,7 @@ FOUNDATION_EXPORT NSString *const kTwitterClientOAuthCallbackURL;
 
 #pragma mark - tweets operations
 
-- (void)loadTimelineWithCompletion:(void (^)(NSArray *tweets, NSError *error))completion;
-
-- (void)loadTimelineOlderThanId:(NSString *)id
-                 andNewerThanId:(NSString *)minId
-                     completion:(void (^)(NSArray *tweets, NSError *error))completion;
+- (void)loadTimelineWithCompletion:(void (^)(NSArray *tweets, NSError *error))completion path:(NSString *)path beforeId:(NSString *)id1 afterId:(NSString *)minId;
 
 - (void)updateStatus:(NSString *)text completion:(void (^)(NSDictionary *, NSError *))completion;
 

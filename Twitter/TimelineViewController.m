@@ -10,7 +10,6 @@
 #import "NewTweetViewController.h"
 #import "TwitterClient.h"
 #import "BBlock/UIKit+BBlock.h"
-#import "RevealViewController.h"
 #import "User.h"
 #import "TweetDetailsViewController.h"
 #import "Tweet.h"
@@ -25,7 +24,9 @@ static NSString *const kTweetCell = @"TweetCell";
 
 @interface TimelineViewController () <UITableViewDataSource, UITableViewDelegate, NewTweetViewControllerDelegate>
 @property(weak, nonatomic) IBOutlet UITableView *tableView;
-@property (strong, nonatomic) IBOutlet UIPanGestureRecognizer *slideGestureRecognizer;
+@property(strong, nonatomic) IBOutlet UIPanGestureRecognizer *slideGestureRecognizer;
+@property(nonatomic, assign) BOOL presentationMode;
+
 
 
 @property(nonatomic, strong) NSMutableArray *tweets;
@@ -80,6 +81,12 @@ static NSString *const kTweetCell = @"TweetCell";
     return self;
 }
 
+- (void)updateToPresentationMode:(BOOL)inPresentationMode {
+    self.navigationController.view.userInteractionEnabled = inPresentationMode;
+    self.presentationMode = inPresentationMode;
+}
+
+
 #pragma mark -
 
 - (void)newTweetViewController:(NewTweetViewController *)controller sentTweet:(Tweet *)tweet {
@@ -92,7 +99,8 @@ static NSString *const kTweetCell = @"TweetCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.title = @"Timeline";
+    self.title = [self timelineTitle];
+    self.presentationMode = YES;
 
     // Do any additional setup after loading the view from its nib.
     self.tableView.dataSource = self;
@@ -122,22 +130,28 @@ static NSString *const kTweetCell = @"TweetCell";
 
     [self.tableView addPullToRefreshWithActionHandler:^{
         [self.tableView.pullToRefreshView startAnimating];
-        [self loadTweetsPriorToMaxId:nil andAfterMinId:self.actualMinId withProgress:YES];
+        [self loadsTweetsBeforeId:nil afterId:self.actualMinId withProgress:YES];
     }];
 
     [self.tableView addInfiniteScrollingWithActionHandler:^{
         [self.tableView.infiniteScrollingView startAnimating];
-        [self loadTweetsPriorToMaxId:((Tweet *) [self.tweets lastObject]).id andAfterMinId:nil withProgress:YES];
+        [self loadsTweetsBeforeId:((Tweet *) [self.tweets lastObject]).id afterId:nil withProgress:YES];
 
     }];
     [self loadTweets];
-    self.slideGestureRecognizer.delegate = self;
+    self.slideGestureRecognizer.delegate = self.revealControllerDelegate;
 
 
 
 
 
     // Do any additional setup after loading the view from its nib.
+}
+
+- (NSString *)timelineTitle {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(@selector(timelineTitle))]
+                                 userInfo:nil];
 }
 
 
@@ -149,6 +163,9 @@ static NSString *const kTweetCell = @"TweetCell";
 #pragma mark - table view delegate method
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (!self.presentationMode) {
+        return;
+    }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     TweetDetailsViewController *detailsVc = [[TweetDetailsViewController alloc] initWithTweet:self.tweets[(NSUInteger) indexPath.row]];
 
@@ -210,15 +227,23 @@ static NSString *const kTweetCell = @"TweetCell";
     [self.navigationController pushViewController:vc animated:YES];
 }
 
+#pragma mark - abstract method
+
+- (NSString *)timelinePath {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(@selector(timelinePath))]
+                                 userInfo:nil];
+}
 
 #pragma mark - load data
+
 
 - (void)loadTweets {
     [self loadTweets:YES];
 }
 
 - (void)loadTweets:(BOOL)withProgress {
-    [self loadTweetsPriorToMaxId:nil andAfterMinId:self.actualMinId withProgress:withProgress];
+    [self loadsTweetsBeforeId:nil afterId:self.actualMinId withProgress:withProgress];
 }
 
 - (NSString *)actualMinId {
@@ -241,8 +266,9 @@ static NSString *const kTweetCell = @"TweetCell";
     return minId;
 }
 
-
-- (void)loadTweetsPriorToMaxId:(NSString *)maxId andAfterMinId:(NSString *)minId withProgress:(BOOL)withProgress {
+// maxId nil means before now
+// minId nil means after now
+- (void)loadsTweetsBeforeId:(NSString *)maxId afterId:(NSString *)minId withProgress:(BOOL)withProgress {
 
 
     // show spinner while searching
@@ -277,7 +303,7 @@ static NSString *const kTweetCell = @"TweetCell";
     [self.tableView.infiniteScrollingView startAnimating];
 
 
-    [[TwitterClient sharedInstance] loadTimelineOlderThanId:maxId andNewerThanId:minId completion:^(NSArray *tweets, NSError *error) {
+    void (^timelineCompletion)(NSArray *, NSError *) = ^(NSArray *tweets, NSError *error) {
         if (error) {
             NSLog(@"Error: %@", error.localizedDescription);
             [self.tableView.pullToRefreshView stopAnimating];
@@ -302,6 +328,7 @@ static NSString *const kTweetCell = @"TweetCell";
                     }
                 } else {
                     NSLog(@"couldn't parse tweets");
+
                 }
                 [self.tableView.pullToRefreshView stopAnimating];
                 [self.tableView.infiniteScrollingView stopAnimating];
@@ -328,16 +355,15 @@ static NSString *const kTweetCell = @"TweetCell";
             [self.tableView reloadData];
         });
 
-    }];
+    };
 
+    [[TwitterClient sharedInstance] loadTimelineWithCompletion:timelineCompletion path:[self timelinePath] beforeId:maxId afterId:minId];
 }
+
+
 - (IBAction)onPanGesture:(UIPanGestureRecognizer *)sender {
     NSLog(@"On Pan gesture, will call delegate %@", self.revealControllerDelegate);
     [self.revealControllerDelegate onPanGesture:sender onController:self];
 }
 
--(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    NSLog(@"shouldRecognizeSimultaneouslyWithGestureRecognizer called");
-    return YES;
-}
 @end

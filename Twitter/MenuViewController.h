@@ -12,7 +12,7 @@
 @interface MenuViewController : UIViewController
 - (instancetype) initWithMenuActions:(NSArray *) menuActions;
 
-@property (weak, nonatomic) id<RevealControllerDelegate> revealControllerDelegate;
+@property (weak, nonatomic) id<RevealViewControllerDelegate> revealControllerDelegate;
 
 
 @end
