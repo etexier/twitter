@@ -16,6 +16,7 @@
 #import "MenuViewController.h"
 #import "HomeTimelineViewController.h"
 #import "Helper.h"
+#import "LoginViewController.h"
 
 NSString *const kTwitterConsumerKey = @"5C74UkLNroHcsRsY2OnapFBx6";
 NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUVoMFLLVMAycK6J";
@@ -78,15 +79,19 @@ NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUV
     [Helper initLayoutForController:menuNavigationController];
 
 
-    
+    LoginViewController *loginVc = [[LoginViewController alloc] initWithFrontViewController:homeNavigationController];
 
-    RevealViewController *revealVc = [[RevealViewController alloc] initWithFrontViewController:homeNavigationController
+
+    RevealViewController *revealVc = [[RevealViewController alloc] initWithFrontViewController:loginVc
                                                                              andRearController:menuNavigationController
                                                                                    menuActions:menuActions];
+
+
     mentionsVc.revealControllerDelegate = revealVc;
     homeVc.revealControllerDelegate = revealVc;
     profileVc.revealControllerDelegate = revealVc;
     menuVc.revealControllerDelegate = revealVc;
+    loginVc.revealControllerDelegate = revealVc;
 
     self.window.rootViewController = revealVc;
     [self.window makeKeyAndVisible];

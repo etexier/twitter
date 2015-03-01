@@ -13,6 +13,8 @@
 		31F522B91A964FF700C5545C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31F522B81A964FF700C5545C /* Images.xcassets */; };
 		31F522BC1A964FF700C5545C /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 31F522BA1A964FF700C5545C /* LaunchScreen.xib */; };
 		31F522C81A964FF700C5545C /* TwitterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F522C71A964FF700C5545C /* TwitterTests.m */; };
+		322294551AA2EBA400657509 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 322294531AA2EBA400657509 /* LoginViewController.m */; };
+		322294561AA2EBA400657509 /* LoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 322294541AA2EBA400657509 /* LoginViewController.xib */; };
 		3294E2E91AA2A2E400E3E088 /* UserHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3294E2E81AA2A2E400E3E088 /* UserHeaderView.xib */; };
 		3294E2EC1AA2A7B600E3E088 /* UserHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3294E2EB1AA2A7B600E3E088 /* UserHeaderView.m */; };
 		32B1D51B1AA0FF9A004E34D8 /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B1D5191AA0FF9A004E34D8 /* ProfileViewController.m */; };
@@ -59,6 +61,9 @@
 		31F522C11A964FF700C5545C /* TwitterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TwitterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		31F522C61A964FF700C5545C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		31F522C71A964FF700C5545C /* TwitterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TwitterTests.m; sourceTree = "<group>"; };
+		322294521AA2EBA400657509 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
+		322294531AA2EBA400657509 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
+		322294541AA2EBA400657509 /* LoginViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoginViewController.xib; sourceTree = "<group>"; };
 		3294E2E81AA2A2E400E3E088 /* UserHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UserHeaderView.xib; sourceTree = "<group>"; };
 		3294E2EA1AA2A7B600E3E088 /* UserHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserHeaderView.h; sourceTree = "<group>"; };
 		3294E2EB1AA2A7B600E3E088 /* UserHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserHeaderView.m; sourceTree = "<group>"; };
@@ -220,6 +225,7 @@
 				32C581271A9E583200C1FEF3 /* Menu */,
 				33065959F29320AA47B2ABF0 /* Reveal */,
 				330651ADC29D4DC887D3A089 /* Timeline */,
+				330652176C5F560C11543B1B /* Login */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -259,6 +265,16 @@
 			);
 			name = Timeline;
 			path = Timelines;
+			sourceTree = "<group>";
+		};
+		330652176C5F560C11543B1B /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				322294521AA2EBA400657509 /* LoginViewController.h */,
+				322294531AA2EBA400657509 /* LoginViewController.m */,
+				322294541AA2EBA400657509 /* LoginViewController.xib */,
+			);
+			name = Login;
 			sourceTree = "<group>";
 		};
 		330652874D9BC50969294F4D /* New */ = {
@@ -427,6 +443,7 @@
 				330651E3B70097763480B051 /* TweetDetailsViewController.xib in Resources */,
 				3294E2E91AA2A2E400E3E088 /* UserHeaderView.xib in Resources */,
 				33065DE168EFD6D2B92DA1E7 /* NewTweetViewController.xib in Resources */,
+				322294561AA2EBA400657509 /* LoginViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -491,6 +508,7 @@
 				330654AF2BDA52C21EC96067 /* RevealViewController.m in Sources */,
 				33065E8899FA38C3C2267798 /* RevealView.m in Sources */,
 				33065D752CBB618602E963A4 /* TimelineViewController.m in Sources */,
+				322294551AA2EBA400657509 /* LoginViewController.m in Sources */,
 				33065203859D937FA394DED4 /* TweetDetailsViewController.m in Sources */,
 				3306519C52D317A70353EB46 /* NewTweetViewController.m in Sources */,
 				330651535D6A6E686130CEAE /* HomeTimelineViewController.m in Sources */,

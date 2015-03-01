@@ -61,6 +61,8 @@
                                   completionBlock:^(NSInteger buttonIndex, UIActionSheet *actionSheet) {
                                       if (buttonIndex == actionSheet.destructiveButtonIndex) {
                                           [[TwitterClient sharedInstance] deAuthorize];
+                                          [self.revealControllerDelegate transitionToLoginController];
+
                                       }
                                   }]
              showInView:self.view];

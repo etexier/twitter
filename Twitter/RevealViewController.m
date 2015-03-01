@@ -21,6 +21,7 @@
 
 @property(nonatomic, strong) RevealView *contentView;
 
+@property(nonatomic, strong) UIViewController *loginController;
 @end
 
 
@@ -31,7 +32,8 @@ CGPoint originalFrontViewCenter;
 
 - (instancetype)initWithFrontViewController:(UIViewController *)frontViewController
                           andRearController:(UIViewController *)rearViewController
-                                menuActions:(NSArray *)menuActions {
+                                menuActions:(NSArray *)menuActions
+                       {
     self = [super init];
     if (self) {
         self.frontViewController = frontViewController;
@@ -42,6 +44,8 @@ CGPoint originalFrontViewCenter;
         springWithDamping = 0.6;
         initialSpringVelocity = 0.2;
         slideWidth = 100;
+        self.loginController = frontViewController;
+
     }
     return self;
 }
@@ -57,8 +61,6 @@ CGPoint originalFrontViewCenter;
 
     // set our contentView to the controllers view
     self.view = self.contentView;
-
-//    self.contentView.backgroundColor = [UIColor blackColor];
 
 
 
@@ -89,6 +91,11 @@ CGPoint originalFrontViewCenter;
 
 
 #pragma mark - RevealControllerDelegate method
+
+- (void)transitionToLoginController {
+    [self transitionToController:self.loginController];
+
+}
 
 - (void)onHorizontalPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *)controller {
     NSLog(@"Pan gesture in delegate");
@@ -121,16 +128,28 @@ CGPoint originalFrontViewCenter;
     targetView.center = CGPointMake(newX, center.y);
 }
 
-- (void)transitionToController:(UIViewController *)controller {
+- (void)slideToController:(UIViewController *)controller {
     UIView *targetView = self.contentView.frontView;
-    NSLog(@"Transitioning to %@", controller);
+    NSLog(@"slide to %@", controller);
     [UIView animateWithDuration:duration delay:delay usingSpringWithDamping:0.6 initialSpringVelocity:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-        if (self.frontViewController != controller) { // not the controller on the side
-            targetView.frame = CGRectMake(targetView.frame.size.width, 0, targetView.frame.size.width, targetView.frame.size.height);
-        }
     }                completion:^(BOOL finished) {
         [self partiallyUnslideController:controller];
     }];
+
+}
+
+- (void)transitionToController:(UIViewController *)presentedController {
+    NSLog(@"Transitioning to %@", presentedController);
+    NSLog(@"Current front view : %@", self.frontViewController);
+
+    if (self.frontViewController != presentedController) { // not the controller on the side
+        NSLog(@"Undeploying old controller %@", self.frontViewController);
+        [self undeployViewOfController:self.frontViewController];
+        [self deployViewOfController:presentedController inView:self.contentView.frontView];
+        self.frontViewController = presentedController;
+    } // else already on the side
+    [self presentController];
+
 
 }
 
@@ -146,7 +165,7 @@ CGPoint originalFrontViewCenter;
 
 - (void)onNavigationBarLongPress:(UILongPressGestureRecognizer *)sender {
     NSLog(@"Detected long press on %@", sender.view);
-    [self transitionToController:(UIViewController *) self.menuActions[MenuActionProfile][@"controller"]];
+    [self slideToController:(UIViewController *) self.menuActions[MenuActionProfile][@"controller"]];
 }
 
 - (void)presentController {
