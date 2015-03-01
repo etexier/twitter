@@ -55,6 +55,10 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"MenuActionCell"];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.backgroundColor = self.tableView.backgroundColor;
+        cell.tintColor = self.tableView.tintColor;
+        cell.textLabel.textColor = [UIColor whiteColor];
+        cell.textLabel.font = [UIFont boldSystemFontOfSize:20.0];
     }
     cell.textLabel.text = self.menuActions[(NSUInteger) indexPath.row][@"name"];
     cell.imageView.image = nil;
