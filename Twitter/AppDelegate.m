@@ -64,12 +64,12 @@ NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUV
     UINavigationController *homeNavigationController = [[UINavigationController alloc] initWithRootViewController:homeVc];
     homeNavigationController.navigationBar.translucent = NO;
 
-    NSArray *menuActions =
-    @[
-      @{@"name" : @"Home", @"controller" : homeNavigationController},
-      @{@"name" : @"Profile", @"controller" : profileNavigationController},
-      @{@"name" : @"Mentions", @"controller" : mentionsNavigationController},
-      ];
+    NSMutableArray *actions = [NSMutableArray array];
+    actions[MenuActionHome] = @{@"name" : @"Home", @"controller" : homeNavigationController};
+    actions[MenuActionMentions] =  @{@"name" : @"Mentions", @"controller" : mentionsNavigationController};
+    actions[MenuActionProfile] = @{@"name" : @"Profile", @"controller" : profileNavigationController};
+
+    NSArray *menuActions = [NSArray arrayWithArray:actions];
 
     MenuViewController *menuVc = [[MenuViewController alloc] initWithMenuActions:menuActions];
     UINavigationController *menuNavigationController = [[UINavigationController alloc] initWithRootViewController:menuVc];
@@ -78,7 +78,8 @@ NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUV
     
 
     RevealViewController *revealVc = [[RevealViewController alloc] initWithFrontViewController:homeNavigationController
-                                                                     andRearController:menuNavigationController];
+                                                                             andRearController:menuNavigationController
+                                                                                   menuActions:menuActions];
     mentionsVc.revealControllerDelegate = revealVc;
     homeVc.revealControllerDelegate = revealVc;
     profileVc.revealControllerDelegate = revealVc;

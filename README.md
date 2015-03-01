@@ -25,7 +25,7 @@ Time spent: `10h`
 
 - [X] Tapping on a user image should bring up that user's profile page
 - [ ] Optional: Account switching
-- [ ] Long press on tab bar to bring up Account view with animation
+- [X] Long press on tab bar to bring up Account view with animation
 - [ ] Tap account to switch to
 - [ ] Include a plus button to Add an Account
 - [ ] Swipe to delete an account

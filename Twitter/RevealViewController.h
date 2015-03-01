@@ -9,10 +9,17 @@
 #import <UIKit/UIKit.h>
 
 
+typedef NS_ENUM(NSInteger, MenuAction) {
+    MenuActionHome = 0,
+    MenuActionMentions,
+    MenuActionProfile
+};
 @protocol RevealViewControllerDelegate <UIGestureRecognizerDelegate>
 @required
 - (void)onPresentController:(UIViewController *)presentViewController;
 - (void)onPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *) controller ;
+- (void)onNavigationBarLongPress;
+
 @end
 
 @interface RevealViewController : UIViewController<RevealViewControllerDelegate>
@@ -20,9 +27,12 @@
 @property (nonatomic, strong) UIViewController *frontViewController;
 @property (nonatomic, strong) UIViewController *rearViewController;
 
+
+@property(nonatomic, weak) NSArray *menuActions;
+
 - (void)onPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *)controller;
 - (void)onPresentController:(UIViewController *)presentViewController;
 
-- (id)initWithFrontViewController:(UIViewController *)frontViewController andRearController:(UIViewController *)rearViewController;
+- (instancetype)initWithFrontViewController:(UIViewController *)frontViewController andRearController:(UIViewController *)rearViewController menuActions:(NSArray *)menuActions;
 
 @end

@@ -21,11 +21,14 @@
 CGPoint originalFrontViewCenter;
 
 
-- (id)initWithFrontViewController:(UIViewController *)frontViewController andRearController:(UIViewController *)rearViewController {
+- (instancetype)initWithFrontViewController:(UIViewController *)frontViewController 
+                          andRearController:(UIViewController *)rearViewController 
+                                menuActions:(NSArray *)menuActions {
     self = [super init];
     if (self) {
         self.frontViewController = frontViewController;
         self.rearViewController = rearViewController;
+        self.menuActions = menuActions;
     }
     return self;
 }
@@ -70,7 +73,6 @@ CGPoint originalFrontViewCenter;
 
 - (void)undeployViewOfController:(UIViewController *)controller {
     [controller.view removeFromSuperview];
-
 }
 
 
@@ -107,21 +109,25 @@ CGPoint originalFrontViewCenter;
     [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.6 initialSpringVelocity:0.2 options:UIViewAnimationOptionCurveEaseOut animations:^{
         targetView.frame = CGRectMake(targetView.frame.size.width - 50, 0, targetView.frame.size.width, targetView.frame.size.height);
     } completion:^(BOOL finished) {
-        [self updateFrontViewInPresentationMode:NO];
     }];
 }
 
-- (void)updateFrontViewInPresentationMode:(BOOL)mode {
-    //[self.frontViewController updateToPresentationMode:mode];
-}
 
+-(void) onNavigationBarLongPress:(UILongPressGestureRecognizer *) sender {
+    NSLog(@"Detected long press on %@", sender.view);
+    if (self.frontViewController != self.menuActions[MenuActionHome][@"controller"]) {
+        return;
+    }
+    [self rightSlideMode];
+    UIViewController *controller = (UIViewController *) self.menuActions[MenuActionProfile][@"controller"];
+    [self onPresentController:controller];
+}
 - (void)presentationMode {
     NSLog(@"Moving in presentation mode");
     UIView *targetView = self.contentView.frontView;
     [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.6 initialSpringVelocity:0.2 options:UIViewAnimationOptionCurveEaseOut animations:^{
         targetView.frame = CGRectMake(0, 0, targetView.frame.size.width, targetView.frame.size.height);
     } completion:^(BOOL finished) {
-        [self updateFrontViewInPresentationMode:YES];
     }];
 }
 

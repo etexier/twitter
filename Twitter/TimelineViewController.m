@@ -119,7 +119,12 @@ static NSString *const kTweetCell = @"TweetCell";
     // cell registration
     [self.tableView registerNib:[UINib nibWithNibName:kTweetCell bundle:nil] forCellReuseIdentifier:kTweetCell];
 
-
+    if (self.slideable) {
+        self.slideGestureRecognizer.delegate = self.revealControllerDelegate;
+        self.slideGestureRecognizer.enabled = YES;
+    } else {
+        self.slideGestureRecognizer.enabled = NO;
+    }
 
     [self.tableView addPullToRefreshWithActionHandler:^{
         [self.tableView.pullToRefreshView startAnimating];
@@ -131,17 +136,30 @@ static NSString *const kTweetCell = @"TweetCell";
         [self loadsTweetsBeforeId:((Tweet *) [self.tweets lastObject]).id afterId:nil withProgress:YES];
 
     }];
-    [self loadTweets];
-    if (self.slideable) {
-        self.slideGestureRecognizer.delegate = self.revealControllerDelegate;
-        self.slideGestureRecognizer.enabled = YES;
-    } else {
-        self.slideGestureRecognizer.enabled = NO;
-    }
-    
 
-    // Do any additional setup after loading the view from its nib.
+    [self loadTweets];
+    [self registerLongPressOnNavigationBar];
+
 }
+
+- (void)registerLongPressOnNavigationBar {
+    NSLog(@"Registering long press gesture recognizer");
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self.revealControllerDelegate
+                                                                                            action:@selector(onNavigationBarLongPress:)];
+
+    UIView *v = self.navigationController.view;
+    v.userInteractionEnabled = YES;
+    [v addGestureRecognizer:longPress];
+
+//    for (UIView *v in self.navigationController.navigationBar.subviews) {
+//        [v setUserInteractionEnabled:YES];
+//        [v addGestureRecognizer:longPress];
+//
+//    }
+    
+    
+}
+
 
 - (NSString *)timelineTitle {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
