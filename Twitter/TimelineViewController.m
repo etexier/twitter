@@ -26,7 +26,7 @@ static NSString *const kTweetCell = @"TweetCell";
 
 
 @interface TimelineViewController () <UITableViewDataSource, UITableViewDelegate, NewTweetViewControllerDelegate, ProfileImageTapDelegate>
-@property(weak, nonatomic) IBOutlet UITableView *tableView;
+
 @property(nonatomic, assign) BOOL presentationMode;
 
 
@@ -113,7 +113,6 @@ static NSString *const kTweetCell = @"TweetCell";
     // cell auto dim.
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 100;
-    self.tableView.separatorColor = [UIColor lightGrayColor];
 
     self.tableView.delegate = self;
 

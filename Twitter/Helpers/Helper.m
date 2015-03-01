@@ -20,6 +20,11 @@
     [UIView commitAnimations];
 }
 
++ (void)initLayoutForController:(UINavigationController *)controller {
+    controller.navigationBar.translucent = NO;
+
+}
+
 
 + (NSString *)calculateTimeAgoTillDate:(NSDate *)date {
     NSDate *now = [NSDate date];
@@ -201,13 +206,13 @@
     }
 }
 
-+(CGFloat) statusBarAdjustment:( UIView*) view {
++ (CGFloat)statusBarAdjustment:(UIView *)view {
     CGFloat adjustment = 0.0f;
     UIApplication *app = [UIApplication sharedApplication];
     CGRect viewFrame = [view convertRect:view.bounds toView:[app keyWindow]];
     CGRect statusBarFrame = [app statusBarFrame];
 
-    if ( CGRectIntersectsRect(viewFrame, statusBarFrame) )
+    if (CGRectIntersectsRect(viewFrame, statusBarFrame))
         adjustment = fminf(statusBarFrame.size.width, statusBarFrame.size.height);
 
     return adjustment;
@@ -258,5 +263,9 @@ static NSString *const kCurrentUserKey = @"kTwitterCurrentUserKey";
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
++ (UIColor *)twitterBackgroundColor {
+    return [[UIColor alloc] initWithRed:117.0 green:190.0 blue:240.0 alpha:1.0];
+
+}
 
 @end

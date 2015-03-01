@@ -56,8 +56,8 @@
     self.dateLabel.text = [Helper calculateLocalDate:_tweet.createdAt];
     self.tweetLabel.text = _tweet.text;
     self.tweetLabel.layer.borderColor = [UIColor whiteColor].CGColor;
-    self.tweetLabel.layer.cornerRadius = 4.0;
-    self.tweetLabel.layer.borderWidth = 1;
+//    self.tweetLabel.layer.cornerRadius = 4.0;
+//    self.tweetLabel.layer.borderWidth = 1;
     UIEdgeInsets insets = {0, 5, 0, 5};
 
     [self.tweetLabel drawTextInRect:UIEdgeInsetsInsetRect(self.tweetLabel.layer.visibleRect, insets)];

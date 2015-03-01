@@ -9,5 +9,12 @@
 #import <UIKit/UIKit.h>
 
 @interface UserHeaderView : UIView
+@property (weak, nonatomic) IBOutlet UIImageView *imageView;
+@property (weak, nonatomic) IBOutlet UILabel *userNameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *FollowersNumberLabel;
+@property (weak, nonatomic) IBOutlet UILabel *followingNumberLabel;
+@property (weak, nonatomic) IBOutlet UILabel *screenNameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *tweetsNumberLabel;
 
++(instancetype) userHeaderView;
 @end

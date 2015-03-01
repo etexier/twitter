@@ -14,7 +14,9 @@
 @property(nonatomic, copy, readonly) NSString *name;
 @property(nonatomic, copy, readonly) NSString *screenName;
 @property(nonatomic, copy, readonly) NSString *id;
-
+@property(nonatomic, copy, readonly) NSNumber *followersCount;
+@property(nonatomic, copy, readonly) NSNumber *followingCount;
+@property(nonatomic, copy, readonly) NSNumber *tweetsCount;
 #pragma mark - init
 
 - (instancetype)initWithJson:(NSDictionary *)dictionaryValue;

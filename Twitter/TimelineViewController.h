@@ -17,6 +17,8 @@
 @end
 
 @interface TimelineViewController : UIViewController
+@property(weak, nonatomic) IBOutlet UITableView *tableView;
+
 @property(nonatomic, assign) BOOL slideable;
 
 

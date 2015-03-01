@@ -10,12 +10,9 @@
 
 @implementation UserHeaderView
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
 
++ (instancetype)userHeaderView {
+    UserHeaderView *userHeaderView = [[[NSBundle mainBundle] loadNibNamed:@"UserHeaderView" owner:nil options:nil] lastObject];
+    return userHeaderView;
+}
 @end

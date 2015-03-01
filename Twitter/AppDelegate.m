@@ -15,6 +15,7 @@
 #import "MentionsTimelineViewController.h"
 #import "MenuViewController.h"
 #import "HomeTimelineViewController.h"
+#import "Helper.h"
 
 NSString *const kTwitterConsumerKey = @"5C74UkLNroHcsRsY2OnapFBx6";
 NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUVoMFLLVMAycK6J";
@@ -24,7 +25,7 @@ NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUV
 
 //NSString *const kTwitterConsumerKey = @"RGnU7YY7LJf2zV0zZ7J7Ikg1Z";
 //NSString *const kTwitterConsumerSecret = @"x0we7O4KSFo1AAwppS2I43HD1v5Z0zDShoUu0spt6rJzhlT1rI";
-@interface AppDelegate () <RevealViewControllerDelegate>
+@interface AppDelegate ()
 
 @end
 
@@ -56,13 +57,14 @@ NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUV
     // menu view controller
 
     UINavigationController *mentionsNavigationController = [[UINavigationController alloc] initWithRootViewController:mentionsVc];
-    mentionsNavigationController.navigationBar.translucent = NO;
+    [Helper initLayoutForController:mentionsNavigationController];
 
     UINavigationController *profileNavigationController = [[UINavigationController alloc] initWithRootViewController:profileVc];
-    profileNavigationController.navigationBar.translucent = NO;
+    [Helper initLayoutForController:profileNavigationController];
 
     UINavigationController *homeNavigationController = [[UINavigationController alloc] initWithRootViewController:homeVc];
-    homeNavigationController.navigationBar.translucent = NO;
+    [Helper initLayoutForController:homeNavigationController];
+
 
     NSMutableArray *actions = [NSMutableArray array];
     actions[MenuActionHome] = @{@"name" : @"Home", @"controller" : homeNavigationController};
@@ -73,7 +75,8 @@ NSString *const kTwitterConsumerSecret = @"Lxl7qlBUdid7Za20UQu9PEAOzgjCs34wu7hUV
 
     MenuViewController *menuVc = [[MenuViewController alloc] initWithMenuActions:menuActions];
     UINavigationController *menuNavigationController = [[UINavigationController alloc] initWithRootViewController:menuVc];
-    menuNavigationController.navigationBar.translucent = NO;
+    [Helper initLayoutForController:menuNavigationController];
+
 
     
 

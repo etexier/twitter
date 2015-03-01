@@ -12,9 +12,12 @@
 @interface Helper : NSObject
 + (void) fadeInImage:(UIImageView *)imageView url:(NSURL *) url;
 
++ (void)initLayoutForController:(UINavigationController *)controller;
+
 
 + (User *) currentUser;
 + (void) setCurrentUser:(User *) user;
++ (UIColor *) twitterBackgroundColor;
 
 
 + (NSString *)calculateTimeAgoTillDate:(NSDate *)date;

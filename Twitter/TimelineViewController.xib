@@ -20,12 +20,13 @@
                     <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <gestureRecognizers/>
+                    <color key="separatorColor" red="0.46014745229999998" green="0.74379772430000002" blue="0.94903761149999999" alpha="1" colorSpace="calibratedRGB"/>
                     <connections>
                         <outletCollection property="gestureRecognizers" destination="jtB-Fk-iNy" appends="YES" id="tKR-aq-sYq"/>
                     </connections>
                 </tableView>
             </subviews>
-            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <color key="backgroundColor" red="0.46014745229999998" green="0.74379772430000002" blue="0.94903761149999999" alpha="1" colorSpace="calibratedRGB"/>
             <gestureRecognizers/>
             <constraints>
                 <constraint firstItem="3fh-ag-s2W" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="0n5-Eh-XSQ"/>

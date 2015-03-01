@@ -16,9 +16,11 @@ typedef NS_ENUM(NSInteger, MenuAction) {
 };
 @protocol RevealViewControllerDelegate <UIGestureRecognizerDelegate>
 @required
-- (void)presentController:(UIViewController *)presentViewController;
+- (void)partiallyUnslideController:(UIViewController *)presentViewController;
 - (void)onHorizontalPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *) controller ;
 - (void)onNavigationBarLongPress:(UILongPressGestureRecognizer *) sender;
+- (void)transitionToController:(UIViewController *)controller;
+
 
 @end
 
@@ -31,7 +33,10 @@ typedef NS_ENUM(NSInteger, MenuAction) {
 @property(nonatomic, weak) NSArray *menuActions;
 
 - (void)onHorizontalPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *)controller;
-- (void)presentController:(UIViewController *)presentViewController;
+
+- (void)transitionToController:(UIViewController *)controller;
+
+- (void)partiallyUnslideController:(UIViewController *)presentViewController;
 
 - (instancetype)initWithFrontViewController:(UIViewController *)frontViewController andRearController:(UIViewController *)rearViewController menuActions:(NSArray *)menuActions;
 

@@ -76,7 +76,7 @@
         return;
     }
 
-    [self.revealControllerDelegate presentController:(UIViewController *) value];
+    [self.revealControllerDelegate transitionToController:(UIViewController *) value];
 
     
 }

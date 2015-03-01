@@ -18,6 +18,9 @@
             @"id" : @"id_str",
             @"name" : @"name",
             @"screenName" : @"screen_name",
+            @"followersCount" : @"followers_count",
+            @"followingCount" : @"friends_count",
+            @"tweetsCount" : @"statuses_count",
             @"profileImageUrl" : @"profile_image_url"
     };
 }
