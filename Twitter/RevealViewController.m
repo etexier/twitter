@@ -32,8 +32,7 @@ CGPoint originalFrontViewCenter;
 
 - (instancetype)initWithFrontViewController:(UIViewController *)frontViewController
                           andRearController:(UIViewController *)rearViewController
-                                menuActions:(NSArray *)menuActions
-                       {
+                                menuActions:(NSArray *)menuActions {
     self = [super init];
     if (self) {
         self.frontViewController = frontViewController;
@@ -61,7 +60,6 @@ CGPoint originalFrontViewCenter;
 
     // set our contentView to the controllers view
     self.view = self.contentView;
-
 
 
     [self deployViewOfController:self.rearViewController inView:self.contentView.rearView];
@@ -97,6 +95,8 @@ CGPoint originalFrontViewCenter;
 
 }
 
+BOOL ignoreHorizontalGesture = NO;
+
 - (void)onHorizontalPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *)controller {
     NSLog(@"Pan gesture in delegate");
     UIView *targetView = self.contentView.frontView; // the actual frontView container
@@ -106,14 +106,32 @@ CGPoint originalFrontViewCenter;
     } else if (sender.state == UIGestureRecognizerStateChanged) {
         NSLog(@"Pan changed");
         CGPoint translation = [sender translationInView:targetView];
-        [self translateView:targetView translationX:translation.x fromCenter:originalFrontViewCenter];
+        CGFloat d = fabsf(translation.y);
+        CGFloat n = fabsf(translation.x);
+        if (d != 0.0) {
+            CGFloat a = n / d;
+            NSLog(@"%f/%f a = %f", n, d, a);
+            if (a < 1) {
+                ignoreHorizontalGesture = YES;
+            } else {
+                ignoreHorizontalGesture = NO;
+                [self translateView:targetView translationX:translation.x fromCenter:originalFrontViewCenter];
+
+            }
+
+
+        } else {
+            [self translateView:targetView translationX:translation.x fromCenter:originalFrontViewCenter];
+        }
     } else if (sender.state == UIGestureRecognizerStateEnded) {
-        NSLog(@"Pan ended");
-        CGPoint velocity = [sender velocityInView:targetView];
-        if (velocity.x > 0) { // moving right
-            [self partiallySlideController];
-        } else { // moving left
-            [self presentController];
+        if (!ignoreHorizontalGesture) {
+            NSLog(@"Pan ended");
+            CGPoint velocity = [sender velocityInView:targetView];
+            if (velocity.x > 0) { // moving right
+                [self partiallySlideController];
+            } else { // moving left
+                [self presentController];
+            }
         }
 
     }
@@ -129,7 +147,6 @@ CGPoint originalFrontViewCenter;
 }
 
 - (void)slideToController:(UIViewController *)controller {
-    UIView *targetView = self.contentView.frontView;
     NSLog(@"slide to %@", controller);
     [UIView animateWithDuration:duration delay:delay usingSpringWithDamping:0.6 initialSpringVelocity:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
     }                completion:^(BOOL finished) {
@@ -177,6 +194,7 @@ CGPoint originalFrontViewCenter;
     }];
 }
 
+
 - (void)partiallyUnslideController:(UIViewController *)presentedController {
     NSLog(@"RevealViewController : present controller %@", presentedController);
     NSLog(@"Current front view : %@", self.frontViewController);
@@ -191,8 +209,21 @@ CGPoint originalFrontViewCenter;
 }
 
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)sender shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     NSLog(@"shouldRecognizeSimultaneouslyWithGestureRecognizer called");
+    UIView *targetView = self.contentView.frontView;
+    if (sender.state == UIGestureRecognizerStateChanged) {
+        NSLog(@"Pan changed");
+        CGPoint translation = [(UIPanGestureRecognizer *) sender translationInView:targetView];
+        CGFloat d = fabsf(translation.y);
+        CGFloat n = fabsf(translation.x);
+        if (d != 0.0) {
+            CGFloat a = n / d;
+            NSLog(@"%f/%f a = %f", n, d, a);
+            return a < 1;
+
+        }
+    }
     return YES;
 }
 
