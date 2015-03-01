@@ -71,8 +71,8 @@
         NSLog(@"Menu Action Not supported yet");
         return;
     }
-    
-    [self.revealControllerDelegate onPresentController:(UIViewController *) value];
+
+    [self.revealControllerDelegate presentController:(UIViewController *) value];
 
     
 }

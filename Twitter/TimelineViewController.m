@@ -19,6 +19,7 @@
 #import "UIScrollView+SVPullToRefresh.h"
 #import "Helper.h"
 #import "ProfileViewController.h"
+#import "HomeTimelineViewController.h"
 
 
 static NSString *const kTweetCell = @"TweetCell";
@@ -144,7 +145,7 @@ static NSString *const kTweetCell = @"TweetCell";
 
 - (void)registerLongPressOnNavigationBar {
     NSLog(@"Registering long press gesture recognizer");
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self.revealControllerDelegate
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                                             action:@selector(onNavigationBarLongPress:)];
 
     UIView *v = self.navigationController.view;
@@ -158,6 +159,14 @@ static NSString *const kTweetCell = @"TweetCell";
 //    }
     
     
+}
+
+- (void)onNavigationBarLongPress:(UILongPressGestureRecognizer*)sender {
+    if (self.class != HomeTimelineViewController.class) {
+        return;
+    }
+    [self.revealControllerDelegate onNavigationBarLongPress:sender];
+
 }
 
 
@@ -381,7 +390,7 @@ static NSString *const kTweetCell = @"TweetCell";
 
 - (IBAction)onPanGesture:(UIPanGestureRecognizer *)sender {
     NSLog(@"On Pan gesture, will call delegate %@", self.revealControllerDelegate);
-    [self.revealControllerDelegate onPanGesture:sender onController:self];
+    [self.revealControllerDelegate onHorizontalPanGesture:sender onController:self];
 }
 
 - (void)onProfileImageTap:(NSString *)screenName {

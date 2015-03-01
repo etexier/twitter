@@ -78,7 +78,7 @@ CGPoint originalFrontViewCenter;
 
 #pragma mark - RevealControllerDelegate method
 
-- (void)onPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *)controller {
+- (void)onHorizontalPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *)controller {
     NSLog(@"Pan gesture in delegate");
     UIView *targetView = self.contentView.frontView; // the actual frontView container
     if (sender.state == UIGestureRecognizerStateBegan) {
@@ -103,6 +103,16 @@ CGPoint originalFrontViewCenter;
     targetView.center = CGPointMake(center.x + x, center.y);
 }
 
+-(void) slideAndPresentControllerTransition:(UIViewController *) controller {
+    UIView *targetView = self.contentView.frontView;
+    NSLog(@"Transitioning to %@", controller);
+    [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.6 initialSpringVelocity:0.2 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        targetView.frame = CGRectMake(targetView.frame.size.width - 50, 0, targetView.frame.size.width, targetView.frame.size.height);
+    } completion:^(BOOL finished) {
+        [self presentController:controller];
+    }];
+
+}
 - (void)rightSlideMode {
     UIView *targetView = self.contentView.frontView;
     NSLog(@"Moving %@ in right slide mode", targetView);
@@ -115,12 +125,7 @@ CGPoint originalFrontViewCenter;
 
 -(void) onNavigationBarLongPress:(UILongPressGestureRecognizer *) sender {
     NSLog(@"Detected long press on %@", sender.view);
-    if (self.frontViewController != self.menuActions[MenuActionHome][@"controller"]) {
-        return;
-    }
-    [self rightSlideMode];
-    UIViewController *controller = (UIViewController *) self.menuActions[MenuActionProfile][@"controller"];
-    [self onPresentController:controller];
+    [self slideAndPresentControllerTransition:(UIViewController *) self.menuActions[MenuActionProfile][@"controller"]];
 }
 - (void)presentationMode {
     NSLog(@"Moving in presentation mode");
@@ -131,7 +136,7 @@ CGPoint originalFrontViewCenter;
     }];
 }
 
-- (void)onPresentController:(UIViewController *)presentedController {
+- (void)presentController:(UIViewController *)presentedController {
     NSLog(@"RevealViewController : present controller %@", presentedController);
     NSLog(@"Current front view : %@", self.frontViewController);
 
