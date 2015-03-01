@@ -95,47 +95,6 @@ CGPoint originalFrontViewCenter;
 
 }
 
-BOOL ignoreHorizontalGesture = NO;
-
-- (void)onHorizontalPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *)controller {
-    NSLog(@"Pan gesture in delegate");
-    UIView *targetView = self.contentView.frontView; // the actual frontView container
-    if (sender.state == UIGestureRecognizerStateBegan) {
-        NSLog(@"Pan began");
-        originalFrontViewCenter = targetView.center;
-    } else if (sender.state == UIGestureRecognizerStateChanged) {
-        NSLog(@"Pan changed");
-        CGPoint translation = [sender translationInView:targetView];
-        CGFloat d = fabsf(translation.y);
-        CGFloat n = fabsf(translation.x);
-        if (d != 0.0) {
-            CGFloat a = n / d;
-            NSLog(@"%f/%f a = %f", n, d, a);
-            if (a < 1) {
-                ignoreHorizontalGesture = YES;
-            } else {
-                ignoreHorizontalGesture = NO;
-                [self translateView:targetView translationX:translation.x fromCenter:originalFrontViewCenter];
-
-            }
-
-
-        } else {
-            [self translateView:targetView translationX:translation.x fromCenter:originalFrontViewCenter];
-        }
-    } else if (sender.state == UIGestureRecognizerStateEnded) {
-        if (!ignoreHorizontalGesture) {
-            NSLog(@"Pan ended");
-            CGPoint velocity = [sender velocityInView:targetView];
-            if (velocity.x > 0) { // moving right
-                [self partiallySlideController];
-            } else { // moving left
-                [self presentController];
-            }
-        }
-
-    }
-}
 
 - (void)translateView:(UIView *)targetView translationX:(CGFloat)x fromCenter:(CGPoint)center {
     CGFloat newX = center.x + x;
@@ -209,22 +168,57 @@ BOOL ignoreHorizontalGesture = NO;
 }
 
 
+// do not allow vertical and horizontal gesture at the same time.
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)sender shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     NSLog(@"shouldRecognizeSimultaneouslyWithGestureRecognizer called");
-    UIView *targetView = self.contentView.frontView;
-    if (sender.state == UIGestureRecognizerStateChanged) {
-        NSLog(@"Pan changed");
-        CGPoint translation = [(UIPanGestureRecognizer *) sender translationInView:targetView];
-        CGFloat d = fabsf(translation.y);
-        CGFloat n = fabsf(translation.x);
-        if (d != 0.0) {
-            CGFloat a = n / d;
-            NSLog(@"%f/%f a = %f", n, d, a);
-            return a < 1;
 
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        allowVerticalPanGesture = YES; // reset
+
+    } else if (sender.state == UIGestureRecognizerStateChanged && allowVerticalPanGesture) {
+        allowVerticalPanGesture = [self isVerticalTranslation:sender];
+    } else if (sender.state == UIGestureRecognizerStateEnded) {
+        // 
+    }
+    return allowVerticalPanGesture;
+}
+
+BOOL allowVerticalPanGesture = YES;
+BOOL hasMovedHorizontally = NO;
+
+- (void)onHorizontalPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *)controller {
+    NSLog(@"Pan gesture in delegate");
+
+    UIView *targetView = self.contentView.frontView; // the actual frontView container
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        NSLog(@"Pan began");
+        originalFrontViewCenter = targetView.center;
+    } else if (sender.state == UIGestureRecognizerStateChanged && !allowVerticalPanGesture) {
+        NSLog(@"Pan changed");
+        CGPoint translation = [sender translationInView:targetView];
+        [self translateView:targetView translationX:translation.x fromCenter:originalFrontViewCenter];
+        hasMovedHorizontally = YES;
+    } else if (sender.state == UIGestureRecognizerStateEnded) {
+        NSLog(@"Pan ended");
+        if (!hasMovedHorizontally && !allowVerticalPanGesture) {
+            return;
+        }
+        CGPoint velocity = [sender velocityInView:targetView];
+        if (velocity.x > 0) { // moving right
+            [self partiallySlideController];
+        } else { // moving left
+            [self presentController];
         }
     }
-    return YES;
+}
+
+- (BOOL)isVerticalTranslation:(UIGestureRecognizer *)sender {
+    UIView *targetView = self.contentView.frontView;
+    CGPoint translation = [(UIPanGestureRecognizer *) sender translationInView:targetView];
+    CGFloat ty = fabsf(translation.y);
+    CGFloat tx = fabsf(translation.x);
+    return tx <= 3 * ty;
+
 }
 
 
