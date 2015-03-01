@@ -193,6 +193,8 @@ BOOL hasMovedHorizontally = NO;
     if (sender.state == UIGestureRecognizerStateBegan) {
         NSLog(@"Pan began");
         originalFrontViewCenter = targetView.center;
+        hasMovedHorizontally = NO;
+        allowVerticalPanGesture = YES;
     } else if (sender.state == UIGestureRecognizerStateChanged && !allowVerticalPanGesture) {
         NSLog(@"Pan changed");
         CGPoint translation = [sender translationInView:targetView];
@@ -200,15 +202,16 @@ BOOL hasMovedHorizontally = NO;
         hasMovedHorizontally = YES;
     } else if (sender.state == UIGestureRecognizerStateEnded) {
         NSLog(@"Pan ended");
-        if (!hasMovedHorizontally && !allowVerticalPanGesture) {
-            return;
+        if (hasMovedHorizontally) {
+            CGPoint velocity = [sender velocityInView:targetView];
+            if (velocity.x > 0) { // moving right
+                [self partiallySlideController];
+            } else { // moving left
+                [self presentController];
+            }
         }
-        CGPoint velocity = [sender velocityInView:targetView];
-        if (velocity.x > 0) { // moving right
-            [self partiallySlideController];
-        } else { // moving left
-            [self presentController];
-        }
+        hasMovedHorizontally = NO;
+        allowVerticalPanGesture = YES;
     }
 }
 
@@ -217,7 +220,7 @@ BOOL hasMovedHorizontally = NO;
     CGPoint translation = [(UIPanGestureRecognizer *) sender translationInView:targetView];
     CGFloat ty = fabsf(translation.y);
     CGFloat tx = fabsf(translation.x);
-    return tx <= 3 * ty;
+    return tx <= 2 * ty;
 
 }
 

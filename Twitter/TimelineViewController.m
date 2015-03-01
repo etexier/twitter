@@ -151,18 +151,17 @@ static NSString *const kTweetCell = @"TweetCell";
     v.userInteractionEnabled = YES;
     [v addGestureRecognizer:longPress];
 
-//    for (UIView *v in self.navigationController.navigationBar.subviews) {
-//        [v setUserInteractionEnabled:YES];
-//        [v addGestureRecognizer:longPress];
-//
-//    }
-    
+
     
 }
 
 - (void)onNavigationBarLongPress:(UILongPressGestureRecognizer*)sender {
     if (self.class != HomeTimelineViewController.class) {
         return;
+    }
+    CGPoint point = [sender locationInView:self.navigationController.navigationBar];
+    if (point.y > self.navigationController.navigationBar.frame.size.height) {
+       return;
     }
     [self.revealControllerDelegate onNavigationBarLongPress:sender];
 
