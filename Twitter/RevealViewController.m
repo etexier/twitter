@@ -62,24 +62,53 @@ CGPoint originalFrontViewCenter;
     self.view = self.contentView;
 
 
-    [self deployViewOfController:self.rearViewController inView:self.contentView.rearView];
-    [self deployViewOfController:self.frontViewController inView:self.contentView.frontView];
+    [self deployViewOfController:self.rearViewController inParentView:self.contentView.rearView];
+    [self deployViewOfController:self.frontViewController inParentView:self.contentView.frontView];
 
     NSLog(@"loadView ended");
 }
 
-- (void)deployViewOfController:(UIViewController *)controller inView:(UIView *)view {
-    NSLog(@"Deploying controller %@ in view %@", controller, view);
-    if (!controller || !view)
+// set controller view as a child of the target view
+- (void)deployViewOfController:(UIViewController *)controller inParentView:(UIView *)parentView {
+    NSLog(@"Deploying controller %@ in view %@", controller, parentView);
+    if (!controller || !parentView)
         return;
 
-    CGRect frame = view.bounds;
 
+    // get target view frame
+    CGRect frame = parentView.bounds;
+
+    // get target controller view and set it up
     UIView *controllerView = controller.view;
     controllerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
+    // set the frame of the target controller to the target view frame
     controllerView.frame = frame;
 
-    [view addSubview:controllerView];
+    // add the target controller view as a child of the target view
+    [parentView addSubview:controllerView];
+
+}
+
+- (void)deployAsHiddenViewOfController:(UIViewController *)controller inParentView:(UIView *)parentView {
+    NSLog(@"Deploying controller %@ in view %@", controller, parentView);
+    if (!controller || !parentView)
+        return;
+
+
+    // get target view frame
+    parentView.frame = CGRectMake(parentView.bounds.size.width, 0, parentView.bounds.size.width, parentView.bounds.size.height);
+    CGRect frame = parentView.frame;
+
+    // get target controller view and set it up
+    UIView *controllerView = controller.view;
+    controllerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
+    // set the frame of the target controller to the target view frame
+    controllerView.frame = frame;
+
+    // add the target controller view as a child of the target view
+    [parentView addSubview:controllerView];
 
 }
 
@@ -91,8 +120,7 @@ CGPoint originalFrontViewCenter;
 #pragma mark - RevealControllerDelegate method
 
 - (void)transitionToLoginController {
-    [self transitionToController:self.loginController];
-
+    [self slideOverToController:self.loginController];
 }
 
 
@@ -105,31 +133,38 @@ CGPoint originalFrontViewCenter;
     targetView.center = CGPointMake(newX, center.y);
 }
 
-- (void)slideToController:(UIViewController *)controller {
-    NSLog(@"slide to %@", controller);
+- (void)rightAndLeftSlideToController:(UIViewController *)controller {
+    NSLog(@"unslide and slide to %@", controller);
+    UIView *targetView = self.contentView.frontView;
     [UIView animateWithDuration:duration delay:delay usingSpringWithDamping:0.6 initialSpringVelocity:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        targetView.frame = CGRectMake(targetView.frame.size.width, 0, targetView.frame.size.width, targetView.frame.size.height);
+
     }                completion:^(BOOL finished) {
-        [self partiallyUnslideController:controller];
+        [self updateFrontController:controller];
+        [self animateFrontPresentationWithCompletion:nil];
     }];
 
 }
 
-- (void)transitionToController:(UIViewController *)presentedController {
-    NSLog(@"Transitioning to %@", presentedController);
-    NSLog(@"Current front view : %@", self.frontViewController);
+- (void)slideOverToController:(UIViewController *)controller {
+    NSLog(@"slide over to %@", controller);
+    UIView *targetView = self.contentView.frontView;
 
-    if (self.frontViewController != presentedController) { // not the controller on the side
-        NSLog(@"Undeploying old controller %@", self.frontViewController);
-        [self undeployViewOfController:self.frontViewController];
-        [self deployViewOfController:presentedController inView:self.contentView.frontView];
-        self.frontViewController = presentedController;
-    } // else already on the side
-    [self presentController];
+    [UIView animateWithDuration:duration delay:delay usingSpringWithDamping:0.6 initialSpringVelocity:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        targetView.frame = CGRectMake(targetView.frame.size.width, 0, targetView.frame.size.width, targetView.frame.size.height);
+//        self.rearViewController.view.alpha = 0.0;
+        [self updateFrontController:controller];
 
+    }                completion:^(BOOL finished) {
+        [self animateFrontPresentationWithCompletion:^(BOOL finished) {
+//            self.rearViewController.view.alpha = 1.0;
+        }];
+    }];
 
 }
 
-- (void)partiallySlideController {
+
+- (void)animateRightSlide {
     UIView *targetView = self.contentView.frontView;
     NSLog(@"Moving %@ in right slide mode", targetView);
     [UIView animateWithDuration:duration delay:delay usingSpringWithDamping:springWithDamping initialSpringVelocity:initialSpringVelocity options:UIViewAnimationOptionCurveEaseOut animations:^{
@@ -141,32 +176,36 @@ CGPoint originalFrontViewCenter;
 
 - (void)onNavigationBarLongPress:(UILongPressGestureRecognizer *)sender {
     NSLog(@"Detected long press on %@", sender.view);
-    [self slideToController:(UIViewController *) self.menuActions[MenuActionProfile][@"controller"]];
+    UIViewController *controller = (UIViewController *) self.menuActions[MenuActionProfile][@"controller"];
+    [self slideOverToController:controller];
+
 }
 
-- (void)presentController {
+- (void)animateFrontPresentationWithCompletion:(void (^)(BOOL finished))completion  {
     NSLog(@"Moving in presentation mode");
     UIView *targetView = self.contentView.frontView;
     [UIView animateWithDuration:duration delay:delay usingSpringWithDamping:0.9 initialSpringVelocity:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         targetView.frame = CGRectMake(0, 0, targetView.frame.size.width, targetView.frame.size.height);
     }                completion:^(BOOL finished) {
+        if (completion) {
+         completion(finished);   
+        }
     }];
 }
 
 
-- (void)partiallyUnslideController:(UIViewController *)presentedController {
-    NSLog(@"RevealViewController : present controller %@", presentedController);
-    NSLog(@"Current front view : %@", self.frontViewController);
 
-    if (self.frontViewController != presentedController) { // not the controller on the side
-        NSLog(@"Undeploying old controller %@", self.frontViewController);
-        [self undeployViewOfController:self.frontViewController];
-        [self deployViewOfController:presentedController inView:self.contentView.frontView];
-        self.frontViewController = presentedController;
-    } // else already on the side
-    [self presentController];
+
+- (void)updateFrontController:(UIViewController *)presentedController {
+    if (self.frontViewController == presentedController) {
+        return;
+    }
+    NSLog(@"Replacing old controller %@ with %@", self.frontViewController, presentedController);
+    [self undeployViewOfController:self.frontViewController];
+    [self deployViewOfController:presentedController inParentView:self.contentView.frontView];
+    self.frontViewController = presentedController;
+
 }
-
 
 // do not allow vertical and horizontal gesture at the same time.
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)sender shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
@@ -205,9 +244,9 @@ BOOL hasMovedHorizontally = NO;
         if (hasMovedHorizontally) {
             CGPoint velocity = [sender velocityInView:targetView];
             if (velocity.x > 0) { // moving right
-                [self partiallySlideController];
+                [self animateRightSlide];
             } else { // moving left
-                [self presentController];
+                [self animateFrontPresentationWithCompletion:nil];
             }
         }
         hasMovedHorizontally = NO;

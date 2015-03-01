@@ -16,12 +16,18 @@ typedef NS_ENUM(NSInteger, MenuAction) {
 };
 @protocol RevealViewControllerDelegate <UIGestureRecognizerDelegate>
 @required
-- (void)partiallyUnslideController:(UIViewController *)presentViewController;
 - (void)onHorizontalPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *) controller ;
 - (void)onNavigationBarLongPress:(UILongPressGestureRecognizer *) sender;
-- (void)slideToController:(UIViewController *)controller;
-- (void)presentController;
-- (void)transitionToController:(UIViewController *)presentedController;
+
+- (void)rightAndLeftSlideToController:(UIViewController *)controller;
+
+- (void)slideOverToController:(UIViewController *)controller;
+
+- (void)animateFrontPresentationWithCompletion:(void (^)(BOOL finished))completion;
+
+- (void)animateRightSlide;
+
+
 
 
 
@@ -38,15 +44,7 @@ typedef NS_ENUM(NSInteger, MenuAction) {
 
 - (void)transitionToLoginController;
 
-- (void)onHorizontalPanGesture:(UIPanGestureRecognizer *)sender onController:(UIViewController *)controller;
 
-- (void)slideToController:(UIViewController *)controller;
-
-- (void)transitionToController:(UIViewController *)presentedController;
-
-- (void)presentController;
-
-- (void)partiallyUnslideController:(UIViewController *)presentViewController;
 
 - (instancetype)initWithFrontViewController:(UIViewController *)frontViewController andRearController:(UIViewController *)rearViewController menuActions:(NSArray *)menuActions;
 

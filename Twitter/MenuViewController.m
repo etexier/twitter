@@ -76,7 +76,7 @@
         return;
     }
 
-    [self.revealControllerDelegate slideToController:(UIViewController *) value];
+    [self.revealControllerDelegate rightAndLeftSlideToController:(UIViewController *) value];
 
     
 }

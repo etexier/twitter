@@ -55,7 +55,7 @@
 }
 
 - (void)login {
-    [self.revealControllerDelegate slideToController:self.frontViewController];
+    [self.revealControllerDelegate slideOverToController:self.frontViewController];
 
 }
 
