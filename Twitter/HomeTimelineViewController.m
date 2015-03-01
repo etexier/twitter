@@ -3,8 +3,10 @@
 // Copyright (c) 2015 Emmanuel Texier. All rights reserved.
 //
 
+#import <BBlock/UIActionSheet+BBlock.h>
 #import "HomeTimelineViewController.h"
 #import "TwitterClient.h"
+#import "NewTweetViewController.h"
 
 
 @implementation HomeTimelineViewController
@@ -32,6 +34,43 @@
     self.navigationItem.rightBarButtonItem = newTweetButton;
 
 }
+
+#pragma mark - button action
+
+- (void)onNewTweet {
+    if (![[TwitterClient sharedInstance] isAuthorized]) {
+        [[[UIAlertView alloc] initWithTitle:@"Error"
+                                    message:@"You must sign in to tweet"
+                                   delegate:self
+                          cancelButtonTitle:@"Dismiss"
+                          otherButtonTitles:nil] show];
+        return;
+    }
+    NewTweetViewController *vc = [[NewTweetViewController alloc] initWithDelegate:self];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+
+- (void)logInOut {
+    if ([[TwitterClient sharedInstance] isAuthorized]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[[UIActionSheet alloc] initWithTitle:@"Are you sure you want to sign out?"
+                                cancelButtonTitle:@"Cancel"
+                           destructiveButtonTitle:@"Sign Out"
+                                 otherButtonTitle:nil
+                                  completionBlock:^(NSInteger buttonIndex, UIActionSheet *actionSheet) {
+                                      if (buttonIndex == actionSheet.destructiveButtonIndex) {
+                                          [[TwitterClient sharedInstance] deAuthorize];
+                                      }
+                                  }]
+             showInView:self.view];
+        });
+    } else {
+        [[TwitterClient sharedInstance] authorize];
+    }
+}
+
+
 
 
 

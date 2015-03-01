@@ -13,6 +13,8 @@
 		31F522B91A964FF700C5545C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31F522B81A964FF700C5545C /* Images.xcassets */; };
 		31F522BC1A964FF700C5545C /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 31F522BA1A964FF700C5545C /* LaunchScreen.xib */; };
 		31F522C81A964FF700C5545C /* TwitterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F522C71A964FF700C5545C /* TwitterTests.m */; };
+		3294E2E91AA2A2E400E3E088 /* UserHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3294E2E81AA2A2E400E3E088 /* UserHeaderView.xib */; };
+		3294E2EC1AA2A7B600E3E088 /* UserHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3294E2EB1AA2A7B600E3E088 /* UserHeaderView.m */; };
 		32B1D51B1AA0FF9A004E34D8 /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B1D5191AA0FF9A004E34D8 /* ProfileViewController.m */; };
 		32B1D5201AA0FFAD004E34D8 /* MentionsTimelineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B1D51E1AA0FFAD004E34D8 /* MentionsTimelineViewController.m */; };
 		32C5812B1A9E585500C1FEF3 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C581291A9E585500C1FEF3 /* MenuViewController.m */; };
@@ -57,6 +59,9 @@
 		31F522C11A964FF700C5545C /* TwitterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TwitterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		31F522C61A964FF700C5545C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		31F522C71A964FF700C5545C /* TwitterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TwitterTests.m; sourceTree = "<group>"; };
+		3294E2E81AA2A2E400E3E088 /* UserHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UserHeaderView.xib; sourceTree = "<group>"; };
+		3294E2EA1AA2A7B600E3E088 /* UserHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserHeaderView.h; sourceTree = "<group>"; };
+		3294E2EB1AA2A7B600E3E088 /* UserHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserHeaderView.m; sourceTree = "<group>"; };
 		32B1D5181AA0FF9A004E34D8 /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
 		32B1D5191AA0FF9A004E34D8 /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
 		32B1D51D1AA0FFAD004E34D8 /* MentionsTimelineViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MentionsTimelineViewController.h; sourceTree = "<group>"; };
@@ -227,6 +232,9 @@
 				32F0B3341A99282A00ED623D /* TweetCell.xib */,
 				33065246DB1A28A600D266FC /* RevealView.m */,
 				33065080064BEBD64854816D /* RevealView.h */,
+				3294E2E81AA2A2E400E3E088 /* UserHeaderView.xib */,
+				3294E2EA1AA2A7B600E3E088 /* UserHeaderView.h */,
+				3294E2EB1AA2A7B600E3E088 /* UserHeaderView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -417,6 +425,7 @@
 				32F0B3361A99282A00ED623D /* TweetCell.xib in Resources */,
 				33065B1504EBEC3FAB48893B /* TimelineViewController.xib in Resources */,
 				330651E3B70097763480B051 /* TweetDetailsViewController.xib in Resources */,
+				3294E2E91AA2A2E400E3E088 /* UserHeaderView.xib in Resources */,
 				33065DE168EFD6D2B92DA1E7 /* NewTweetViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -469,6 +478,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				31F522B11A964FF700C5545C /* AppDelegate.m in Sources */,
+				3294E2EC1AA2A7B600E3E088 /* UserHeaderView.m in Sources */,
 				32F0B3351A99282A00ED623D /* TweetCell.m in Sources */,
 				32B1D5201AA0FFAD004E34D8 /* MentionsTimelineViewController.m in Sources */,
 				31C4AD4B1A96BCA200507116 /* Tweet.m in Sources */,
