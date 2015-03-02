@@ -1,7 +1,7 @@
 
 Twitter REDUX project (week4)
 
-Time spent: `16h`
+Time spent: `18h`
 
 
 ### Features
