@@ -156,17 +156,20 @@ static NSString *const kTweetCell = @"TweetCell";
 }
 
 - (void)onNavigationBarLongPress:(UILongPressGestureRecognizer*)sender {
+    NSLog(@"Long press detected in TimelineViewController");
     if (self.class != HomeTimelineViewController.class) {
+        NSLog(@"Class %@ is not a HomeTimelineViewController class", self.class);
         return;
     }
     CGPoint point = [sender locationInView:self.navigationController.navigationBar];
     if (point.y > self.navigationController.navigationBar.frame.size.height) {
+        NSLog(@"Y %f is below the navigation bar", point.y);
+
        return;
     }
     [self.revealControllerDelegate onNavigationBarLongPress:sender];
 
 }
-
 
 - (NSString *)timelineTitle {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException

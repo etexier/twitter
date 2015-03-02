@@ -177,7 +177,7 @@ CGPoint originalFrontViewCenter;
 - (void)onNavigationBarLongPress:(UILongPressGestureRecognizer *)sender {
     NSLog(@"Detected long press on %@", sender.view);
     UIViewController *controller = (UIViewController *) self.menuActions[MenuActionProfile][@"controller"];
-    [self slideOverToController:controller];
+    [self rightAndLeftSlideToController:controller];
 
 }
 
